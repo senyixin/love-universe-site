@@ -1,0 +1,50 @@
+[
+  {
+    "id": "877717b0-d135-4f7a-a889-47718e261252",
+    "title": "奶茶免排队券",
+    "text": "想喝哪杯都可以，我负责下单和夸你眼光好。",
+    "totalQuantity": 2,
+    "claimedQuantity": 0,
+    "effectiveDate": "",
+    "expiryDate": "",
+    "useHistory": [],
+    "createdAt": "2026-05-25T15:53:57.584Z",
+    "updatedAt": "2026-05-25T15:53:57.584Z"
+  },
+  {
+    "id": "7fcce252-8bd7-4b4c-986f-1594ebe7d0d2",
+    "title": "无条件抱抱券",
+    "text": "不讲道理也能用，优先级最高。",
+    "totalQuantity": 3,
+    "claimedQuantity": 0,
+    "effectiveDate": "",
+    "expiryDate": "",
+    "useHistory": [],
+    "createdAt": "2026-05-25T15:53:57.585Z",
+    "updatedAt": "2026-05-25T15:53:57.585Z"
+  },
+  {
+    "id": "a09e87eb-5ecb-4e0c-8bdd-d58f3391cc39",
+    "title": "电影选择权",
+    "text": "今晚看什么，你说了算。",
+    "totalQuantity": 1,
+    "claimedQuantity": 0,
+    "effectiveDate": "",
+    "expiryDate": "",
+    "useHistory": [],
+    "createdAt": "2026-05-25T15:53:57.585Z",
+    "updatedAt": "2026-05-25T15:53:57.585Z"
+  },
+  {
+    "id": "458951cf-7f2b-4b88-8b44-ba52b8cf723f",
+    "title": "哄睡语音券",
+    "text": "睡不着的时候兑换，直到你困为止。",
+    "totalQuantity": 2,
+    "claimedQuantity": 0,
+    "effectiveDate": "",
+    "expiryDate": "",
+    "useHistory": [],
+    "createdAt": "2026-05-25T15:53:57.585Z",
+    "updatedAt": "2026-05-25T15:53:57.585Z"
+  }
+]

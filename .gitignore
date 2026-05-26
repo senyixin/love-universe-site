@@ -1,0 +1,10 @@
+node_modules/
+.server.*
+.playwright-cli/
+npm-debug.log*
+.env
+uploads/photos/
+data/mail-config.json
+data/coupon-events.json
+data/admin-config.json
+dist/

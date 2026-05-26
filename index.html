@@ -1,0 +1,726 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>给她的小宇宙</title>
+    <meta name="description" content="一个只属于她的私密纪念网站。">
+    <link rel="preload" href="assets/hero-romance.png" as="image">
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="styles.css">
+    <script defer src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script defer src="app.js"></script>
+  </head>
+  <body>
+    <div class="entry" id="entry">
+      <div class="entry-art" aria-hidden="true"></div>
+      <form class="entry-panel" id="entryForm" autocomplete="off">
+        <p class="eyebrow">PRIVATE UNIVERSE</p>
+        <h1>只给她看的地方</h1>
+        <p class="entry-copy">把暗号说给这扇门听，里面全是偏心和认真。</p>
+        <label class="sr-only" for="passcodeInput">暗号</label>
+        <div class="passcode-row">
+          <input id="passcodeInput" name="passcode" type="password" inputmode="text" autocomplete="new-password" placeholder="输入暗号" aria-describedby="entryMessage">
+          <button type="submit">
+            <i data-lucide="lock-keyhole"></i>
+            <span>进入</span>
+          </button>
+        </div>
+        <p class="entry-message" id="entryMessage" aria-live="polite">默认暗号：0520 / 520 / 我爱你</p>
+      </form>
+    </div>
+
+    <div class="app" id="app" hidden>
+      <header class="topbar">
+        <a class="brand" href="#home" aria-label="回到首页">
+          <span class="brand-mark">L</span>
+          <span data-partner-name>她</span>
+        </a>
+        <nav class="nav-links" aria-label="主导航">
+          <a href="#dialog">对话</a>
+          <a href="#weather">天气</a>
+          <a href="#memories">回忆</a>
+          <a href="#plans">愿望</a>
+          <a href="#letters">信件</a>
+        </nav>
+        <div class="top-actions">
+          <button class="icon-button" id="musicButton" type="button" aria-label="播放音乐">
+            <i data-lucide="music"></i>
+          </button>
+          <button class="icon-button" id="settingsButton" type="button" aria-label="小设定">
+            <i data-lucide="settings"></i>
+          </button>
+        </div>
+      </header>
+
+      <main>
+        <section class="hero" id="home">
+          <img class="hero-img" src="assets/hero-romance.png" alt="">
+          <div class="hero-shade" aria-hidden="true"></div>
+          <div class="hero-content">
+            <p class="eyebrow">FOR <span data-partner-name>她</span></p>
+            <h1><span data-partner-name>她</span>的小宇宙</h1>
+            <p id="heroLine">今天也想认真地，把世界温柔地递给你。</p>
+            <div class="hero-actions">
+              <button class="primary-button" type="button" data-scroll-target="#dialog">
+                <i data-lucide="message-circle-heart"></i>
+                <span>打开对话</span>
+              </button>
+              <button class="secondary-button" type="button" data-scroll-target="#weather">
+                <i data-lucide="cloud-sun"></i>
+                <span>看天气</span>
+              </button>
+            </div>
+            <button class="heart-counter" id="secretHeart" type="button" aria-label="心跳">
+              <i data-lucide="heart"></i>
+              <span id="heroDays">第 1 天</span>
+            </button>
+          </div>
+        </section>
+
+        <section class="ticker-band" aria-label="今天">
+          <div>
+            <span class="ticker-label">今日一句</span>
+            <strong id="dailyQuote">喜欢你这件事，今天也没有下班。</strong>
+          </div>
+          <div>
+            <span class="ticker-label">纪念日</span>
+            <strong id="anniversaryText">第 1 天</strong>
+          </div>
+          <div>
+            <span class="ticker-label">下次见面</span>
+            <strong id="meetText">很快</strong>
+          </div>
+          <div>
+            <span class="ticker-label">生日倒计时</span>
+            <strong id="birthdayText">准备中</strong>
+          </div>
+        </section>
+
+        <section class="section dialog-section" id="dialog">
+          <div class="section-heading">
+            <p class="eyebrow">SOFT TALK</p>
+            <h2>慢慢说给她听</h2>
+          </div>
+          <div class="dialog-shell">
+            <div class="chat-list" id="chatList" aria-live="polite"></div>
+            <div class="dialog-controls">
+              <button class="secondary-button" id="nextLineButton" type="button">
+                <i data-lucide="send"></i>
+                <span>下一句</span>
+              </button>
+              <button class="ghost-button" id="replayDialogButton" type="button">
+                <i data-lucide="rotate-ccw"></i>
+                <span>重来</span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section class="section weather-section" id="weather">
+          <div class="section-heading">
+            <p class="eyebrow">SEVEN DAYS</p>
+            <h2>她那边的天空</h2>
+          </div>
+          <div class="weather-tools">
+            <form class="city-form" id="cityForm">
+              <label class="sr-only" for="cityInput">城市</label>
+              <i data-lucide="map-pin"></i>
+              <input id="cityInput" name="city" type="search" placeholder="输入城市，比如 上海 / Beijing">
+              <button class="secondary-button" type="submit">
+                <i data-lucide="search"></i>
+                <span>查找</span>
+              </button>
+            </form>
+            <button class="primary-button" id="locationButton" type="button">
+              <i data-lucide="crosshair"></i>
+              <span>当前位置</span>
+            </button>
+          </div>
+          <div class="weather-status" id="weatherStatus" aria-live="polite"></div>
+          <div class="care-strip" id="weatherCare">
+            <i data-lucide="sparkles"></i>
+            <span>正在把未来一周的天气整理成关心。</span>
+          </div>
+          <div class="weather-grid" id="weatherGrid"></div>
+        </section>
+
+        <section class="section memories-section" id="memories">
+          <div class="section-heading">
+            <p class="eyebrow">OUR DAYS</p>
+            <h2>回忆时间线</h2>
+          </div>
+          <div class="timeline" id="timelineList"></div>
+        </section>
+
+        <section class="section album-section" id="album">
+          <div class="section-heading with-action">
+            <div>
+              <p class="eyebrow">PHOTO BOOK</p>
+              <h2>照片相册</h2>
+            </div>
+            <button class="secondary-button" id="addPhotoButton" type="button">
+              <i data-lucide="upload"></i>
+              <span>上传照片</span>
+            </button>
+          </div>
+          <div class="album-grid" id="albumGrid"></div>
+        </section>
+
+        <section class="section mood-section" id="mood">
+          <div class="section-heading">
+            <p class="eyebrow">MOOD BUTTONS</p>
+            <h2>她今天的心情</h2>
+          </div>
+          <div class="mood-grid" id="moodGrid"></div>
+          <div class="mood-response" id="moodResponse">
+            <i data-lucide="heart-handshake"></i>
+            <span>点一下心情，我会替你把话说得更软一点。</span>
+          </div>
+        </section>
+
+        <section class="section plans-section" id="plans">
+          <div class="section-heading">
+            <p class="eyebrow">LITTLE PLANS</p>
+            <h2>愿望、约会和小票券</h2>
+          </div>
+          <div class="plans-grid">
+            <div class="tool-panel">
+              <div class="tool-title">
+                <i data-lucide="dice-5"></i>
+                <h3>约会灵感盒子</h3>
+              </div>
+              <div class="idea-card" id="dateIdeaCard"></div>
+              <button class="primary-button full-button" id="drawIdeaButton" type="button">
+                <i data-lucide="shuffle"></i>
+                <span>抽一个</span>
+              </button>
+            </div>
+
+            <div class="tool-panel">
+              <div class="tool-title">
+                <i data-lucide="list-checks"></i>
+                <h3>愿望清单</h3>
+              </div>
+              <form class="wish-form" id="wishForm">
+                <label class="sr-only" for="wishInput">新愿望</label>
+                <input id="wishInput" name="wish" type="text" placeholder="写下一个新愿望">
+                <button class="icon-button solid" type="submit" aria-label="添加愿望">
+                  <i data-lucide="plus"></i>
+                </button>
+              </form>
+              <div class="wish-toolbar">
+                <span id="wishProgressText">已完成 0 / 100</span>
+                <div class="wish-progress" aria-hidden="true">
+                  <span id="wishProgressBar"></span>
+                </div>
+              </div>
+              <div class="wish-list" id="wishList"></div>
+            </div>
+
+            <div class="tool-panel">
+              <div class="tool-title">
+                <i data-lucide="ticket"></i>
+                <h3>专属小票券</h3>
+              </div>
+              <div class="coupon-list" id="couponList"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section map-section" id="map">
+          <div class="section-heading">
+            <p class="eyebrow">FOOTPRINTS</p>
+            <h2>地图足迹</h2>
+          </div>
+          <div class="map-layout">
+            <div class="memory-map" id="memoryMap" aria-label="地图足迹"></div>
+            <div class="place-column">
+              <form class="place-form" id="placeForm">
+                <label class="sr-only" for="placeInput">地点</label>
+                <input id="placeInput" name="place" type="text" placeholder="新的地点">
+                <label class="sr-only" for="placeNoteInput">备注</label>
+                <input id="placeNoteInput" name="note" type="text" placeholder="一句话">
+                <button class="secondary-button" type="submit">
+                  <i data-lucide="map-pinned"></i>
+                  <span>标记</span>
+                </button>
+              </form>
+              <div class="place-list" id="placeList"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section letters-section" id="letters">
+          <div class="section-heading">
+            <p class="eyebrow">FUTURE MAIL</p>
+            <h2>留言墙和未来信</h2>
+          </div>
+          <div class="message-wall" id="messageWall"></div>
+          <div class="letter-grid" id="letterGrid"></div>
+        </section>
+      </main>
+    </div>
+
+    <div class="admin-app" id="adminApp" hidden>
+      <header class="admin-topbar">
+        <div class="admin-brand">
+          <span class="brand-mark">M</span>
+          <span>管理台</span>
+        </div>
+        <button class="secondary-button" id="adminLogoutButton" type="button">
+          <i data-lucide="log-out"></i>
+          <span>离开</span>
+        </button>
+      </header>
+
+      <main class="admin-main">
+        <section class="admin-hero">
+          <p class="eyebrow">COUPON CONTROL</p>
+          <h1>专属小票券管理</h1>
+          <p>这里不会出现在她的导航里。只有输入你的管理密钥，才会从同一个入口进入。</p>
+        </section>
+
+        <section class="admin-layout">
+          <form class="admin-panel" id="securityForm">
+            <div class="admin-panel-head">
+              <div>
+                <p class="eyebrow">SECURITY</p>
+                <h2>后台密码</h2>
+              </div>
+            </div>
+            <div class="admin-form-grid two-columns">
+              <label>
+                当前后台密码
+                <input name="currentKey" type="password" autocomplete="current-password" required>
+              </label>
+              <label>
+                新后台密码
+                <input name="newKey" type="password" autocomplete="new-password" minlength="6" required>
+              </label>
+              <label>
+                再输入一次
+                <input name="confirmKey" type="password" autocomplete="new-password" minlength="6" required>
+              </label>
+            </div>
+            <p class="admin-message" id="securityMessage" aria-live="polite"></p>
+            <button class="primary-button full-button" type="submit">
+              <i data-lucide="key-round"></i>
+              <span>保存后台密码</span>
+            </button>
+          </form>
+
+          <form class="admin-panel" id="timelineAdminForm">
+            <div class="admin-panel-head">
+              <div>
+                <p class="eyebrow">MEMORIES</p>
+                <h2 id="timelineAdminTitle">新增回忆</h2>
+              </div>
+              <button class="ghost-button" id="resetTimelineFormButton" type="button">
+                <i data-lucide="rotate-ccw"></i>
+                <span>清空</span>
+              </button>
+            </div>
+            <input name="timelineId" type="hidden">
+            <div class="admin-form-grid two-columns">
+              <label>
+                日期
+                <input name="date" type="date" required>
+              </label>
+              <label>
+                标题
+                <input name="title" type="text" required>
+              </label>
+            </div>
+            <label>
+              内容
+              <textarea name="text" rows="3" required></textarea>
+            </label>
+            <p class="admin-message" id="timelineAdminMessage" aria-live="polite"></p>
+            <button class="primary-button full-button" type="submit">
+              <i data-lucide="save"></i>
+              <span>保存回忆时间线</span>
+            </button>
+            <div class="admin-content-list" id="adminTimelineList"></div>
+          </form>
+
+          <form class="admin-panel" id="ideaAdminForm">
+            <div class="admin-panel-head">
+              <div>
+                <p class="eyebrow">DATE IDEAS</p>
+                <h2 id="ideaAdminTitle">新增约会灵感</h2>
+              </div>
+              <button class="ghost-button" id="resetIdeaFormButton" type="button">
+                <i data-lucide="rotate-ccw"></i>
+                <span>清空</span>
+              </button>
+            </div>
+            <input name="ideaId" type="hidden">
+            <div class="admin-form-grid two-columns">
+              <label>
+                标题
+                <input name="title" type="text" required>
+              </label>
+              <label>
+                时长
+                <input name="time" type="text" placeholder="比如：下午" required>
+              </label>
+            </div>
+            <label>
+              标签
+              <input name="tags" type="text" placeholder="用逗号分隔，比如：拍照, 甜品">
+            </label>
+            <label>
+              内容
+              <textarea name="text" rows="3" required></textarea>
+            </label>
+            <p class="admin-message" id="ideaAdminMessage" aria-live="polite"></p>
+            <button class="primary-button full-button" type="submit">
+              <i data-lucide="save"></i>
+              <span>保存约会灵感</span>
+            </button>
+            <div class="admin-content-list" id="adminIdeaList"></div>
+          </form>
+
+          <form class="admin-panel" id="placeAdminForm">
+            <div class="admin-panel-head">
+              <div>
+                <p class="eyebrow">FOOTPRINTS</p>
+                <h2 id="placeAdminTitle">新增地图足迹</h2>
+              </div>
+              <button class="ghost-button" id="resetPlaceFormButton" type="button">
+                <i data-lucide="rotate-ccw"></i>
+                <span>清空</span>
+              </button>
+            </div>
+            <input name="placeId" type="hidden">
+            <div class="admin-form-grid two-columns">
+              <label>
+                地点名
+                <input name="name" type="text" required>
+              </label>
+              <label>
+                备注
+                <input name="note" type="text" required>
+              </label>
+              <label>
+                横向位置 %
+                <input name="x" type="number" min="4" max="96" step="1" placeholder="自动">
+              </label>
+              <label>
+                纵向位置 %
+                <input name="y" type="number" min="4" max="96" step="1" placeholder="自动">
+              </label>
+            </div>
+            <p class="admin-message" id="placeAdminMessage" aria-live="polite"></p>
+            <button class="primary-button full-button" type="submit">
+              <i data-lucide="map-pinned"></i>
+              <span>保存地图足迹</span>
+            </button>
+            <div class="admin-content-list" id="adminPlaceList"></div>
+          </form>
+
+          <form class="admin-panel" id="messageAdminForm">
+            <div class="admin-panel-head">
+              <div>
+                <p class="eyebrow">MESSAGE WALL</p>
+                <h2 id="messageAdminTitle">新增留言</h2>
+              </div>
+              <button class="ghost-button" id="resetMessageFormButton" type="button">
+                <i data-lucide="rotate-ccw"></i>
+                <span>清空</span>
+              </button>
+            </div>
+            <input name="messageId" type="hidden">
+            <label>
+              标题
+              <input name="title" type="text" required>
+            </label>
+            <label>
+              留言内容
+              <textarea name="text" rows="4" required></textarea>
+            </label>
+            <p class="admin-message" id="messageAdminMessage" aria-live="polite"></p>
+            <button class="primary-button full-button" type="submit">
+              <i data-lucide="message-circle-heart"></i>
+              <span>保存留言墙</span>
+            </button>
+            <div class="admin-content-list" id="adminMessageList"></div>
+          </form>
+
+          <form class="admin-panel" id="letterAdminForm">
+            <div class="admin-panel-head">
+              <div>
+                <p class="eyebrow">FUTURE MAIL</p>
+                <h2 id="letterAdminTitle">新增未来信</h2>
+              </div>
+              <button class="ghost-button" id="resetLetterFormButton" type="button">
+                <i data-lucide="rotate-ccw"></i>
+                <span>清空</span>
+              </button>
+            </div>
+            <input name="letterId" type="hidden">
+            <div class="admin-form-grid two-columns">
+              <label>
+                标题
+                <input name="title" type="text" required>
+              </label>
+              <label>
+                几天后解锁
+                <input name="unlockDays" type="number" min="0" step="1" value="0" required>
+              </label>
+            </div>
+            <label>
+              信件内容
+              <textarea name="body" rows="5" required></textarea>
+            </label>
+            <p class="admin-message" id="letterAdminMessage" aria-live="polite"></p>
+            <button class="primary-button full-button" type="submit">
+              <i data-lucide="mail-plus"></i>
+              <span>保存未来信</span>
+            </button>
+            <div class="admin-content-list" id="adminLetterList"></div>
+          </form>
+
+          <section class="admin-panel">
+            <div class="admin-panel-head">
+              <div>
+                <p class="eyebrow">PHOTO BOOK</p>
+                <h2>相册照片</h2>
+              </div>
+              <button class="secondary-button" id="adminAddPhotoButton" type="button">
+                <i data-lucide="upload"></i>
+                <span>上传</span>
+              </button>
+            </div>
+            <p class="admin-message">这里只管理上传到服务器的照片；样例照片保留在页面资源里。</p>
+            <div class="admin-photo-list" id="adminPhotoList"></div>
+          </section>
+
+          <form class="admin-panel" id="couponAdminForm">
+            <div class="admin-panel-head">
+              <div>
+                <p class="eyebrow">EDIT</p>
+                <h2 id="adminFormTitle">新增小票券</h2>
+              </div>
+              <button class="ghost-button" id="resetCouponFormButton" type="button">
+                <i data-lucide="rotate-ccw"></i>
+                <span>清空</span>
+              </button>
+            </div>
+            <input name="couponId" type="hidden">
+            <label>
+              标题
+              <input name="title" type="text" placeholder="比如：免排队奶茶券" required>
+            </label>
+            <label>
+              描述
+              <textarea name="text" rows="4" placeholder="她看到的小票券说明" required></textarea>
+            </label>
+            <div class="admin-form-grid">
+              <label>
+                可领取总数
+                <input name="totalQuantity" type="number" min="0" step="1" value="1" required>
+              </label>
+              <label>
+                生效日期
+                <input name="effectiveDate" type="date">
+              </label>
+              <label>
+                到期日期
+                <input name="expiryDate" type="date">
+              </label>
+            </div>
+            <p class="admin-message" id="adminCouponMessage" aria-live="polite"></p>
+            <button class="primary-button full-button" type="submit">
+              <i data-lucide="save"></i>
+              <span>保存小票券</span>
+            </button>
+          </form>
+
+          <section class="admin-panel">
+            <div class="admin-panel-head">
+              <div>
+                <p class="eyebrow">LIVE</p>
+                <h2>当前小票券</h2>
+              </div>
+              <button class="secondary-button" id="refreshAdminCouponsButton" type="button">
+                <i data-lucide="refresh-cw"></i>
+                <span>刷新</span>
+              </button>
+            </div>
+            <div class="admin-coupon-list" id="adminCouponList"></div>
+          </section>
+
+          <section class="admin-panel">
+            <div class="admin-panel-head">
+              <div>
+                <p class="eyebrow">MAIL LOG</p>
+                <h2>使用通知</h2>
+              </div>
+              <button class="secondary-button" id="refreshAdminEventsButton" type="button">
+                <i data-lucide="mail-check"></i>
+                <span>刷新</span>
+              </button>
+            </div>
+            <div class="admin-event-list" id="adminEventList"></div>
+          </section>
+
+          <form class="admin-panel" id="mailConfigForm">
+            <div class="admin-panel-head">
+              <div>
+                <p class="eyebrow">QQ MAIL</p>
+                <h2>邮箱配置</h2>
+              </div>
+              <button class="secondary-button" id="refreshMailConfigButton" type="button">
+                <i data-lucide="refresh-cw"></i>
+                <span>读取</span>
+              </button>
+            </div>
+            <label class="switch-label">
+              <input name="enabled" type="checkbox">
+              <span>启用 QQ 邮箱通知</span>
+            </label>
+            <div class="admin-form-grid mail-grid">
+              <label>
+                QQ 邮箱账号
+                <input name="smtpUser" type="email" placeholder="123456@qq.com">
+              </label>
+              <label>
+                SMTP 授权码
+                <input name="smtpPass" type="password" autocomplete="new-password" placeholder="留空则保留原授权码">
+              </label>
+              <label>
+                收件邮箱
+                <input name="to" type="email" placeholder="你的收件邮箱">
+              </label>
+              <label>
+                发件显示邮箱
+                <input name="from" type="email" placeholder="默认同 QQ 邮箱账号">
+              </label>
+            </div>
+            <p class="admin-message" id="mailConfigMessage" aria-live="polite">QQ 邮箱需要在邮箱设置里开启 SMTP，并使用授权码。</p>
+            <button class="primary-button full-button" type="submit">
+              <i data-lucide="mail-check"></i>
+              <span>保存邮箱配置</span>
+            </button>
+          </form>
+        </section>
+      </main>
+    </div>
+
+    <dialog class="letter-dialog" id="letterDialog">
+      <button class="dialog-close icon-button" id="closeLetterButton" type="button" aria-label="关闭信件">
+        <i data-lucide="x"></i>
+      </button>
+      <p class="eyebrow" id="letterDate">LETTER</p>
+      <h2 id="letterTitle">标题</h2>
+      <p id="letterBody">正文</p>
+    </dialog>
+
+    <dialog class="photo-dialog" id="photoDialog">
+      <form id="photoForm" enctype="multipart/form-data">
+        <div class="settings-head">
+          <div>
+            <p class="eyebrow">SERVER PHOTO</p>
+            <h2 id="photoDialogTitle">上传照片</h2>
+          </div>
+          <button class="icon-button" id="closePhotoButton" type="button" aria-label="关闭照片编辑">
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+        <input name="photoId" type="hidden">
+        <div class="photo-form-grid">
+          <label>
+            本地照片
+            <input name="photoImage" type="file" accept="image/*">
+          </label>
+          <label>
+            标题
+            <input name="photoTitle" type="text" placeholder="比如：雨天咖啡" required>
+          </label>
+        </div>
+        <label class="wide-label">
+          一句话
+          <textarea name="photoDate" rows="3" placeholder="写下这张照片背后的感觉"></textarea>
+        </label>
+        <figure class="photo-preview" id="photoPreview" hidden>
+          <img alt="照片预览">
+        </figure>
+        <p class="photo-message" id="photoMessage">照片会上传到服务器的 uploads/photos 目录，页面再从服务器接口读取。</p>
+        <button class="primary-button full-button" type="submit">
+          <i data-lucide="save"></i>
+          <span>保存到服务器</span>
+        </button>
+      </form>
+    </dialog>
+
+    <dialog class="settings-dialog" id="settingsDialog">
+      <form id="settingsForm">
+        <div class="settings-head">
+          <div>
+            <p class="eyebrow">PERSONAL</p>
+            <h2>小设定</h2>
+          </div>
+          <button class="icon-button" id="closeSettingsButton" type="button" aria-label="关闭设定">
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+        <div class="settings-grid">
+          <label>
+            她的称呼
+            <input name="partnerName" type="text">
+          </label>
+          <label>
+            你的称呼
+            <input name="yourName" type="text">
+          </label>
+          <label>
+            在一起日期
+            <input name="startDate" type="date">
+          </label>
+          <label>
+            她的生日
+            <input name="birthday" type="date">
+          </label>
+          <label>
+            下次见面
+            <input name="nextMeet" type="date">
+          </label>
+          <label>
+            暗号
+            <input name="passcodes" type="text">
+          </label>
+          <label>
+            默认城市
+            <input name="cityName" type="text">
+          </label>
+          <label>
+            音乐链接
+            <input name="songUrl" type="url">
+          </label>
+        </div>
+        <label class="wide-label">
+          首页句子
+          <textarea name="heroLine" rows="3"></textarea>
+        </label>
+        <button class="primary-button full-button" type="submit">
+          <i data-lucide="save"></i>
+          <span>保存</span>
+        </button>
+      </form>
+    </dialog>
+
+    <dialog class="easter-dialog" id="easterDialog">
+      <button class="dialog-close icon-button" id="closeEasterButton" type="button" aria-label="关闭彩蛋">
+        <i data-lucide="x"></i>
+      </button>
+      <p class="eyebrow">SECRET</p>
+      <h2>你找到藏起来的偏爱了</h2>
+      <p id="easterText">这一颗心被点亮的时候，我想把所有普通日子都变成值得纪念的日子。</p>
+      <div class="burst-hearts" aria-hidden="true">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+    </dialog>
+  </body>
+</html>
