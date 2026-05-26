@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>给她的小宇宙</title>
     <meta name="description" content="一个只属于她的私密纪念网站。">
-    <link rel="preload" href="assets/hero-romance.png" as="image">
+    <link rel="preload" href="assets/hero-romance.webp" as="image" type="image/webp">
     <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="styles.css">
     <script defer src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
@@ -26,7 +26,7 @@
             <span>进入</span>
           </button>
         </div>
-        <p class="entry-message" id="entryMessage" aria-live="polite">默认暗号：0520 / 520 / 我爱你</p>
+        <p class="entry-message" id="entryMessage" aria-live="polite">输入只属于你们的暗号。</p>
       </form>
     </div>
 
@@ -47,15 +47,12 @@
           <button class="icon-button" id="musicButton" type="button" aria-label="播放音乐">
             <i data-lucide="music"></i>
           </button>
-          <button class="icon-button" id="settingsButton" type="button" aria-label="小设定">
-            <i data-lucide="settings"></i>
-          </button>
         </div>
       </header>
 
       <main>
         <section class="hero" id="home">
-          <img class="hero-img" src="assets/hero-romance.png" alt="">
+          <img class="hero-img" src="assets/hero-romance.webp" alt="">
           <div class="hero-shade" aria-hidden="true"></div>
           <div class="hero-content">
             <p class="eyebrow">FOR <span data-partner-name>她</span></p>
@@ -164,6 +161,10 @@
               <span>上传照片</span>
             </button>
           </div>
+          <button class="primary-button album-reveal" id="revealAlbumButton" type="button">
+            <i data-lucide="images"></i>
+            <span>查看照片相册</span>
+          </button>
           <div class="album-grid" id="albumGrid"></div>
         </section>
 
@@ -191,6 +192,10 @@
                 <h3>约会灵感盒子</h3>
               </div>
               <div class="idea-card" id="dateIdeaCard"></div>
+              <button class="secondary-button full-button" id="toggleIdeaDetailsButton" type="button">
+                <i data-lucide="chevrons-down"></i>
+                <span>展开详情</span>
+              </button>
               <button class="primary-button full-button" id="drawIdeaButton" type="button">
                 <i data-lucide="shuffle"></i>
                 <span>抽一个</span>
@@ -215,6 +220,10 @@
                   <span id="wishProgressBar"></span>
                 </div>
               </div>
+              <button class="secondary-button full-button" id="toggleWishListButton" type="button">
+                <i data-lucide="chevrons-down"></i>
+                <span>展开愿望清单</span>
+              </button>
               <div class="wish-list" id="wishList"></div>
             </div>
 
@@ -223,6 +232,10 @@
                 <i data-lucide="ticket"></i>
                 <h3>专属小票券</h3>
               </div>
+              <button class="secondary-button full-button" id="toggleCouponListButton" type="button">
+                <i data-lucide="chevrons-down"></i>
+                <span>展开小票券</span>
+              </button>
               <div class="coupon-list" id="couponList"></div>
             </div>
           </div>
@@ -307,6 +320,66 @@
             <button class="primary-button full-button" type="submit">
               <i data-lucide="key-round"></i>
               <span>保存后台密码</span>
+            </button>
+          </form>
+
+          <form class="admin-panel" id="siteSettingsForm">
+            <div class="admin-panel-head">
+              <div>
+                <p class="eyebrow">SITE SETTINGS</p>
+                <h2>小设定</h2>
+              </div>
+            </div>
+            <div class="admin-form-grid two-columns">
+              <label>
+                她的称呼
+                <input name="partnerName" type="text" required>
+              </label>
+              <label>
+                你的称呼
+                <input name="yourName" type="text" required>
+              </label>
+              <label>
+                在一起日期
+                <input name="startDate" type="date" required>
+              </label>
+              <label>
+                她的生日
+                <input name="birthday" type="date">
+              </label>
+              <label>
+                下次见面
+                <input name="nextMeet" type="date">
+              </label>
+              <label>
+                默认城市
+                <input name="cityName" type="text" required>
+              </label>
+              <label>
+                城市纬度
+                <input name="cityLatitude" type="number" step="0.0001" required>
+              </label>
+              <label>
+                城市经度
+                <input name="cityLongitude" type="number" step="0.0001" required>
+              </label>
+              <label>
+                进入暗号
+                <input name="passcodes" type="text" placeholder="用逗号分隔" required>
+              </label>
+              <label>
+                音乐链接
+                <input name="songUrl" type="url">
+              </label>
+            </div>
+            <label>
+              首页句子
+              <textarea name="heroLine" rows="3" required></textarea>
+            </label>
+            <p class="admin-message" id="siteSettingsMessage" aria-live="polite">这里保存后会写入服务器，前台不会再用本地小设定。</p>
+            <button class="primary-button full-button" type="submit">
+              <i data-lucide="save"></i>
+              <span>保存小设定</span>
             </button>
           </form>
 
@@ -651,62 +724,6 @@
         <button class="primary-button full-button" type="submit">
           <i data-lucide="save"></i>
           <span>保存到服务器</span>
-        </button>
-      </form>
-    </dialog>
-
-    <dialog class="settings-dialog" id="settingsDialog">
-      <form id="settingsForm">
-        <div class="settings-head">
-          <div>
-            <p class="eyebrow">PERSONAL</p>
-            <h2>小设定</h2>
-          </div>
-          <button class="icon-button" id="closeSettingsButton" type="button" aria-label="关闭设定">
-            <i data-lucide="x"></i>
-          </button>
-        </div>
-        <div class="settings-grid">
-          <label>
-            她的称呼
-            <input name="partnerName" type="text">
-          </label>
-          <label>
-            你的称呼
-            <input name="yourName" type="text">
-          </label>
-          <label>
-            在一起日期
-            <input name="startDate" type="date">
-          </label>
-          <label>
-            她的生日
-            <input name="birthday" type="date">
-          </label>
-          <label>
-            下次见面
-            <input name="nextMeet" type="date">
-          </label>
-          <label>
-            暗号
-            <input name="passcodes" type="text">
-          </label>
-          <label>
-            默认城市
-            <input name="cityName" type="text">
-          </label>
-          <label>
-            音乐链接
-            <input name="songUrl" type="url">
-          </label>
-        </div>
-        <label class="wide-label">
-          首页句子
-          <textarea name="heroLine" rows="3"></textarea>
-        </label>
-        <button class="primary-button full-button" type="submit">
-          <i data-lucide="save"></i>
-          <span>保存</span>
         </button>
       </form>
     </dialog>

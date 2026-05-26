@@ -8,6 +8,7 @@ const nodemailer = require("nodemailer");
 
 const app = express();
 const PORT = Number(process.env.PORT || 5173);
+const HOST = process.env.HOST || "0.0.0.0";
 const ROOT = __dirname;
 const DATA_DIR = path.resolve(ROOT, "data");
 const UPLOAD_DIR = path.resolve(ROOT, "uploads", "photos");
@@ -902,6 +903,6 @@ function getCookie(req, name) {
   return match ? decodeURIComponent(match.slice(name.length + 1)) : "";
 }
 
-app.listen(PORT, "127.0.0.1", () => {
-  console.log(`Love universe site running at http://127.0.0.1:${PORT}`);
+app.listen(PORT, HOST, () => {
+  console.log(`Love universe site running at http://${HOST}:${PORT}`);
 });

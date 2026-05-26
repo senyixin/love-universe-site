@@ -155,9 +155,9 @@ const DEFAULTS = {
     { date: "2026-05-25", title: "这个网站诞生", text: "它不算大，但每一个角落都向着你。" }
   ],
   photos: [
-    { id: "rainy-cafe", title: "雨天咖啡", date: "想和你慢慢坐一下午", src: "assets/photos/photo-rainy-cafe.png" },
-    { id: "travel-morning", title: "出发前的早晨", date: "下一趟旅行已经在心里排队", src: "assets/photos/photo-travel-morning.png" },
-    { id: "park-picnic", title: "傍晚野餐", date: "蓝色小时里，灯和你都很温柔", src: "assets/photos/photo-park-picnic.png" }
+    { id: "rainy-cafe", title: "雨天咖啡", date: "想和你慢慢坐一下午", src: "assets/photos/photo-rainy-cafe.webp" },
+    { id: "travel-morning", title: "出发前的早晨", date: "下一趟旅行已经在心里排队", src: "assets/photos/photo-travel-morning.webp" },
+    { id: "park-picnic", title: "傍晚野餐", date: "蓝色小时里，灯和你都很温柔", src: "assets/photos/photo-park-picnic.webp" }
   ],
   moods: {
     happy: { label: "开心", icon: "smile", response: "那今天就把快乐放大一点：买一杯喜欢的饮料，拍一张好看的云，晚上把好事讲给我听。" },
@@ -216,6 +216,14 @@ let secretClicks = 0;
 let typedSecret = "";
 let photoPreviewUrl = "";
 let adminEditingCouponId = "";
+let albumExpanded = false;
+let albumLoaded = false;
+let selectedDateIdea = null;
+const expandedPanels = {
+  idea: false,
+  wishes: false,
+  coupons: false
+};
 const adminEditors = {
   timeline: "",
   idea: "",
@@ -234,7 +242,7 @@ function loadState() {
 
   return {
     unlocked: false,
-    settings: { ...DEFAULTS.settings, ...(saved.settings || {}) },
+    settings: { ...DEFAULTS.settings },
     serverPhotos: [],
     coupons: [],
     adminCoupons: [],
@@ -360,7 +368,6 @@ function clampPercent(value, fallback) {
 
 function persist() {
   localStorage.setItem(STORE_KEY, JSON.stringify({
-    settings: state.settings,
     wishes: state.wishes,
     wishlistVersion: 2,
     places: state.places
@@ -441,13 +448,11 @@ async function init() {
   bindPlans();
   bindMap();
   bindLetters();
-  bindSettings();
   bindMusic();
   bindEasterEgg();
   bindAdmin();
   await loadContent();
   renderAll();
-  loadServerPhotos();
   loadCoupons();
 
   if (state.unlocked) {
@@ -685,7 +690,6 @@ function bindWeather() {
       state.settings.cityName = [match.name, match.admin1, match.country].filter(Boolean).join(" · ");
       state.settings.cityLatitude = match.latitude;
       state.settings.cityLongitude = match.longitude;
-      persist();
       loadWeather(match.latitude, match.longitude, state.settings.cityName);
     } catch {
       $("#weatherStatus").textContent = "城市查询失败，等网络稳定一点再试。";
@@ -806,6 +810,11 @@ function renderTimeline() {
 }
 
 function bindAlbum() {
+  $("#revealAlbumButton").addEventListener("click", async () => {
+    albumExpanded = !albumExpanded;
+    if (albumExpanded && !albumLoaded) await loadServerPhotos();
+    renderAlbum();
+  });
   $("#addPhotoButton").addEventListener("click", () => openPhotoEditor());
   $("#closePhotoButton").addEventListener("click", () => $("#photoDialog").close());
   $("#photoForm").addEventListener("submit", savePhotoFromForm);
@@ -830,10 +839,12 @@ async function loadServerPhotos() {
     if (!response.ok) throw new Error("photos");
     const data = await response.json();
     state.serverPhotos = Array.isArray(data.photos) ? data.photos : [];
+    albumLoaded = true;
     renderAlbum();
     renderAdminPhotos();
   } catch {
     state.serverPhotos = [];
+    albumLoaded = false;
     renderAlbum("相册服务器还没连上，先显示样例照片。用 Node 服务启动后就能上传。");
     renderAdminPhotos("相册服务器还没连上。");
   }
@@ -891,13 +902,17 @@ async function savePhotoFromForm(event) {
   const formData = new FormData();
   formData.append("title", title);
   formData.append("date", date || "这张照片背后，有一段只有你们懂的时间。");
-  if (file) formData.append("photo", file);
 
   const submit = form.querySelector("button[type='submit']");
   submit.disabled = true;
-  $("#photoMessage").textContent = "正在保存到服务器...";
+  $("#photoMessage").textContent = file ? "正在压缩照片并保存到服务器..." : "正在保存到服务器...";
 
   try {
+    if (file) {
+      const optimized = await optimizeImageFile(file);
+      formData.append("photo", optimized.blob, optimized.filename);
+      $("#photoMessage").textContent = `已压缩 ${formatBytes(file.size)} → ${formatBytes(optimized.blob.size)}，正在上传...`;
+    }
     const response = await fetch(id ? `/api/photos/${encodeURIComponent(id)}` : "/api/photos", {
       method: id ? "PUT" : "POST",
       body: formData
@@ -943,7 +958,61 @@ function showPhotoPreview(src) {
   figure.hidden = false;
 }
 
+async function optimizeImageFile(file) {
+  if (!file || file.type === "image/gif") {
+    return { blob: file, filename: file?.name || "photo.gif" };
+  }
+
+  const bitmap = await createImageBitmap(file);
+  const maxSide = 1600;
+  const scale = Math.min(1, maxSide / Math.max(bitmap.width, bitmap.height));
+  const width = Math.max(1, Math.round(bitmap.width * scale));
+  const height = Math.max(1, Math.round(bitmap.height * scale));
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext("2d", { alpha: false });
+  ctx.fillStyle = "#fff";
+  ctx.fillRect(0, 0, width, height);
+  ctx.drawImage(bitmap, 0, 0, width, height);
+  bitmap.close?.();
+
+  const blob = await new Promise((resolve) => {
+    canvas.toBlob(resolve, "image/jpeg", 0.78);
+  });
+  if (!blob || blob.size >= file.size) {
+    return { blob: file, filename: file.name };
+  }
+  const baseName = file.name.replace(/\.[^.]+$/, "") || "photo";
+  return { blob, filename: `${baseName}-optimized.jpg` };
+}
+
+function formatBytes(bytes) {
+  const value = Number(bytes || 0);
+  if (value >= 1024 * 1024) return `${(value / 1024 / 1024).toFixed(1)} MB`;
+  if (value >= 1024) return `${Math.round(value / 1024)} KB`;
+  return `${value} B`;
+}
+
 function renderAlbum(message = "") {
+  $("#addPhotoButton").hidden = !albumExpanded;
+  $("#revealAlbumButton").innerHTML = albumExpanded
+    ? `<i data-lucide="chevrons-up"></i><span>收起照片相册</span>`
+    : `<i data-lucide="images"></i><span>查看照片相册</span>`;
+  if (!albumExpanded) {
+    $("#albumGrid").innerHTML = `
+      <article class="album-teaser">
+        <i data-lucide="images"></i>
+        <div>
+          <h3>照片先藏起来</h3>
+          <p>点击查看时再加载图片，页面打开会更快一点。</p>
+        </div>
+      </article>
+    `;
+    refreshIcons();
+    return;
+  }
+
   const photos = getAlbumPhotos();
   const notice = message ? `
     <article class="album-notice">
@@ -1025,6 +1094,18 @@ function renderMoods() {
 
 function bindPlans() {
   $("#drawIdeaButton").addEventListener("click", () => renderDateIdea(true));
+  $("#toggleIdeaDetailsButton").addEventListener("click", () => {
+    expandedPanels.idea = !expandedPanels.idea;
+    renderDateIdea(false, selectedDateIdea);
+  });
+  $("#toggleWishListButton").addEventListener("click", () => {
+    expandedPanels.wishes = !expandedPanels.wishes;
+    renderWishes();
+  });
+  $("#toggleCouponListButton").addEventListener("click", () => {
+    expandedPanels.coupons = !expandedPanels.coupons;
+    renderCoupons();
+  });
   $("#wishForm").addEventListener("submit", (event) => {
     event.preventDefault();
     const input = $("#wishInput");
@@ -1060,18 +1141,23 @@ function bindPlans() {
   });
 }
 
-function renderDateIdea(random = false) {
+function renderDateIdea(random = false, forcedIdea = null) {
   const ideas = state.dateIdeas.length ? state.dateIdeas : DEFAULTS.dateIdeas;
   const index = random ? Math.floor(Math.random() * ideas.length) : Math.abs(hashCode(dayKey())) % ideas.length;
-  const idea = ideas[index];
+  const idea = forcedIdea || ideas[index];
+  selectedDateIdea = idea;
   $("#dateIdeaCard").innerHTML = `
     <h4>${idea.title}</h4>
-    <p>${idea.text}</p>
+    <p class="idea-summary">${expandedPanels.idea ? escapeHtml(idea.text) : "今天先给你一个标题，想看具体玩法再展开。"}</p>
     <div class="idea-tags">
       <span>${idea.time}</span>
-      ${idea.tags.map((tag) => `<span>${tag}</span>`).join("")}
+      ${idea.tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join("")}
     </div>
   `;
+  $("#toggleIdeaDetailsButton").innerHTML = expandedPanels.idea
+    ? `<i data-lucide="chevrons-up"></i><span>收起详情</span>`
+    : `<i data-lucide="chevrons-down"></i><span>展开详情</span>`;
+  refreshIcons();
 }
 
 function renderWishes() {
@@ -1079,6 +1165,15 @@ function renderWishes() {
   const total = state.wishes.length || 1;
   $("#wishProgressText").textContent = `已完成 ${doneCount} / ${total}`;
   $("#wishProgressBar").style.width = `${Math.round((doneCount / total) * 100)}%`;
+
+  $("#toggleWishListButton").innerHTML = expandedPanels.wishes
+    ? `<i data-lucide="chevrons-up"></i><span>收起愿望清单</span>`
+    : `<i data-lucide="chevrons-down"></i><span>展开愿望清单</span>`;
+  if (!expandedPanels.wishes) {
+    $("#wishList").innerHTML = `<p class="folded-note">清单已收起，展开后可以打卡、添加或删除愿望。</p>`;
+    refreshIcons();
+    return;
+  }
 
   $("#wishList").innerHTML = state.wishes.map((wish) => `
     <label class="wish-item ${wish.done ? "done" : ""}">
@@ -1136,6 +1231,21 @@ async function runCouponAction(id, action) {
 }
 
 function renderCoupons() {
+  $("#toggleCouponListButton").innerHTML = expandedPanels.coupons
+    ? `<i data-lucide="chevrons-up"></i><span>收起小票券</span>`
+    : `<i data-lucide="chevrons-down"></i><span>展开小票券</span>`;
+  if (!expandedPanels.coupons) {
+    const available = state.coupons.reduce((sum, coupon) => sum + Number(coupon.availableQuantity || 0), 0);
+    const claimed = state.coupons.reduce((sum, coupon) => sum + Number(coupon.claimedQuantity || 0), 0);
+    $("#couponList").innerHTML = `
+      <article class="folded-note">
+        现在有 ${state.coupons.length} 种小票券，可领取 ${available} 张，已领取未使用 ${claimed} 张。
+      </article>
+    `;
+    refreshIcons();
+    return;
+  }
+
   $("#couponList").innerHTML = state.coupons.map((coupon) => {
     const active = Boolean(coupon.status?.usable);
     const canClaim = active && coupon.availableQuantity > 0;
@@ -1187,6 +1297,7 @@ function bindAdmin() {
   $("#refreshMailConfigButton").addEventListener("click", loadMailConfig);
   $("#mailConfigForm").addEventListener("submit", saveMailConfig);
   $("#securityForm").addEventListener("submit", saveSecurityConfig);
+  $("#siteSettingsForm").addEventListener("submit", saveSiteSettings);
   $("#timelineAdminForm").addEventListener("submit", saveAdminTimeline);
   $("#ideaAdminForm").addEventListener("submit", saveAdminIdea);
   $("#placeAdminForm").addEventListener("submit", saveAdminPlace);
@@ -1272,6 +1383,36 @@ async function saveSecurityConfig(event) {
     $("#securityMessage").textContent = "后台密码已更新，下次登录请使用新密码。";
   } catch (error) {
     $("#securityMessage").textContent = error.message;
+  }
+}
+
+async function saveSiteSettings(event) {
+  event.preventDefault();
+  const form = event.currentTarget;
+  state.settings = {
+    ...state.settings,
+    partnerName: form.partnerName.value.trim() || DEFAULTS.settings.partnerName,
+    yourName: form.yourName.value.trim() || DEFAULTS.settings.yourName,
+    startDate: form.startDate.value || DEFAULTS.settings.startDate,
+    birthday: form.birthday.value || "",
+    nextMeet: form.nextMeet.value || "",
+    heroLine: form.heroLine.value.trim() || DEFAULTS.settings.heroLine,
+    cityName: form.cityName.value.trim() || DEFAULTS.settings.cityName,
+    cityLatitude: Number(form.cityLatitude.value || DEFAULTS.settings.cityLatitude),
+    cityLongitude: Number(form.cityLongitude.value || DEFAULTS.settings.cityLongitude),
+    songUrl: form.songUrl.value.trim(),
+    passcodes: form.passcodes.value
+      .split(/[，,]/)
+      .map((item) => item.trim())
+      .filter(Boolean)
+  };
+  if (!state.settings.passcodes.length) state.settings.passcodes = DEFAULTS.settings.passcodes;
+
+  try {
+    await saveAdminContent("#siteSettingsMessage", "小设定已保存到服务器。");
+    fillSettingsForm();
+  } catch (error) {
+    $("#siteSettingsMessage").textContent = error.message;
   }
 }
 
@@ -1997,39 +2138,8 @@ function openLetter(letter) {
   refreshIcons();
 }
 
-function bindSettings() {
-  $("#settingsButton").addEventListener("click", () => {
-    fillSettingsForm();
-    $("#settingsDialog").showModal();
-    refreshIcons();
-  });
-
-  $("#closeSettingsButton").addEventListener("click", () => $("#settingsDialog").close());
-
-  $("#settingsForm").addEventListener("submit", (event) => {
-    event.preventDefault();
-    const form = new FormData(event.currentTarget);
-    state.settings.partnerName = form.get("partnerName").trim() || DEFAULTS.settings.partnerName;
-    state.settings.yourName = form.get("yourName").trim() || DEFAULTS.settings.yourName;
-    state.settings.startDate = form.get("startDate") || DEFAULTS.settings.startDate;
-    state.settings.birthday = form.get("birthday") || DEFAULTS.settings.birthday;
-    state.settings.nextMeet = form.get("nextMeet") || DEFAULTS.settings.nextMeet;
-    state.settings.heroLine = form.get("heroLine").trim() || DEFAULTS.settings.heroLine;
-    state.settings.cityName = form.get("cityName").trim() || DEFAULTS.settings.cityName;
-    state.settings.songUrl = form.get("songUrl").trim();
-    state.settings.passcodes = String(form.get("passcodes") || "")
-      .split(/[，,]/)
-      .map((item) => item.trim())
-      .filter(Boolean);
-    if (!state.settings.passcodes.length) state.settings.passcodes = DEFAULTS.settings.passcodes;
-    persist();
-    renderAll();
-    $("#settingsDialog").close();
-  });
-}
-
 function fillSettingsForm() {
-  const form = $("#settingsForm");
+  const form = $("#siteSettingsForm");
   if (!form) return;
   form.partnerName.value = state.settings.partnerName || "";
   form.yourName.value = state.settings.yourName || "";
@@ -2038,6 +2148,8 @@ function fillSettingsForm() {
   form.nextMeet.value = state.settings.nextMeet || "";
   form.passcodes.value = (state.settings.passcodes || []).join(", ");
   form.cityName.value = state.settings.cityName || "";
+  form.cityLatitude.value = state.settings.cityLatitude || "";
+  form.cityLongitude.value = state.settings.cityLongitude || "";
   form.songUrl.value = state.settings.songUrl || "";
   form.heroLine.value = state.settings.heroLine || "";
 }

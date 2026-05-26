@@ -97,7 +97,7 @@ img {
   inset: 0;
   background:
     linear-gradient(90deg, rgba(10, 13, 16, 0.86), rgba(10, 13, 16, 0.34)),
-    url("assets/hero-romance.png") center / cover no-repeat;
+    url("assets/hero-romance.webp") center / cover no-repeat;
 }
 
 .entry-panel {
@@ -682,6 +682,42 @@ img {
   border-radius: 8px;
 }
 
+.album-reveal {
+  margin-bottom: 16px;
+}
+
+.album-teaser,
+.folded-note {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px;
+  color: var(--muted);
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.album-teaser {
+  grid-column: 1 / -1;
+  min-height: 110px;
+}
+
+.album-teaser i,
+.folded-note i {
+  color: var(--teal);
+}
+
+.album-teaser h3 {
+  margin: 0 0 6px;
+}
+
+.album-teaser p,
+.folded-note p {
+  margin: 0;
+  line-height: 1.7;
+}
+
 .photo-card {
   position: relative;
   min-width: 0;
@@ -833,6 +869,10 @@ img {
 .idea-card h4 {
   margin: 0 0 10px;
   font-size: 1.26rem;
+}
+
+.idea-summary {
+  min-height: 58px;
 }
 
 .idea-tags {
