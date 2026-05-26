@@ -27,75 +27,75 @@ const adminSessions = new Map();
 const DEFAULT_SITE_CONTENT = {
   settings: {
     partnerName: "Shannon",
-    yourName: "?",
-    heroLine: "??????????????????",
-    passcodes: ["0520", "520", "???", "shannon", "Shannon"],
+    yourName: "我",
+    heroLine: "今天也想认真地，把世界温柔地递给你。",
+    passcodes: ["0520", "520", "我爱你", "shannon", "Shannon"],
     startDate: "2024-05-20",
     birthday: "2026-08-20",
     nextMeet: "2026-06-01",
-    cityName: "???",
+    cityName: "新沂市",
     cityLatitude: 34.3686,
     cityLongitude: 118.3545,
     songUrl: ""
   },
   timeline: [
-    { date: "2024-05-20", title: "???????", text: "???????????????????????" },
-    { date: "2024-08-14", title: "?????????", text: "???????????????????????" },
-    { date: "2025-02-14", title: "????????", text: "????????????????????" },
-    { date: "2026-05-25", title: "??????", text: "????????????????" }
+    { date: "2024-05-20", title: "把今天设成起点", text: "从这一天开始，日子有了可以被倒数和珍藏的理由。" },
+    { date: "2024-08-14", title: "第一次认真计划旅行", text: "地图上每一个被圈起来的地方，都像在提前等我们。" },
+    { date: "2025-02-14", title: "一封没有寄丢的信", text: "很多话说出口会害羞，写下来就会一直发光。" },
+    { date: "2026-05-25", title: "这个网站诞生", text: "它不算大，但每一个角落都向着你。" }
   ],
   dateIdeas: [
-    { title: "?????", time: "2 ??", tags: ["??", "??", "??"], text: "??????????????????????????????????" },
-    { title: "??????", time: "90 ??", tags: ["??", "??", "??"], text: "????????????????????????????????" },
-    { title: "??????", time: "1 ?", tags: ["??", "??", "??"], text: "????????????????????????????????" },
-    { title: "???????", time: "??", tags: ["??", "??", "??"], text: "??????????????????????????????????" },
-    { title: "?????", time: "??", tags: ["??", "??", "??"], text: "??????????????????????????" },
-    { title: "????", time: "??", tags: ["??", "??", "??"], text: "?????????????????????????????????" },
-    { title: "?????", time: "2 ??", tags: ["??", "??", "??"], text: "?????????????????????????????????????" },
-    { title: "??????", time: "1 ?", tags: ["??", "??", "??"], text: "????????????????????????????????" },
-    { title: "??????", time: "??", tags: ["??", "??", "??"], text: "??????????????????????????????" },
-    { title: "?????", time: "??", tags: ["??", "??", "??"], text: "??????????????????????????????" },
-    { title: "????????", time: "??", tags: ["??", "??", "??"], text: "???????????????? 9 ???????????????" },
-    { title: "?????", time: "1 ?", tags: ["??", "??", "??"], text: "?????????????????????????????" },
-    { title: "???????", time: "??", tags: ["??", "??", "??"], text: "?????????????????????????????" },
-    { title: "??????", time: "1 ??", tags: ["??", "??", "??"], text: "???? 10 ?????????????????????????????" },
-    { title: "??????", time: "1 ??", tags: ["??", "??", "??"], text: "?????????????????????????????" }
+    { title: "雨天电影局", time: "2 小时", tags: ["电影", "热饮", "抱枕"], text: "选一部都没看过的电影，准备热饮和零食，谁先猜中剧情谁获得一个小奖励。" },
+    { title: "城市散步盲盒", time: "90 分钟", tags: ["散步", "拍照", "甜品"], text: "随便选一个地铁站下车，沿着最漂亮的街走，遇见第一家甜品店就进去。" },
+    { title: "一起做饭实验", time: "1 晚", tags: ["做饭", "音乐", "打分"], text: "每人选一道菜，给对方的作品打分。最低分负责洗碗，最高分负责被夸。" },
+    { title: "日出或夜景计划", time: "半天", tags: ["风景", "相机", "外套"], text: "挑一个视野好的地方，看日出或夜景。带外套，也带一点不用赶时间的心情。" },
+    { title: "奶茶路线图", time: "下午", tags: ["奶茶", "街区", "小票"], text: "挑三家没喝过的店，给每一杯取名字，最后选出今日冠军。" },
+    { title: "晚风骑行", time: "傍晚", tags: ["骑行", "落日", "耳机"], text: "找一条不赶路的路，骑到天色变软。中途停下来拍一张只有你们懂的照片。" },
+    { title: "旧照片复刻", time: "2 小时", tags: ["照片", "回忆", "造型"], text: "选一张以前的合照，在同样姿势或同样情绪里复刻一次，顺便看看你们变得多亲近。" },
+    { title: "超市随机晚餐", time: "1 晚", tags: ["超市", "料理", "随机"], text: "每人只许选三样食材，回家拼成一顿饭。不好吃也算一次值得笑的作品。" },
+    { title: "书店交换书签", time: "下午", tags: ["书店", "安静", "礼物"], text: "各自挑一本想让对方翻开的书，再给对方写一张藏在书里的小纸条。" },
+    { title: "夜市评分员", time: "晚上", tags: ["夜市", "小吃", "排名"], text: "从第一家摊位吃到最后，给每样小吃起一个很认真或很离谱的奖项。" },
+    { title: "彼此的一日摄影师", time: "半天", tags: ["拍照", "街区", "滤镜"], text: "今天只负责把对方拍好看。最后各选 9 张，拼成一张属于这天的小相册。" },
+    { title: "居家手作夜", time: "1 晚", tags: ["手作", "蜡烛", "歌单"], text: "做香薰、拼图、串珠或小摆件，作品不需要完美，但要写上日期。" },
+    { title: "随机公交终点站", time: "半天", tags: ["公交", "探索", "照片"], text: "选一辆顺眼的公交坐到一个陌生站点，在附近找一家小店坐下来。" },
+    { title: "情侣问答电台", time: "1 小时", tags: ["聊天", "录音", "问题"], text: "每人准备 10 个问题，像录电台一样认真回答。可以把好笑的片段留给以后听。" },
+    { title: "为她的一小时", time: "1 小时", tags: ["偏爱", "陪伴", "放松"], text: "这一小时只做她想做的事：散步、发呆、逛店、吃甜品，都不催。" }
   ],
   ideaTools: [
     {
       id: "food-roulette",
-      title: "??????",
-      text: "?????????????????????????",
-      buttonLabel: "??????",
+      title: "随机点餐盲盒",
+      text: "不知道吃什么的时候抽一下，先让选择困难休息一会儿。",
+      buttonLabel: "抽今天吃什么",
       items: [
-        "??", "??", "??", "???", "??", "??", "???", "??", "??", "??", "??", "??",
-        "??", "??", "????", "???", "??", "??", "???", "???", "??", "???",
-        "???", "????", "???", "?????"
+        "川菜", "湘菜", "粤菜", "东北菜", "火锅", "烧烤", "麻辣烫", "米线", "拉面", "日料", "韩餐", "泰餐",
+        "披萨", "汉堡", "轻食沙拉", "小龙虾", "烤肉", "砂锅", "煲仔饭", "黄焖鸡", "冒菜", "酸菜鱼",
+        "螺蛳粉", "饺子馄饨", "粥粉面", "甜品下午茶"
       ]
     }
   ],
   places: [
-    { id: "place-1", name: "????????", note: "?????????????", x: 25, y: 68 },
-    { id: "place-2", name: "??????", note: "??????????????????", x: 58, y: 42 },
-    { id: "place-3", name: "???", note: "???????????", x: 76, y: 28 }
+    { id: "place-1", name: "第一次见面的地方", note: "空气里都是紧张和装作镇定。", x: 25, y: 68 },
+    { id: "place-2", name: "最常去的街角", note: "路过很多次，每一次都更像自己的地方。", x: 58, y: 42 },
+    { id: "place-3", name: "下一站", note: "还没去，但已经很期待。", x: 76, y: 28 }
   ],
   messageWall: [
-    { id: "message-1", title: "????", text: "?????????????????" },
-    { id: "message-2", title: "??????", text: "??????????????????????????" }
+    { id: "message-1", title: "置顶留言", text: "这里可以放你想让她每次都看见的话。" },
+    { id: "message-2", title: "今天也偏心你", text: "如果今天不太顺，就先把难过寄存在这里，我会慢慢接住。" }
   ],
   letters: [
-    { id: "letter-1", title: "??????", openAt: dateAfterDays(0), body: "{?}?????????????????????????????????????" },
-    { id: "letter-2", title: "?????", openAt: dateAfterDays(3), body: "??????????????????????????????????????" },
-    { id: "letter-3", title: "?????", openAt: dateAfterDays(7), body: "??????????????????????????????" },
-    { id: "letter-4", title: "???????", openAt: dateAfterDays(14), body: "????????????????????????????????????" }
+    { id: "letter-1", title: "今天就能打开", openAt: dateAfterDays(0), body: "{她}，这个网站的第一封信想告诉你：你不用成为完美的一天，我也照样喜欢今天的你。" },
+    { id: "letter-2", title: "三天后的信", openAt: dateAfterDays(3), body: "如果你打开了这封信，说明我们又一起经过了三个普通日子。谢谢你让普通变得值得。" },
+    { id: "letter-3", title: "下次见面前", openAt: dateAfterDays(7), body: "见面前我总会有点期待过头。想牵手，想看你笑，想把路走慢一点。" },
+    { id: "letter-4", title: "留给某个不开心", openAt: dateAfterDays(14), body: "不开心来的时候，不要一个人硬扛。你可以把难过说得乱七八糟，我会慢慢听懂。" }
   ]
 };
 
 const DEFAULT_COUPONS = [
-  { title: "??????", text: "????????????????????", totalQuantity: 2 },
-  { title: "??????", text: "??????????????", totalQuantity: 3 },
-  { title: "?????", text: "???????????", totalQuantity: 1 },
-  { title: "?????", text: "????????????????", totalQuantity: 2 }
+  { title: "奶茶免排队券", text: "想喝哪杯都可以，我负责下单和夸你眼光好。", totalQuantity: 2 },
+  { title: "无条件抱抱券", text: "不讲道理也能用，优先级最高。", totalQuantity: 3 },
+  { title: "电影选择权", text: "今晚看什么，你说了算。", totalQuantity: 1 },
+  { title: "哄睡语音券", text: "睡不着的时候兑换，直到你困为止。", totalQuantity: 2 }
 ];
 
 fs.mkdirSync(DATA_DIR, { recursive: true });
@@ -131,7 +131,7 @@ const upload = multer({
       cb(null, true);
       return;
     }
-    cb(new Error("??? jpg?png?webp?gif ???"));
+    cb(new Error("只支持 jpg、png、webp、gif 图片。"));
   }
 });
 
@@ -187,7 +187,7 @@ app.get("/api/content", async (_req, res, next) => {
 app.post("/api/photos", upload.single("photo"), async (req, res, next) => {
   try {
     if (!req.file) {
-      res.status(400).json({ error: "????????" });
+      res.status(400).json({ error: "请上传一张照片。" });
       return;
     }
 
@@ -195,8 +195,8 @@ app.post("/api/photos", upload.single("photo"), async (req, res, next) => {
     const now = new Date().toISOString();
     const photo = {
       id: crypto.randomUUID(),
-      title: cleanText(req.body.title, "????"),
-      date: cleanText(req.body.date, "???????????????????"),
+      title: cleanText(req.body.title, "新的照片"),
+      date: cleanText(req.body.date, "这张照片背后，有一段只有你们懂的时间。"),
       src: `/uploads/photos/${req.file.filename}`,
       filename: req.file.filename,
       createdAt: now,
@@ -218,7 +218,7 @@ app.put("/api/photos/:id", upload.single("photo"), async (req, res, next) => {
     const photo = photos.find((item) => item.id === req.params.id);
     if (!photo) {
       if (req.file) await safeDelete(req.file.filename);
-      res.status(404).json({ error: "?????????" });
+      res.status(404).json({ error: "没有找到这张照片。" });
       return;
     }
 
@@ -248,7 +248,7 @@ app.delete("/api/photos/:id", async (req, res, next) => {
     const photos = await readPhotos();
     const index = photos.findIndex((item) => item.id === req.params.id);
     if (index === -1) {
-      res.status(404).json({ error: "?????????" });
+      res.status(404).json({ error: "没有找到这张照片。" });
       return;
     }
 
@@ -275,13 +275,13 @@ app.post("/api/coupons/:id/claim", async (req, res, next) => {
     const coupons = await readCoupons();
     const coupon = coupons.find((item) => item.id === req.params.id);
     if (!coupon) {
-      res.status(404).json({ error: "??????????" });
+      res.status(404).json({ error: "没有找到这张小票券。" });
       return;
     }
 
     const status = couponStatus(coupon);
     if (!status.usable || availableQuantity(coupon) <= 0) {
-      res.status(400).json({ error: status.reason || "??????????" });
+      res.status(400).json({ error: status.reason || "这张券暂时不能领取。" });
       return;
     }
 
@@ -297,8 +297,8 @@ app.post("/api/coupons/:id/claim", async (req, res, next) => {
 app.post("/api/coupons/:id/use", async (req, res, next) => {
   try {
     const result = await useCoupon(req.params.id, {
-      actor: "?",
-      note: cleanText(req.body?.note, "???????????")
+      actor: "她",
+      note: cleanText(req.body?.note, "她在页面使用了小票券。")
     });
     if (result.error) {
       res.status(result.status || 400).json({ error: result.error });
@@ -312,7 +312,7 @@ app.post("/api/coupons/:id/use", async (req, res, next) => {
 
 app.post("/api/mood-events", async (req, res, next) => {
   try {
-    const label = cleanText(req.body?.label, "????");
+    const label = cleanText(req.body?.label, "未知心情");
     const responseText = cleanText(req.body?.response, "");
     const record = {
       id: crypto.randomUUID(),
@@ -325,11 +325,11 @@ app.post("/api/mood-events", async (req, res, next) => {
     const event = { ...record, emailStatus: "not_configured" };
     try {
       const sent = await sendNotificationEmail({
-        subject: `??????${label}`,
+        subject: `她点了心情：${label}`,
         lines: [
-          `???${label}`,
-          `???${formatDateTime(record.createdAt)}`,
-          responseText ? `?????${responseText}` : ""
+          `心情：${label}`,
+          `时间：${formatDateTime(record.createdAt)}`,
+          responseText ? `页面回应：${responseText}` : ""
         ].filter(Boolean)
       });
       event.emailStatus = sent ? "sent" : "not_configured";
@@ -372,7 +372,7 @@ app.put("/api/admin/coupons/:id", requireAdmin, async (req, res, next) => {
     const coupons = await readCoupons();
     const coupon = coupons.find((item) => item.id === req.params.id);
     if (!coupon) {
-      res.status(404).json({ error: "??????????" });
+      res.status(404).json({ error: "没有找到这张小票券。" });
       return;
     }
 
@@ -389,7 +389,7 @@ app.delete("/api/admin/coupons/:id", requireAdmin, async (req, res, next) => {
     const coupons = await readCoupons();
     const nextCoupons = coupons.filter((coupon) => coupon.id !== req.params.id);
     if (nextCoupons.length === coupons.length) {
-      res.status(404).json({ error: "??????????" });
+      res.status(404).json({ error: "没有找到这张小票券。" });
       return;
     }
     await writeCoupons(nextCoupons);
@@ -404,7 +404,7 @@ app.post("/api/admin/coupons/:id/return", requireAdmin, async (req, res, next) =
     const coupons = await readCoupons();
     const coupon = coupons.find((item) => item.id === req.params.id);
     if (!coupon) {
-      res.status(404).json({ error: "??????????" });
+      res.status(404).json({ error: "没有找到这张小票券。" });
       return;
     }
 
@@ -421,8 +421,8 @@ app.post("/api/admin/coupons/:id/return", requireAdmin, async (req, res, next) =
 app.post("/api/admin/coupons/:id/use", requireAdmin, async (req, res, next) => {
   try {
     const result = await useCoupon(req.params.id, {
-      actor: "???",
-      note: cleanText(req.body?.note, "??????????")
+      actor: "管理端",
+      note: cleanText(req.body?.note, "管理员手动登记使用。")
     });
     if (result.error) {
       res.status(result.status || 400).json({ error: result.error });
@@ -439,7 +439,7 @@ app.post("/api/admin/coupons/:id/pin", requireAdmin, async (req, res, next) => {
     const coupons = await readCoupons();
     const coupon = coupons.find((item) => item.id === req.params.id);
     if (!coupon) {
-      res.status(404).json({ error: "??????????" });
+      res.status(404).json({ error: "没有找到这张小票券。" });
       return;
     }
     coupon.pinned = Boolean(req.body?.pinned);
@@ -457,7 +457,7 @@ app.post("/api/admin/coupons/:id/move", requireAdmin, async (req, res, next) => 
     const coupons = sortCoupons(await readCoupons());
     const index = coupons.findIndex((item) => item.id === req.params.id);
     if (index === -1) {
-      res.status(404).json({ error: "??????????" });
+      res.status(404).json({ error: "没有找到这张小票券。" });
       return;
     }
     const direction = req.body?.direction === "down" ? 1 : -1;
@@ -537,11 +537,11 @@ app.put("/api/admin/security", requireAdmin, async (req, res, next) => {
     const currentKey = String(req.body?.currentKey || "");
     const newKey = String(req.body?.newKey || "").trim();
     if (!(await verifyAdminKey(currentKey))) {
-      res.status(400).json({ error: "??????????" });
+      res.status(400).json({ error: "当前后台密码不正确。" });
       return;
     }
     if (newKey.length < 6) {
-      res.status(400).json({ error: "??????? 6 ??" });
+      res.status(400).json({ error: "新后台密码至少 6 位。" });
       return;
     }
 
@@ -594,8 +594,8 @@ app.use(express.static(ROOT));
 
 app.use((error, _req, res, _next) => {
   const message = error instanceof multer.MulterError
-    ? "?????????????"
-    : error.message || "????????";
+    ? "图片太大或上传格式不正确。"
+    : error.message || "服务器处理失败。";
   res.status(400).json({ error: message });
 });
 
@@ -604,7 +604,7 @@ function requireAdmin(req, res, next) {
   const expiresAt = token ? adminSessions.get(token) : 0;
   if (!token || !expiresAt || expiresAt < Date.now()) {
     if (token) adminSessions.delete(token);
-    res.status(401).json({ error: "???????" });
+    res.status(401).json({ error: "需要管理密钥。" });
     return;
   }
   adminSessions.set(token, Date.now() + SESSION_TTL_MS);
@@ -614,11 +614,11 @@ function requireAdmin(req, res, next) {
 async function useCoupon(id, options) {
   const coupons = await readCoupons();
   const coupon = coupons.find((item) => item.id === id);
-  if (!coupon) return { status: 404, error: "??????????" };
+  if (!coupon) return { status: 404, error: "没有找到这张小票券。" };
 
   const status = couponStatus(coupon);
   if (!status.usable) return { status: 400, error: status.reason };
-  if (coupon.claimedQuantity <= 0) return { status: 400, error: "????????????" };
+  if (coupon.claimedQuantity <= 0) return { status: 400, error: "她还没有可使用的这张券。" };
 
   const record = {
     id: crypto.randomUUID(),
@@ -653,14 +653,14 @@ async function recordCouponEvent(record, coupon) {
 
 async function sendCouponUseEmail(record, coupon) {
   return sendNotificationEmail({
-    subject: `????????${coupon.title}`,
+    subject: `她使用了小票券：${coupon.title}`,
     lines: [
-      `????${coupon.title}`,
-      `????${record.actor}`,
-      `?????${formatDateTime(record.usedAt)}`,
-      `???${record.note || "?"}`,
-      `????????${availableQuantity(coupon)}`,
-      `?????????${coupon.claimedQuantity}`
+      `小票券：${coupon.title}`,
+      `使用人：${record.actor}`,
+      `使用时间：${formatDateTime(record.usedAt)}`,
+      `备注：${record.note || "无"}`,
+      `当前剩余可领取：${availableQuantity(coupon)}`,
+      `当前已领取未使用：${coupon.claimedQuantity}`
     ]
   });
 }
@@ -730,8 +730,8 @@ function createCoupon(input, index = 0) {
   const now = new Date().toISOString();
   const coupon = {
     id: input.id || crypto.randomUUID(),
-    title: cleanText(input.title, "?????"),
-    text: cleanText(input.text, "?????????????"),
+    title: cleanText(input.title, "新的小票券"),
+    text: cleanText(input.text, "这是一张只属于她的小票券。"),
     totalQuantity: Math.max(0, Math.floor(Number(input.totalQuantity ?? input.total ?? 1))),
     claimedQuantity: Math.max(0, Math.floor(Number(input.claimedQuantity || 0))),
     pinned: Boolean(input.pinned),
@@ -793,12 +793,12 @@ function toAdminCoupon(coupon) {
 function couponStatus(coupon) {
   const today = todayKey();
   if (coupon.effectiveDate && coupon.effectiveDate > today) {
-    return { usable: false, label: "???", reason: `??? ${coupon.effectiveDate} ???` };
+    return { usable: false, label: "未生效", reason: `这张券 ${coupon.effectiveDate} 生效。` };
   }
   if (coupon.expiryDate && coupon.expiryDate < today) {
-    return { usable: false, label: "???", reason: "????????" };
+    return { usable: false, label: "已过期", reason: "这张券已经到期。" };
   }
-  return { usable: true, label: "???", reason: "" };
+  return { usable: true, label: "可使用", reason: "" };
 }
 
 function availableQuantity(coupon) {
@@ -922,33 +922,33 @@ function normalizeTimelineItem(item = {}) {
   return {
     id: cleanText(item.id, crypto.randomUUID()),
     date: normalizeDate(item.date) || todayKey(),
-    title: cleanText(item.title, "????"),
-    text: cleanText(item.text, "????????")
+    title: cleanText(item.title, "新的回忆"),
+    text: cleanText(item.text, "把这一刻写下来。")
   };
 }
 
 function normalizeDateIdea(item = {}) {
   const tags = Array.isArray(item.tags)
     ? item.tags.map((tag) => String(tag || "").trim()).filter(Boolean)
-    : String(item.tags || "").split(/[?,]/).map((tag) => tag.trim()).filter(Boolean);
+    : String(item.tags || "").split(/[，,]/).map((tag) => tag.trim()).filter(Boolean);
   return {
     id: cleanText(item.id, crypto.randomUUID()),
-    title: cleanText(item.title, "??????"),
-    time: cleanText(item.time, "??"),
+    title: cleanText(item.title, "新的约会灵感"),
+    time: cleanText(item.time, "随时"),
     tags: tags.slice(0, 6),
-    text: cleanText(item.text, "????????????")
+    text: cleanText(item.text, "写下这次约会要怎么发生。")
   };
 }
 
 function normalizeIdeaTool(item = {}) {
   const items = Array.isArray(item.items)
     ? item.items.map((value) => String(value || "").trim()).filter(Boolean)
-    : String(item.items || "").split(/[\n?,]/).map((value) => value.trim()).filter(Boolean);
+    : String(item.items || "").split(/[\n，,]/).map((value) => value.trim()).filter(Boolean);
   return {
     id: cleanText(item.id, crypto.randomUUID()),
-    title: cleanText(item.title, "??????"),
-    text: cleanText(item.text, "???????????????"),
-    buttonLabel: cleanText(item.buttonLabel, "?????"),
+    title: cleanText(item.title, "新的功能盒子"),
+    text: cleanText(item.text, "写下这个功能要怎么陪她做决定。"),
+    buttonLabel: cleanText(item.buttonLabel, "随机抽一个"),
     items: items.slice(0, 200)
   };
 }
@@ -956,8 +956,8 @@ function normalizeIdeaTool(item = {}) {
 function normalizePlace(item = {}) {
   return {
     id: cleanText(item.id, crypto.randomUUID()),
-    name: cleanText(item.name, "????"),
-    note: cleanText(item.note, "?????????"),
+    name: cleanText(item.name, "新的地点"),
+    note: cleanText(item.note, "这里会有新的故事。"),
     x: normalizeCoordinate(item.x, 50, 4, 96),
     y: normalizeCoordinate(item.y, 50, 4, 96)
   };
@@ -966,8 +966,8 @@ function normalizePlace(item = {}) {
 function normalizeMessage(item = {}) {
   return {
     id: cleanText(item.id, crypto.randomUUID()),
-    title: cleanText(item.title, "????"),
-    text: cleanText(item.text, "??????????")
+    title: cleanText(item.title, "新的留言"),
+    text: cleanText(item.text, "把想说的话写在这里。")
   };
 }
 
@@ -975,10 +975,10 @@ function normalizeLetter(item = {}) {
   const unlockAfterDays = Math.max(0, Math.floor(Number(item.unlockAfterDays || 0)));
   return {
     id: cleanText(item.id, crypto.randomUUID()),
-    title: cleanText(item.title, "?????"),
+    title: cleanText(item.title, "新的未来信"),
     openAt: normalizeDate(item.openAt) || dateAfterDays(unlockAfterDays),
     unlockAfterDays,
-    body: cleanText(item.body, "?????????")
+    body: cleanText(item.body, "这封信还没有正文。")
   };
 }
 
