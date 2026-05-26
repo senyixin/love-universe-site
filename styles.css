@@ -137,6 +137,7 @@ img {
 .place-form input,
 .photo-dialog input,
 .photo-dialog textarea,
+.mood-dialog textarea,
 .admin-panel input,
 .admin-panel textarea,
 .settings-dialog input,
@@ -167,6 +168,7 @@ img {
 .place-form input:focus,
 .photo-dialog input:focus,
 .photo-dialog textarea:focus,
+.mood-dialog textarea:focus,
 .admin-panel input:focus,
 .admin-panel textarea:focus,
 .settings-dialog input:focus,
@@ -433,7 +435,8 @@ img {
 .letter-dialog,
 .photo-dialog,
 .settings-dialog,
-.easter-dialog {
+.easter-dialog,
+.mood-dialog {
   border: 1px solid var(--line);
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.82);
@@ -1483,7 +1486,8 @@ dialog::backdrop {
 .letter-dialog h2,
 .photo-dialog h2,
 .settings-dialog h2,
-.easter-dialog h2 {
+.easter-dialog h2,
+.mood-dialog h2 {
   margin: 0 42px 16px 0;
   font-size: 2rem;
 }
@@ -1520,6 +1524,17 @@ dialog::backdrop {
   gap: 8px;
   color: var(--muted);
   font-size: 0.92rem;
+}
+
+.mood-dialog label {
+  display: grid;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.mood-dialog textarea {
+  resize: vertical;
 }
 
 .photo-form-grid {

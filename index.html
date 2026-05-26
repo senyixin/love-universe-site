@@ -170,13 +170,13 @@
 
         <section class="section mood-section" id="mood">
           <div class="section-heading">
-            <p class="eyebrow">MOOD BUTTONS</p>
+            <p class="eyebrow">CALL ME</p>
             <h2>她今天的心情</h2>
           </div>
           <div class="mood-grid" id="moodGrid"></div>
           <div class="mood-response" id="moodResponse">
             <i data-lucide="heart-handshake"></i>
-            <span>点一下心情，我会替你把话说得更软一点。</span>
+            <span>点一下呼唤，把现在的心情悄悄发给我。</span>
           </div>
         </section>
 
@@ -781,6 +781,31 @@
       <div class="burst-hearts" aria-hidden="true">
         <span></span><span></span><span></span><span></span><span></span>
       </div>
+    </dialog>
+
+    <dialog class="mood-dialog" id="moodDialog">
+      <button class="dialog-close icon-button" id="closeMoodDialogButton" type="button" aria-label="关闭呼唤">
+        <i data-lucide="x"></i>
+      </button>
+      <p class="eyebrow">CALL ME</p>
+      <h2>现在的心情</h2>
+      <form id="moodCallForm">
+        <label class="wide-label" for="moodCallInput">
+          输入现在的心情
+          <textarea id="moodCallInput" name="message" rows="5" maxlength="500" placeholder="比如：今天有点累，想被抱一下。"></textarea>
+        </label>
+        <p class="admin-message" id="moodDialogMessage" aria-live="polite"></p>
+        <div class="dialog-controls">
+          <button class="ghost-button" id="cancelMoodDialogButton" type="button">
+            <i data-lucide="x"></i>
+            <span>取消</span>
+          </button>
+          <button class="primary-button" type="submit">
+            <i data-lucide="send"></i>
+            <span>发给我</span>
+          </button>
+        </div>
+      </form>
     </dialog>
   </body>
 </html>

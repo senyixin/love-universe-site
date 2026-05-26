@@ -725,7 +725,7 @@ function bindWeather() {
     if (!city) return;
     $("#weatherStatus").textContent = `正在找 ${city}...`;
     try {
-      const response = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=zh&format=json`);
+      const response = await fetch(`/api/geocode?city=${encodeURIComponent(city)}`);
       if (!response.ok) throw new Error("city");
       const data = await response.json();
       const match = data.results && data.results[0];
@@ -749,22 +749,22 @@ async function loadWeather(latitude, longitude, placeName) {
     const params = new URLSearchParams({
       latitude,
       longitude,
-      daily: "weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset",
-      timezone: "auto",
-      forecast_days: "7"
+      place: placeName || "当前位置"
     });
-    const response = await fetch(`https://api.open-meteo.com/v1/forecast?${params}`);
+    const response = await fetch(`/api/weather?${params}`);
     if (!response.ok) throw new Error("weather");
     const data = await response.json();
-    renderWeather(data.daily, placeName);
+    renderWeather(data.daily, data.placeName || placeName, data.fallback);
   } catch {
-    $("#weatherStatus").textContent = "天气接口暂时没有回应，先把伞和外套都当作备选。";
-    $("#weatherCare").innerHTML = `<i data-lucide="umbrella"></i><span>天气没刷新出来，但关心照常：出门前看一眼天空，别让自己冷到或淋到。</span>`;
-    refreshIcons();
+    renderWeather(buildFallbackWeather(), placeName || state.settings.cityName, true);
   }
 }
 
-function renderWeather(daily, placeName) {
+function renderWeather(daily, placeName, fallback = false) {
+  if (!daily || !Array.isArray(daily.time) || !daily.time.length) {
+    renderWeather(buildFallbackWeather(), placeName || state.settings.cityName, true);
+    return;
+  }
   const cards = daily.time.map((date, index) => {
     const code = daily.weather_code[index];
     const max = Math.round(daily.temperature_2m_max[index]);
@@ -789,9 +789,45 @@ function renderWeather(daily, placeName) {
   }).join("");
 
   $("#weatherGrid").innerHTML = cards;
-  $("#weatherStatus").textContent = `${placeName || "当前位置"} · 未来 7 天`;
-  $("#weatherCare").innerHTML = `<i data-lucide="${careIcon(daily)}"></i><span>${weatherCare(daily)}</span>`;
+  $("#weatherStatus").textContent = fallback
+    ? `${placeName || "当前位置"} · 天气接口不稳，先显示临时参考`
+    : `${placeName || "当前位置"} · 未来 7 天`;
+  $("#weatherCare").innerHTML = fallback
+    ? `<i data-lucide="umbrella"></i><span>天气接口暂时不稳，出门前再看一眼天空；伞和外套先放进备选。</span>`
+    : `<i data-lucide="${careIcon(daily)}"></i><span>${weatherCare(daily)}</span>`;
   refreshIcons();
+}
+
+function buildFallbackWeather() {
+  const times = [];
+  const codes = [];
+  const maxTemps = [];
+  const minTemps = [];
+  const rains = [];
+  const sunrise = [];
+  const sunset = [];
+  const now = new Date();
+  for (let index = 0; index < 7; index += 1) {
+    const date = new Date(now);
+    date.setDate(now.getDate() + index);
+    times.push(dayKey(date));
+    codes.push([1, 2, 3, 61, 2, 0, 80][index]);
+    const base = 24 + (index % 3);
+    maxTemps.push(base + 4);
+    minTemps.push(base - 3);
+    rains.push([20, 30, 35, 55, 25, 10, 45][index]);
+    sunrise.push(`${dayKey(date)}T05:05`);
+    sunset.push(`${dayKey(date)}T19:12`);
+  }
+  return {
+    time: times,
+    weather_code: codes,
+    temperature_2m_max: maxTemps,
+    temperature_2m_min: minTemps,
+    precipitation_probability_max: rains,
+    sunrise,
+    sunset
+  };
 }
 
 function weatherInfo(code) {
@@ -1116,44 +1152,64 @@ function renderAdminPhotos(message = "") {
 
 function bindMood() {
   $("#moodGrid").addEventListener("click", (event) => {
-    const button = event.target.closest("[data-mood]");
+    const button = event.target.closest("[data-mood-call]");
     if (!button) return;
-    selectedMood = button.dataset.mood;
-    renderMoods();
-    notifyMoodSelection(selectedMood, DEFAULTS.moods[selectedMood]);
+    openMoodDialog();
   });
+  $("#closeMoodDialogButton").addEventListener("click", closeMoodDialog);
+  $("#cancelMoodDialogButton").addEventListener("click", closeMoodDialog);
+  $("#moodCallForm").addEventListener("submit", sendMoodCall);
 }
 
 function renderMoods() {
-  $("#moodGrid").innerHTML = Object.entries(DEFAULTS.moods).map(([key, mood]) => `
-    <button class="mood-button ${selectedMood === key ? "is-active" : ""}" type="button" data-mood="${key}">
-      <i data-lucide="${mood.icon}"></i>
-      <span>${mood.label}</span>
+  $("#moodGrid").innerHTML = `
+    <button class="mood-button mood-call-button" type="button" data-mood-call="true">
+      <i data-lucide="message-circle-heart"></i>
+      <span>呼唤我</span>
     </button>
-  `).join("");
-
-  if (selectedMood) {
-    const mood = DEFAULTS.moods[selectedMood];
-    $("#moodResponse").innerHTML = `<i data-lucide="${mood.icon}"></i><span>${escapeHtml(personalize(mood.response))}</span>`;
-  }
+  `;
   refreshIcons();
 }
 
-async function notifyMoodSelection(key, mood) {
-  if (!mood) return;
+function openMoodDialog() {
+  $("#moodDialogMessage").textContent = "";
+  $("#moodCallInput").value = "";
+  $("#moodDialog").showModal();
+  window.setTimeout(() => $("#moodCallInput").focus(), 40);
+  refreshIcons();
+}
+
+function closeMoodDialog() {
+  $("#moodDialog").close();
+}
+
+async function sendMoodCall(event) {
+  event.preventDefault();
+  const input = $("#moodCallInput");
+  const message = input.value.trim();
+  if (!message) {
+    $("#moodDialogMessage").textContent = "先写一点现在的心情。";
+    return;
+  }
+  $("#moodDialogMessage").textContent = "正在发给我...";
   try {
-    await fetch("/api/mood-events", {
+    const response = await fetch("/api/mood-events", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      keepalive: true,
       body: JSON.stringify({
-        moodKey: key,
-        label: mood.label,
-        response: personalize(mood.response)
+        moodKey: "call",
+        label: "呼唤",
+        response: message
       })
     });
-  } catch {
-    // 心情按钮不因为通知失败打断她的页面体验。
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || data.ok === false) throw new Error(data.error || "发送失败");
+    selectedMood = "call";
+    $("#moodResponse").innerHTML = `<i data-lucide="heart-handshake"></i><span>已经发给我了，我会看到她现在的心情。</span>`;
+    closeMoodDialog();
+    refreshIcons();
+  } catch (error) {
+    $("#moodDialogMessage").textContent = error.message || "暂时没有发出去，再试一次。";
   }
 }
 
@@ -1287,14 +1343,16 @@ async function loadCoupons() {
     const response = await fetch("/api/coupons");
     if (!response.ok) throw new Error("coupons");
     const data = await response.json();
-    state.coupons = Array.isArray(data.coupons) ? data.coupons : [];
+    state.coupons = normalizeCouponList(data.coupons);
   } catch {
-    state.coupons = DEFAULTS.coupons.map((coupon) => ({
+    state.coupons = DEFAULTS.coupons.map((coupon, index) => ({
       ...coupon,
       totalQuantity: 1,
       claimedQuantity: 0,
       usedQuantity: 0,
       availableQuantity: 1,
+      pinned: false,
+      sortOrder: index * 10,
       effectiveDate: "",
       expiryDate: "",
       status: { usable: true, label: "本地预览", reason: "" },
@@ -1302,6 +1360,26 @@ async function loadCoupons() {
     }));
   }
   renderCoupons();
+}
+
+function normalizeCouponList(coupons) {
+  const list = Array.isArray(coupons) ? coupons : [];
+  return list.map((coupon, index) => ({
+    ...coupon,
+    totalQuantity: numberOr(coupon.totalQuantity, 0),
+    claimedQuantity: numberOr(coupon.claimedQuantity, 0),
+    usedQuantity: numberOr(coupon.usedQuantity, Array.isArray(coupon.useHistory) ? coupon.useHistory.length : 0),
+    availableQuantity: numberOr(coupon.availableQuantity, 0),
+    pinned: Boolean(coupon.pinned),
+    sortOrder: numberOr(coupon.sortOrder, index * 10),
+    status: coupon.status || { usable: true, label: "可使用", reason: "" },
+    useHistory: Array.isArray(coupon.useHistory) ? coupon.useHistory : []
+  }));
+}
+
+function numberOr(value, fallback) {
+  const number = Number(value);
+  return Number.isFinite(number) ? number : fallback;
 }
 
 async function runCouponAction(id, action) {
@@ -2080,7 +2158,7 @@ async function loadAdminCoupons() {
     }
     if (!response.ok) throw new Error("load");
     const data = await response.json();
-    state.adminCoupons = Array.isArray(data.coupons) ? data.coupons : [];
+    state.adminCoupons = normalizeCouponList(data.coupons);
     renderAdminCoupons();
     await loadCoupons();
   } catch {
@@ -2123,6 +2201,7 @@ function renderAdminCoupons() {
     const active = Boolean(coupon.status?.usable);
     const canMoveUp = index > 0 && Boolean(list[index - 1]?.pinned) === Boolean(coupon.pinned);
     const canMoveDown = index < list.length - 1 && Boolean(list[index + 1]?.pinned) === Boolean(coupon.pinned);
+    const sortOrder = numberOr(coupon.sortOrder, index * 10);
     return `
       <article class="admin-coupon-card">
         <div class="admin-coupon-main">
@@ -2139,7 +2218,7 @@ function renderAdminCoupons() {
             <span>可领 ${coupon.availableQuantity}</span>
             <span>已领 ${coupon.claimedQuantity}</span>
             <span>已用 ${coupon.usedQuantity}</span>
-            <span>排序 ${coupon.sortOrder}</span>
+            <span>排序 ${sortOrder}</span>
           </div>
           <div class="coupon-dates">
             <span>生效：${coupon.effectiveDate || "立即"}</span>

@@ -1,6 +1,7 @@
 const crypto = require("node:crypto");
 const fs = require("node:fs");
 const fsp = require("node:fs/promises");
+const https = require("node:https");
 const path = require("node:path");
 const express = require("express");
 const multer = require("multer");
@@ -184,6 +185,51 @@ app.get("/api/content", async (_req, res, next) => {
   }
 });
 
+app.get("/api/geocode", async (req, res, next) => {
+  try {
+    const city = cleanText(req.query.city, "");
+    if (!city) {
+      res.status(400).json({ error: "请输入城市。" });
+      return;
+    }
+    const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=3&language=zh&format=json`;
+    const data = await fetchJson(url, 8000);
+    res.json({ results: Array.isArray(data.results) ? data.results : [] });
+  } catch (error) {
+    const fallback = fallbackGeocode(req.query.city);
+    if (fallback.length) {
+      res.json({ results: fallback, fallback: true });
+      return;
+    }
+    next(error);
+  }
+});
+
+app.get("/api/weather", async (req, res) => {
+  const latitude = Number(req.query.latitude);
+  const longitude = Number(req.query.longitude);
+  const placeName = cleanText(req.query.place, "当前位置");
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+    res.status(400).json({ error: "天气坐标不正确。" });
+    return;
+  }
+
+  try {
+    const params = new URLSearchParams({
+      latitude: String(latitude),
+      longitude: String(longitude),
+      daily: "weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset",
+      timezone: "auto",
+      forecast_days: "7"
+    });
+    const data = await fetchJson(`https://api.open-meteo.com/v1/forecast?${params}`, 10000);
+    if (!data.daily || !Array.isArray(data.daily.time)) throw new Error("天气数据格式不正确。");
+    res.json({ placeName, daily: data.daily, fallback: false });
+  } catch {
+    res.json({ placeName, daily: buildFallbackWeather(), fallback: true });
+  }
+});
+
 app.post("/api/photos", upload.single("photo"), async (req, res, next) => {
   try {
     if (!req.file) {
@@ -312,7 +358,7 @@ app.post("/api/coupons/:id/use", async (req, res, next) => {
 
 app.post("/api/mood-events", async (req, res, next) => {
   try {
-    const label = cleanText(req.body?.label, "未知心情");
+    const label = cleanText(req.body?.label, "呼唤");
     const responseText = cleanText(req.body?.response, "");
     const record = {
       id: crypto.randomUUID(),
@@ -325,11 +371,11 @@ app.post("/api/mood-events", async (req, res, next) => {
     const event = { ...record, emailStatus: "not_configured" };
     try {
       const sent = await sendNotificationEmail({
-        subject: `她点了心情：${label}`,
+        subject: label === "呼唤" ? "她呼唤你了" : `她点了心情：${label}`,
         lines: [
-          `心情：${label}`,
+          label === "呼唤" ? "她在页面呼唤你了。" : `心情：${label}`,
           `时间：${formatDateTime(record.createdAt)}`,
-          responseText ? `页面回应：${responseText}` : ""
+          responseText ? `她写下的心情：${responseText}` : ""
         ].filter(Boolean)
       });
       event.emailStatus = sent ? "sent" : "not_configured";
@@ -774,6 +820,7 @@ function toPublicCoupon(coupon) {
     usedQuantity: coupon.useHistory.length,
     availableQuantity: availableQuantity(coupon),
     pinned: Boolean(coupon.pinned),
+    sortOrder: Number.isFinite(Number(coupon.sortOrder)) ? Number(coupon.sortOrder) : 0,
     effectiveDate: coupon.effectiveDate,
     expiryDate: coupon.expiryDate,
     status,
@@ -784,7 +831,7 @@ function toPublicCoupon(coupon) {
 function toAdminCoupon(coupon) {
   return {
     ...toPublicCoupon(coupon),
-    sortOrder: coupon.sortOrder,
+    sortOrder: Number.isFinite(Number(coupon.sortOrder)) ? Number(coupon.sortOrder) : 0,
     createdAt: coupon.createdAt,
     updatedAt: coupon.updatedAt
   };
@@ -835,6 +882,50 @@ function renumberCouponOrders(coupons) {
     coupon.sortOrder = index * 10;
   });
   return coupons;
+}
+
+function buildFallbackWeather() {
+  const now = new Date();
+  const daily = {
+    time: [],
+    weather_code: [],
+    temperature_2m_max: [],
+    temperature_2m_min: [],
+    precipitation_probability_max: [],
+    sunrise: [],
+    sunset: []
+  };
+  const codes = [1, 2, 3, 61, 2, 0, 80];
+  const rain = [20, 30, 35, 55, 25, 10, 45];
+  for (let index = 0; index < 7; index += 1) {
+    const date = new Date(now);
+    date.setDate(now.getDate() + index);
+    const key = dateKey(date);
+    const base = 24 + (index % 3);
+    daily.time.push(key);
+    daily.weather_code.push(codes[index]);
+    daily.temperature_2m_max.push(base + 4);
+    daily.temperature_2m_min.push(base - 3);
+    daily.precipitation_probability_max.push(rain[index]);
+    daily.sunrise.push(`${key}T05:05`);
+    daily.sunset.push(`${key}T19:12`);
+  }
+  return daily;
+}
+
+function fallbackGeocode(city) {
+  const text = String(city || "").trim().toLowerCase();
+  if (!text) return [];
+  if (text.includes("新沂") || text.includes("xinyi")) {
+    return [{
+      name: "新沂市",
+      admin1: "江苏省",
+      country: "中国",
+      latitude: 34.3686,
+      longitude: 118.3545
+    }];
+  }
+  return [];
 }
 
 function topSortOrderFor(coupons, pinned, excludeId = "") {
@@ -1026,6 +1117,58 @@ async function readJson(file, fallback) {
   }
 }
 
+async function fetchJson(url, timeoutMs) {
+  if (typeof fetch !== "function") return fetchJsonWithHttps(url, timeoutMs);
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const response = await fetch(url, {
+      signal: controller.signal,
+      headers: {
+        "Accept": "application/json",
+        "User-Agent": "love-universe-site/1.0"
+      }
+    });
+    if (!response.ok) throw new Error(`接口请求失败：${response.status}`);
+    return response.json();
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+function fetchJsonWithHttps(url, timeoutMs) {
+  return new Promise((resolve, reject) => {
+    const req = https.get(url, {
+      headers: {
+        "Accept": "application/json",
+        "User-Agent": "love-universe-site/1.0"
+      },
+      timeout: timeoutMs
+    }, (response) => {
+      let body = "";
+      response.setEncoding("utf8");
+      response.on("data", (chunk) => {
+        body += chunk;
+      });
+      response.on("end", () => {
+        if (response.statusCode < 200 || response.statusCode >= 300) {
+          reject(new Error(`接口请求失败：${response.statusCode}`));
+          return;
+        }
+        try {
+          resolve(JSON.parse(body));
+        } catch (error) {
+          reject(error);
+        }
+      });
+    });
+    req.on("timeout", () => {
+      req.destroy(new Error("接口请求超时"));
+    });
+    req.on("error", reject);
+  });
+}
+
 async function readObjectJson(file, fallback) {
   try {
     const raw = await fsp.readFile(file, "utf8");
@@ -1066,10 +1209,13 @@ function normalizeDate(value) {
 }
 
 function todayKey() {
-  const now = new Date();
-  const y = now.getFullYear();
-  const m = String(now.getMonth() + 1).padStart(2, "0");
-  const d = String(now.getDate()).padStart(2, "0");
+  return dateKey(new Date());
+}
+
+function dateKey(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
   return `${y}-${m}-${d}`;
 }
 
