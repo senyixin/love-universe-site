@@ -184,6 +184,19 @@ const DEFAULTS = {
     { title: "情侣问答电台", time: "1 小时", tags: ["聊天", "录音", "问题"], text: "每人准备 10 个问题，像录电台一样认真回答。可以把好笑的片段留给以后听。" },
     { title: "为她的一小时", time: "1 小时", tags: ["偏爱", "陪伴", "放松"], text: "这一小时只做她想做的事：散步、发呆、逛店、吃甜品，都不催。" }
   ],
+  ideaTools: [
+    {
+      id: "food-roulette",
+      title: "随机点餐盲盒",
+      text: "不知道吃什么的时候抽一下，先让选择困难休息一会儿。",
+      buttonLabel: "抽今天吃什么",
+      items: [
+        "川菜", "湘菜", "粤菜", "东北菜", "火锅", "烧烤", "麻辣烫", "米线", "拉面", "日料", "韩餐", "泰餐",
+        "披萨", "汉堡", "轻食沙拉", "小龙虾", "烤肉", "砂锅", "煲仔饭", "黄焖鸡", "冒菜", "酸菜鱼",
+        "螺蛳粉", "饺子馄饨", "粥粉面", "甜品下午茶"
+      ]
+    }
+  ],
   wishes: COUPLE_WISH_TEXTS.map((text, index) => ({ id: `couple-100-${String(index + 1).padStart(3, "0")}`, text, done: false })),
   coupons: [
     { id: "coupon-1", title: "奶茶免排队券", text: "想喝哪杯都可以，我负责下单和夸你眼光好。" },
@@ -219,6 +232,7 @@ let adminEditingCouponId = "";
 let albumExpanded = false;
 let albumLoaded = false;
 let selectedDateIdea = null;
+const ideaToolResults = {};
 const expandedPanels = {
   idea: false,
   wishes: false,
@@ -227,6 +241,7 @@ const expandedPanels = {
 const adminEditors = {
   timeline: "",
   idea: "",
+  ideaTool: "",
   place: "",
   message: "",
   letter: ""
@@ -251,6 +266,7 @@ function loadState() {
     securityConfig: null,
     timeline: DEFAULTS.timeline.map((item) => ({ ...item })),
     dateIdeas: DEFAULTS.dateIdeas.map((item) => ({ ...item, tags: [...item.tags] })),
+    ideaTools: DEFAULTS.ideaTools.map((item) => ({ ...item, items: [...item.items] })),
     messageWall: DEFAULTS.messageWall.map((item) => ({ ...item })),
     letters: DEFAULTS.letters.map((item) => ({ ...item })),
     wishes: normalizeWishes(saved.wishes, saved.wishlistVersion),
@@ -293,6 +309,7 @@ function applyContent(content) {
   };
   state.timeline = normalizeTimeline(content.timeline);
   state.dateIdeas = normalizeDateIdeas(content.dateIdeas);
+  state.ideaTools = normalizeIdeaTools(content.ideaTools);
   state.places = normalizePlaces(content.places);
   state.messageWall = normalizeMessages(content.messageWall);
   state.letters = normalizeLetters(content.letters);
@@ -319,6 +336,19 @@ function normalizeDateIdeas(items) {
       : String(item.tags || "").split(/[，,]/).map((tag) => tag.trim()).filter(Boolean),
     text: String(item.text || "写下这次约会要怎么发生。")
   }));
+}
+
+function normalizeIdeaTools(items) {
+  const source = Array.isArray(items) ? items : DEFAULTS.ideaTools;
+  return source.map((item) => ({
+    id: item.id || `idea-tool-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+    title: String(item.title || "新的功能盒子"),
+    text: String(item.text || "写下这个功能要怎么陪她做决定。"),
+    buttonLabel: String(item.buttonLabel || "随机抽一个"),
+    items: Array.isArray(item.items)
+      ? item.items.map((value) => String(value || "").trim()).filter(Boolean)
+      : String(item.items || "").split(/[\n，,]/).map((value) => value.trim()).filter(Boolean)
+  })).filter((item) => item.items.length);
 }
 
 function normalizePlaces(items) {
@@ -590,6 +620,7 @@ function renderAll() {
   renderAlbum();
   renderMoods();
   renderDateIdea();
+  renderIdeaTools();
   renderWishes();
   renderCoupons();
   renderMap();
@@ -1074,6 +1105,7 @@ function bindMood() {
     if (!button) return;
     selectedMood = button.dataset.mood;
     renderMoods();
+    notifyMoodSelection(selectedMood, DEFAULTS.moods[selectedMood]);
   });
 }
 
@@ -1092,6 +1124,23 @@ function renderMoods() {
   refreshIcons();
 }
 
+async function notifyMoodSelection(key, mood) {
+  if (!mood) return;
+  try {
+    await fetch("/api/mood-events", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        moodKey: key,
+        label: mood.label,
+        response: personalize(mood.response)
+      })
+    });
+  } catch {
+    // 心情按钮不因为通知失败打断她的页面体验。
+  }
+}
+
 function bindPlans() {
   $("#drawIdeaButton").addEventListener("click", () => renderDateIdea(true));
   $("#toggleIdeaDetailsButton").addEventListener("click", () => {
@@ -1105,6 +1154,11 @@ function bindPlans() {
   $("#toggleCouponListButton").addEventListener("click", () => {
     expandedPanels.coupons = !expandedPanels.coupons;
     renderCoupons();
+  });
+  $("#ideaToolList").addEventListener("click", (event) => {
+    const button = event.target.closest("[data-idea-tool-draw]");
+    if (!button) return;
+    drawIdeaTool(button.dataset.ideaToolDraw);
   });
   $("#wishForm").addEventListener("submit", (event) => {
     event.preventDefault();
@@ -1158,6 +1212,31 @@ function renderDateIdea(random = false, forcedIdea = null) {
     ? `<i data-lucide="chevrons-up"></i><span>收起详情</span>`
     : `<i data-lucide="chevrons-down"></i><span>展开详情</span>`;
   refreshIcons();
+}
+
+function renderIdeaTools() {
+  $("#ideaToolList").innerHTML = state.ideaTools.map((tool) => `
+    <article class="idea-tool-card">
+      <div>
+        <h4>${escapeHtml(tool.title)}</h4>
+        <p>${escapeHtml(tool.text)}</p>
+        ${ideaToolResults[tool.id] ? `<strong class="idea-tool-result">${escapeHtml(ideaToolResults[tool.id])}</strong>` : ""}
+      </div>
+      <button class="secondary-button" type="button" data-idea-tool-draw="${tool.id}">
+        <i data-lucide="dice-5"></i>
+        <span>${escapeHtml(tool.buttonLabel)}</span>
+      </button>
+    </article>
+  `).join("");
+  refreshIcons();
+}
+
+function drawIdeaTool(id) {
+  const tool = state.ideaTools.find((item) => item.id === id);
+  if (!tool || !tool.items.length) return;
+  const index = Math.floor(Math.random() * tool.items.length);
+  ideaToolResults[id] = tool.items[index];
+  renderIdeaTools();
 }
 
 function renderWishes() {
@@ -1256,7 +1335,10 @@ function renderCoupons() {
         <div>
           <div class="coupon-title-row">
             <h4>${escapeHtml(coupon.title)}</h4>
-            <span class="coupon-status ${active ? "is-live" : "is-muted"}">${escapeHtml(coupon.status?.label || "可使用")}</span>
+            <div class="coupon-title-badges">
+              ${coupon.pinned ? `<span class="coupon-pin-badge">置顶</span>` : ""}
+              <span class="coupon-status ${active ? "is-live" : "is-muted"}">${escapeHtml(coupon.status?.label || "可使用")}</span>
+            </div>
           </div>
           <p>${escapeHtml(coupon.text)}</p>
           <div class="coupon-stats">
@@ -1300,12 +1382,14 @@ function bindAdmin() {
   $("#siteSettingsForm").addEventListener("submit", saveSiteSettings);
   $("#timelineAdminForm").addEventListener("submit", saveAdminTimeline);
   $("#ideaAdminForm").addEventListener("submit", saveAdminIdea);
+  $("#ideaToolAdminForm").addEventListener("submit", saveAdminIdeaTool);
   $("#placeAdminForm").addEventListener("submit", saveAdminPlace);
   $("#messageAdminForm").addEventListener("submit", saveAdminMessage);
   $("#letterAdminForm").addEventListener("submit", saveAdminLetter);
   $("#adminAddPhotoButton").addEventListener("click", () => openPhotoEditor());
   $("#resetTimelineFormButton").addEventListener("click", resetTimelineForm);
   $("#resetIdeaFormButton").addEventListener("click", resetIdeaForm);
+  $("#resetIdeaToolFormButton").addEventListener("click", resetIdeaToolForm);
   $("#resetPlaceFormButton").addEventListener("click", resetPlaceForm);
   $("#resetMessageFormButton").addEventListener("click", resetMessageForm);
   $("#resetLetterFormButton").addEventListener("click", resetLetterForm);
@@ -1318,6 +1402,7 @@ function bindAdmin() {
   });
   $("#adminTimelineList").addEventListener("click", (event) => handleAdminContentAction(event, "timeline"));
   $("#adminIdeaList").addEventListener("click", (event) => handleAdminContentAction(event, "idea"));
+  $("#adminIdeaToolList").addEventListener("click", (event) => handleAdminContentAction(event, "ideaTool"));
   $("#adminPlaceList").addEventListener("click", (event) => handleAdminContentAction(event, "place"));
   $("#adminMessageList").addEventListener("click", (event) => handleAdminContentAction(event, "message"));
   $("#adminLetterList").addEventListener("click", (event) => handleAdminContentAction(event, "letter"));
@@ -1419,6 +1504,7 @@ async function saveSiteSettings(event) {
 function renderAdminContent() {
   renderAdminTimeline();
   renderAdminIdeas();
+  renderAdminIdeaTools();
   renderAdminPlaces();
   renderAdminMessages();
   renderAdminLetters();
@@ -1429,6 +1515,7 @@ function contentPayload() {
     settings: state.settings,
     timeline: state.timeline,
     dateIdeas: state.dateIdeas,
+    ideaTools: state.ideaTools,
     places: state.places,
     messageWall: state.messageWall,
     letters: state.letters
@@ -1494,6 +1581,21 @@ function fillContentForm(type, id) {
     return;
   }
 
+  if (type === "ideaTool") {
+    const item = state.ideaTools.find((entry) => entry.id === id);
+    if (!item) return;
+    adminEditors.ideaTool = id;
+    const form = $("#ideaToolAdminForm");
+    form.ideaToolId.value = id;
+    form.title.value = item.title || "";
+    form.buttonLabel.value = item.buttonLabel || "";
+    form.text.value = item.text || "";
+    form.items.value = (item.items || []).join("\n");
+    $("#ideaToolAdminTitle").textContent = "编辑功能盒子";
+    $("#ideaToolAdminMessage").textContent = "";
+    return;
+  }
+
   if (type === "place") {
     const item = state.places.find((entry) => entry.id === id);
     if (!item) return;
@@ -1540,6 +1642,7 @@ async function deleteContentItem(type, id) {
   const configs = {
     timeline: { list: "timeline", label: "这条回忆", message: "#timelineAdminMessage" },
     idea: { list: "dateIdeas", label: "这个约会灵感", message: "#ideaAdminMessage" },
+    ideaTool: { list: "ideaTools", label: "这个功能盒子", message: "#ideaToolAdminMessage" },
     place: { list: "places", label: "这个地图足迹", message: "#placeAdminMessage" },
     message: { list: "messageWall", label: "这条留言", message: "#messageAdminMessage" },
     letter: { list: "letters", label: "这封未来信", message: "#letterAdminMessage" }
@@ -1591,6 +1694,26 @@ async function saveAdminIdea(event) {
     resetIdeaForm(false);
   } catch (error) {
     $("#ideaAdminMessage").textContent = error.message;
+  }
+}
+
+async function saveAdminIdeaTool(event) {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const id = form.ideaToolId.value || `idea-tool-${Date.now()}`;
+  const item = {
+    id,
+    title: form.title.value.trim(),
+    text: form.text.value.trim(),
+    buttonLabel: form.buttonLabel.value.trim(),
+    items: form.items.value.split(/[\n，,]/).map((value) => value.trim()).filter(Boolean)
+  };
+  upsertContentItem("ideaTool", item);
+  try {
+    await saveAdminContent("#ideaToolAdminMessage");
+    resetIdeaToolForm(false);
+  } catch (error) {
+    $("#ideaToolAdminMessage").textContent = error.message;
   }
 }
 
@@ -1658,6 +1781,7 @@ function upsertContentItem(type, item) {
   const configs = {
     timeline: "timeline",
     idea: "dateIdeas",
+    ideaTool: "ideaTools",
     place: "places",
     message: "messageWall",
     letter: "letters"
@@ -1675,6 +1799,7 @@ function upsertContentItem(type, item) {
 function resetContentForm(type, clearMessage = true) {
   if (type === "timeline") return resetTimelineForm(clearMessage);
   if (type === "idea") return resetIdeaForm(clearMessage);
+  if (type === "ideaTool") return resetIdeaToolForm(clearMessage);
   if (type === "place") return resetPlaceForm(clearMessage);
   if (type === "message") return resetMessageForm(clearMessage);
   return resetLetterForm(clearMessage);
@@ -1697,6 +1822,15 @@ function resetIdeaForm(clearMessage = true) {
   form.ideaId.value = "";
   $("#ideaAdminTitle").textContent = "新增约会灵感";
   if (clearMessage) $("#ideaAdminMessage").textContent = "";
+}
+
+function resetIdeaToolForm(clearMessage = true) {
+  adminEditors.ideaTool = "";
+  const form = $("#ideaToolAdminForm");
+  form.reset();
+  form.ideaToolId.value = "";
+  $("#ideaToolAdminTitle").textContent = "新增功能盒子";
+  if (clearMessage) $("#ideaToolAdminMessage").textContent = "";
 }
 
 function resetPlaceForm(clearMessage = true) {
@@ -1752,6 +1886,20 @@ function renderAdminIdeas() {
       ${adminContentButtons("idea", item.id)}
     </article>
   `).join("") : `<p class="admin-empty">还没有约会灵感。</p>`;
+  refreshIcons();
+}
+
+function renderAdminIdeaTools() {
+  $("#adminIdeaToolList").innerHTML = state.ideaTools.length ? state.ideaTools.map((item) => `
+    <article class="admin-content-card">
+      <div>
+        <strong>${escapeHtml(item.title)}</strong>
+        <span>${escapeHtml(item.buttonLabel)} · ${(item.items || []).length} 个选项</span>
+        <p>${escapeHtml(item.text)}</p>
+      </div>
+      ${adminContentButtons("ideaTool", item.id)}
+    </article>
+  `).join("") : `<p class="admin-empty">还没有功能盒子。</p>`;
   refreshIcons();
 }
 
@@ -1906,14 +2054,19 @@ async function loadAdminEvents() {
 }
 
 function renderAdminCoupons() {
-  $("#adminCouponList").innerHTML = state.adminCoupons.length ? state.adminCoupons.map((coupon) => {
+  $("#adminCouponList").innerHTML = state.adminCoupons.length ? state.adminCoupons.map((coupon, index, list) => {
     const active = Boolean(coupon.status?.usable);
+    const canMoveUp = index > 0 && Boolean(list[index - 1]?.pinned) === Boolean(coupon.pinned);
+    const canMoveDown = index < list.length - 1 && Boolean(list[index + 1]?.pinned) === Boolean(coupon.pinned);
     return `
       <article class="admin-coupon-card">
         <div class="admin-coupon-main">
           <div class="coupon-title-row">
             <h3>${escapeHtml(coupon.title)}</h3>
-            <span class="coupon-status ${active ? "is-live" : "is-muted"}">${escapeHtml(coupon.status?.label || "可使用")}</span>
+            <div class="coupon-title-badges">
+              ${coupon.pinned ? `<span class="coupon-pin-badge">置顶</span>` : ""}
+              <span class="coupon-status ${active ? "is-live" : "is-muted"}">${escapeHtml(coupon.status?.label || "可使用")}</span>
+            </div>
           </div>
           <p>${escapeHtml(coupon.text)}</p>
           <div class="coupon-stats">
@@ -1921,6 +2074,7 @@ function renderAdminCoupons() {
             <span>可领 ${coupon.availableQuantity}</span>
             <span>已领 ${coupon.claimedQuantity}</span>
             <span>已用 ${coupon.usedQuantity}</span>
+            <span>排序 ${coupon.sortOrder}</span>
           </div>
           <div class="coupon-dates">
             <span>生效：${coupon.effectiveDate || "立即"}</span>
@@ -1931,6 +2085,15 @@ function renderAdminCoupons() {
         <div class="admin-coupon-actions">
           <button class="secondary-button" type="button" data-admin-coupon="${coupon.id}" data-admin-coupon-action="edit">
             <i data-lucide="pencil"></i><span>编辑</span>
+          </button>
+          <button class="ghost-button" type="button" data-admin-coupon="${coupon.id}" data-admin-coupon-action="${coupon.pinned ? "unpin" : "pin"}">
+            <i data-lucide="${coupon.pinned ? "pin-off" : "pin"}"></i><span>${coupon.pinned ? "取消置顶" : "置顶"}</span>
+          </button>
+          <button class="ghost-button" type="button" data-admin-coupon="${coupon.id}" data-admin-coupon-action="up" ${canMoveUp ? "" : "disabled"}>
+            <i data-lucide="arrow-up"></i><span>上移</span>
+          </button>
+          <button class="ghost-button" type="button" data-admin-coupon="${coupon.id}" data-admin-coupon-action="down" ${canMoveDown ? "" : "disabled"}>
+            <i data-lucide="arrow-down"></i><span>下移</span>
           </button>
           <button class="ghost-button" type="button" data-admin-coupon="${coupon.id}" data-admin-coupon-action="return" ${coupon.claimedQuantity > 0 ? "" : "disabled"}>
             <i data-lucide="undo-2"></i><span>退回 1</span>
@@ -1967,7 +2130,8 @@ async function saveAdminCoupon(event) {
     text: form.text.value.trim(),
     totalQuantity: Number(form.totalQuantity.value || 0),
     effectiveDate: form.effectiveDate.value,
-    expiryDate: form.expiryDate.value
+    expiryDate: form.expiryDate.value,
+    pinned: form.pinned.checked
   };
   const id = form.couponId.value.trim();
   $("#adminCouponMessage").textContent = "正在保存...";
@@ -1998,6 +2162,10 @@ async function runAdminCouponAction(action, id) {
 
   const routes = {
     delete: { method: "DELETE", url: `/api/admin/coupons/${encodeURIComponent(id)}` },
+    pin: { method: "POST", url: `/api/admin/coupons/${encodeURIComponent(id)}/pin`, body: { pinned: true } },
+    unpin: { method: "POST", url: `/api/admin/coupons/${encodeURIComponent(id)}/pin`, body: { pinned: false } },
+    up: { method: "POST", url: `/api/admin/coupons/${encodeURIComponent(id)}/move`, body: { direction: "up" } },
+    down: { method: "POST", url: `/api/admin/coupons/${encodeURIComponent(id)}/move`, body: { direction: "down" } },
     return: { method: "POST", url: `/api/admin/coupons/${encodeURIComponent(id)}/return`, body: { quantity: 1 } },
     use: { method: "POST", url: `/api/admin/coupons/${encodeURIComponent(id)}/use`, body: { note: "管理员手动登记使用。" } }
   };
@@ -2027,6 +2195,7 @@ function fillAdminCouponForm(coupon) {
   form.totalQuantity.value = coupon.totalQuantity;
   form.effectiveDate.value = coupon.effectiveDate || "";
   form.expiryDate.value = coupon.expiryDate || "";
+  form.pinned.checked = Boolean(coupon.pinned);
   $("#adminFormTitle").textContent = "编辑小票券";
   $("#adminCouponMessage").textContent = "";
   form.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -2038,6 +2207,7 @@ function resetAdminCouponForm(clearMessage = true) {
   form.reset();
   form.couponId.value = "";
   form.totalQuantity.value = 1;
+  form.pinned.checked = false;
   $("#adminFormTitle").textContent = "新增小票券";
   if (clearMessage) $("#adminCouponMessage").textContent = "";
 }

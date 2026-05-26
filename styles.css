@@ -890,6 +890,43 @@ img {
   font-size: 0.86rem;
 }
 
+.idea-tool-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.idea-tool-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 14px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.idea-tool-card h4 {
+  margin: 0 0 6px;
+}
+
+.idea-tool-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.idea-tool-result {
+  display: inline-flex;
+  width: fit-content;
+  margin-top: 10px;
+  padding: 7px 10px;
+  color: var(--teal-dark);
+  background: #e7f4ef;
+  border-radius: 8px;
+}
+
 .wish-form,
 .place-form {
   display: grid;
@@ -989,9 +1026,27 @@ img {
   gap: 10px;
 }
 
+.coupon-title-badges {
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
 .coupon-status {
   flex: 0 0 auto;
   padding: 5px 8px;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.coupon-pin-badge {
+  flex: 0 0 auto;
+  padding: 5px 8px;
+  color: #8a5a12;
+  background: #fff0c9;
   border-radius: 8px;
   font-size: 0.78rem;
   font-weight: 800;
@@ -1642,6 +1697,7 @@ dialog::backdrop {
 
   .admin-coupon-card,
   .admin-event-card,
+  .idea-tool-card,
   .coupon-item.rich-coupon {
     grid-template-columns: 1fr;
   }

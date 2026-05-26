@@ -15,6 +15,7 @@ const UPLOAD_DIR = path.resolve(ROOT, "uploads", "photos");
 const PHOTOS_FILE = path.join(DATA_DIR, "photos.json");
 const COUPONS_FILE = path.join(DATA_DIR, "coupons.json");
 const COUPON_EVENTS_FILE = path.join(DATA_DIR, "coupon-events.json");
+const MOOD_EVENTS_FILE = path.join(DATA_DIR, "mood-events.json");
 const MAIL_CONFIG_FILE = path.join(DATA_DIR, "mail-config.json");
 const SITE_CONTENT_FILE = path.join(DATA_DIR, "site-content.json");
 const ADMIN_CONFIG_FILE = path.join(DATA_DIR, "admin-config.json");
@@ -60,6 +61,19 @@ const DEFAULT_SITE_CONTENT = {
     { title: "情侣问答电台", time: "1 小时", tags: ["聊天", "录音", "问题"], text: "每人准备 10 个问题，像录电台一样认真回答。可以把好笑的片段留给以后听。" },
     { title: "为她的一小时", time: "1 小时", tags: ["偏爱", "陪伴", "放松"], text: "这一小时只做她想做的事：散步、发呆、逛店、吃甜品，都不催。" }
   ],
+  ideaTools: [
+    {
+      id: "food-roulette",
+      title: "随机点餐盲盒",
+      text: "不知道吃什么的时候抽一下，先让选择困难休息一会儿。",
+      buttonLabel: "抽今天吃什么",
+      items: [
+        "川菜", "湘菜", "粤菜", "东北菜", "火锅", "烧烤", "麻辣烫", "米线", "拉面", "日料", "韩餐", "泰餐",
+        "披萨", "汉堡", "轻食沙拉", "小龙虾", "烤肉", "砂锅", "煲仔饭", "黄焖鸡", "冒菜", "酸菜鱼",
+        "螺蛳粉", "饺子馄饨", "粥粉面", "甜品下午茶"
+      ]
+    }
+  ],
   places: [
     { id: "place-1", name: "第一次见面的地方", note: "空气里都是紧张和装作镇定。", x: 25, y: 68 },
     { id: "place-2", name: "最常去的街角", note: "路过很多次，每一次都更像自己的地方。", x: 58, y: 42 },
@@ -89,6 +103,7 @@ fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 ensureJsonFile(PHOTOS_FILE, []);
 ensureJsonFile(COUPONS_FILE, DEFAULT_COUPONS.map(createCoupon));
 ensureJsonFile(COUPON_EVENTS_FILE, []);
+ensureJsonFile(MOOD_EVENTS_FILE, []);
 ensureJsonFile(MAIL_CONFIG_FILE, {});
 ensureJsonFile(SITE_CONTENT_FILE, DEFAULT_SITE_CONTENT);
 ensureJsonFile(ADMIN_CONFIG_FILE, createAdminConfig(DEFAULT_ADMIN_KEY));
@@ -295,6 +310,41 @@ app.post("/api/coupons/:id/use", async (req, res, next) => {
   }
 });
 
+app.post("/api/mood-events", async (req, res, next) => {
+  try {
+    const label = cleanText(req.body?.label, "未知心情");
+    const responseText = cleanText(req.body?.response, "");
+    const record = {
+      id: crypto.randomUUID(),
+      moodKey: cleanText(req.body?.moodKey, ""),
+      label,
+      response: responseText,
+      createdAt: new Date().toISOString()
+    };
+    const events = await readJson(MOOD_EVENTS_FILE, []);
+    const event = { ...record, emailStatus: "not_configured" };
+    try {
+      const sent = await sendNotificationEmail({
+        subject: `她点了心情：${label}`,
+        lines: [
+          `心情：${label}`,
+          `时间：${formatDateTime(record.createdAt)}`,
+          responseText ? `页面回应：${responseText}` : ""
+        ].filter(Boolean)
+      });
+      event.emailStatus = sent ? "sent" : "not_configured";
+    } catch (error) {
+      event.emailStatus = "failed";
+      event.emailError = error.message;
+    }
+    events.unshift(event);
+    await writeJson(MOOD_EVENTS_FILE, events.slice(0, 200));
+    res.json({ ok: true, event: { ...event, emailError: undefined } });
+  } catch (error) {
+    next(error);
+  }
+});
+
 app.get("/api/admin/coupons", requireAdmin, async (_req, res, next) => {
   try {
     const coupons = await readCoupons();
@@ -307,9 +357,10 @@ app.get("/api/admin/coupons", requireAdmin, async (_req, res, next) => {
 app.post("/api/admin/coupons", requireAdmin, async (req, res, next) => {
   try {
     const coupons = await readCoupons();
-    const coupon = createCoupon(req.body || {});
+    const minOrder = coupons.reduce((min, item) => Math.min(min, item.sortOrder), 0);
+    const coupon = createCoupon({ ...(req.body || {}), sortOrder: minOrder - 10 });
     coupons.unshift(coupon);
-    await writeCoupons(coupons);
+    await writeCoupons(sortCoupons(coupons));
     res.status(201).json({ coupon: toAdminCoupon(coupon) });
   } catch (error) {
     next(error);
@@ -378,6 +429,52 @@ app.post("/api/admin/coupons/:id/use", requireAdmin, async (req, res, next) => {
       return;
     }
     res.json({ coupon: toAdminCoupon(result.coupon), record: result.record });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post("/api/admin/coupons/:id/pin", requireAdmin, async (req, res, next) => {
+  try {
+    const coupons = await readCoupons();
+    const coupon = coupons.find((item) => item.id === req.params.id);
+    if (!coupon) {
+      res.status(404).json({ error: "没有找到这张小票券。" });
+      return;
+    }
+    coupon.pinned = Boolean(req.body?.pinned);
+    coupon.updatedAt = new Date().toISOString();
+    await writeCoupons(sortCoupons(coupons));
+    res.json({ coupon: toAdminCoupon(coupon) });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post("/api/admin/coupons/:id/move", requireAdmin, async (req, res, next) => {
+  try {
+    const coupons = sortCoupons(await readCoupons());
+    const index = coupons.findIndex((item) => item.id === req.params.id);
+    if (index === -1) {
+      res.status(404).json({ error: "没有找到这张小票券。" });
+      return;
+    }
+    const direction = req.body?.direction === "down" ? 1 : -1;
+    const nextIndex = index + direction;
+    if (nextIndex < 0 || nextIndex >= coupons.length) {
+      res.json({ coupon: toAdminCoupon(coupons[index]) });
+      return;
+    }
+    if (Boolean(coupons[index].pinned) !== Boolean(coupons[nextIndex].pinned)) {
+      res.json({ coupon: toAdminCoupon(coupons[index]) });
+      return;
+    }
+    const currentOrder = coupons[index].sortOrder;
+    coupons[index].sortOrder = coupons[nextIndex].sortOrder;
+    coupons[nextIndex].sortOrder = currentOrder;
+    coupons[index].updatedAt = new Date().toISOString();
+    await writeCoupons(sortCoupons(coupons));
+    res.json({ coupon: toAdminCoupon(coupons[index]) });
   } catch (error) {
     next(error);
   }
@@ -545,6 +642,20 @@ async function recordCouponEvent(record, coupon) {
 }
 
 async function sendCouponUseEmail(record, coupon) {
+  return sendNotificationEmail({
+    subject: `她使用了小票券：${coupon.title}`,
+    lines: [
+      `小票券：${coupon.title}`,
+      `使用人：${record.actor}`,
+      `使用时间：${formatDateTime(record.usedAt)}`,
+      `备注：${record.note || "无"}`,
+      `当前剩余可领取：${availableQuantity(coupon)}`,
+      `当前已领取未使用：${coupon.claimedQuantity}`
+    ]
+  });
+}
+
+async function sendNotificationEmail({ subject, lines }) {
   const saved = await readMailConfig();
   const host = saved.enabled ? saved.smtpHost : process.env.SMTP_HOST;
   const user = saved.enabled ? saved.smtpUser : process.env.SMTP_USER;
@@ -560,24 +671,16 @@ async function sendCouponUseEmail(record, coupon) {
     auth: { user, pass }
   });
   const from = saved.enabled ? (saved.from || user) : (process.env.SMTP_FROM || user);
-  const usedAt = formatDateTime(record.usedAt);
   await transporter.sendMail({
     from,
     to,
-    subject: `她使用了小票券：${coupon.title}`,
-    text: [
-      `小票券：${coupon.title}`,
-      `使用人：${record.actor}`,
-      `使用时间：${usedAt}`,
-      `备注：${record.note || "无"}`,
-      `当前剩余可领取：${availableQuantity(coupon)}`,
-      `当前已领取未使用：${coupon.claimedQuantity}`
-    ].join("\n")
+    subject,
+    text: lines.join("\n")
   });
   return true;
 }
 
-function createCoupon(input) {
+function createCoupon(input, index = 0) {
   const now = new Date().toISOString();
   const coupon = {
     id: input.id || crypto.randomUUID(),
@@ -585,6 +688,8 @@ function createCoupon(input) {
     text: cleanText(input.text, "这是一张只属于她的小票券。"),
     totalQuantity: Math.max(0, Math.floor(Number(input.totalQuantity ?? input.total ?? 1))),
     claimedQuantity: Math.max(0, Math.floor(Number(input.claimedQuantity || 0))),
+    pinned: Boolean(input.pinned),
+    sortOrder: Number.isFinite(Number(input.sortOrder)) ? Number(input.sortOrder) : index * 10,
     effectiveDate: normalizeDate(input.effectiveDate),
     expiryDate: normalizeDate(input.expiryDate),
     useHistory: Array.isArray(input.useHistory) ? input.useHistory : [],
@@ -599,6 +704,7 @@ function updateCoupon(coupon, input) {
   coupon.title = cleanText(input.title, coupon.title);
   coupon.text = cleanText(input.text, coupon.text);
   coupon.totalQuantity = Math.max(0, Math.floor(Number(input.totalQuantity ?? coupon.totalQuantity)));
+  coupon.pinned = Boolean(input.pinned);
   coupon.effectiveDate = normalizeDate(input.effectiveDate);
   coupon.expiryDate = normalizeDate(input.expiryDate);
   coupon.updatedAt = new Date().toISOString();
@@ -621,6 +727,7 @@ function toPublicCoupon(coupon) {
     claimedQuantity: coupon.claimedQuantity,
     usedQuantity: coupon.useHistory.length,
     availableQuantity: availableQuantity(coupon),
+    pinned: Boolean(coupon.pinned),
     effectiveDate: coupon.effectiveDate,
     expiryDate: coupon.expiryDate,
     status,
@@ -631,6 +738,7 @@ function toPublicCoupon(coupon) {
 function toAdminCoupon(coupon) {
   return {
     ...toPublicCoupon(coupon),
+    sortOrder: coupon.sortOrder,
     createdAt: coupon.createdAt,
     updatedAt: coupon.updatedAt
   };
@@ -661,11 +769,19 @@ async function writePhotos(photos) {
 
 async function readCoupons() {
   const coupons = await readJson(COUPONS_FILE, []);
-  return coupons.map(createCoupon);
+  return sortCoupons(coupons.map((coupon, index) => createCoupon(coupon, index)));
 }
 
 async function writeCoupons(coupons) {
-  return writeJson(COUPONS_FILE, coupons);
+  return writeJson(COUPONS_FILE, sortCoupons(coupons));
+}
+
+function sortCoupons(coupons) {
+  return [...coupons].sort((a, b) => {
+    if (Boolean(a.pinned) !== Boolean(b.pinned)) return a.pinned ? -1 : 1;
+    if (a.sortOrder !== b.sortOrder) return a.sortOrder - b.sortOrder;
+    return String(a.createdAt || "").localeCompare(String(b.createdAt || ""));
+  });
 }
 
 async function readMailConfig() {
@@ -711,6 +827,7 @@ function normalizeSiteContent(input = {}) {
     settings: normalizeSiteSettings(input.settings),
     timeline: normalizeArray(input.timeline, DEFAULT_SITE_CONTENT.timeline, normalizeTimelineItem),
     dateIdeas: normalizeArray(input.dateIdeas, DEFAULT_SITE_CONTENT.dateIdeas, normalizeDateIdea),
+    ideaTools: normalizeArray(input.ideaTools, DEFAULT_SITE_CONTENT.ideaTools, normalizeIdeaTool),
     places: normalizeArray(input.places, DEFAULT_SITE_CONTENT.places, normalizePlace),
     messageWall: normalizeArray(input.messageWall, DEFAULT_SITE_CONTENT.messageWall, normalizeMessage),
     letters: normalizeArray(input.letters, DEFAULT_SITE_CONTENT.letters, normalizeLetter)
@@ -761,6 +878,19 @@ function normalizeDateIdea(item = {}) {
     time: cleanText(item.time, "随时"),
     tags: tags.slice(0, 6),
     text: cleanText(item.text, "写下这次约会要怎么发生。")
+  };
+}
+
+function normalizeIdeaTool(item = {}) {
+  const items = Array.isArray(item.items)
+    ? item.items.map((value) => String(value || "").trim()).filter(Boolean)
+    : String(item.items || "").split(/[\n，,]/).map((value) => value.trim()).filter(Boolean);
+  return {
+    id: cleanText(item.id, crypto.randomUUID()),
+    title: cleanText(item.title, "新的功能盒子"),
+    text: cleanText(item.text, "写下这个功能要怎么陪她做决定。"),
+    buttonLabel: cleanText(item.buttonLabel, "随机抽一个"),
+    items: items.slice(0, 200)
   };
 }
 

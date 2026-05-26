@@ -200,6 +200,7 @@
                 <i data-lucide="shuffle"></i>
                 <span>抽一个</span>
               </button>
+              <div class="idea-tool-list" id="ideaToolList"></div>
             </div>
 
             <div class="tool-panel">
@@ -455,6 +456,44 @@
             <div class="admin-content-list" id="adminIdeaList"></div>
           </form>
 
+          <form class="admin-panel" id="ideaToolAdminForm">
+            <div class="admin-panel-head">
+              <div>
+                <p class="eyebrow">IDEA TOOLS</p>
+                <h2 id="ideaToolAdminTitle">新增功能盒子</h2>
+              </div>
+              <button class="ghost-button" id="resetIdeaToolFormButton" type="button">
+                <i data-lucide="rotate-ccw"></i>
+                <span>清空</span>
+              </button>
+            </div>
+            <input name="ideaToolId" type="hidden">
+            <div class="admin-form-grid two-columns">
+              <label>
+                功能标题
+                <input name="title" type="text" placeholder="比如：随机点餐盲盒" required>
+              </label>
+              <label>
+                按钮文字
+                <input name="buttonLabel" type="text" placeholder="比如：抽今天吃什么" required>
+              </label>
+            </div>
+            <label>
+              功能说明
+              <textarea name="text" rows="3" required></textarea>
+            </label>
+            <label>
+              随机选项
+              <textarea name="items" rows="6" placeholder="一行一个，或用逗号分隔" required></textarea>
+            </label>
+            <p class="admin-message" id="ideaToolAdminMessage" aria-live="polite"></p>
+            <button class="primary-button full-button" type="submit">
+              <i data-lucide="save"></i>
+              <span>保存功能盒子</span>
+            </button>
+            <div class="admin-content-list" id="adminIdeaToolList"></div>
+          </form>
+
           <form class="admin-panel" id="placeAdminForm">
             <div class="admin-panel-head">
               <div>
@@ -604,6 +643,10 @@
                 <input name="expiryDate" type="date">
               </label>
             </div>
+            <label class="switch-label">
+              <input name="pinned" type="checkbox">
+              <span>前台置顶显示</span>
+            </label>
             <p class="admin-message" id="adminCouponMessage" aria-live="polite"></p>
             <button class="primary-button full-button" type="submit">
               <i data-lucide="save"></i>
