@@ -48,6 +48,22 @@ npm start
 
 建议用 Nginx、宝塔、PM2 或服务器面板把域名反向代理到 `127.0.0.1:5173`。
 
+## 安卓 App
+
+项目里已经包含 `android-app/`，它是一个 Android WebView 外壳，会打开你服务器上的网站。后台、照片、邮件和小票券仍然由服务器处理。
+
+在 GitHub 仓库的 Actions 里运行 `Android APK`，输入你的服务器地址，比如：
+
+```text
+https://你的域名
+```
+
+打包完成后下载 `love-universe-android-debug`，里面的 `app-debug.apk` 就可以安装测试。也可以本地安装 Android Studio、Android SDK 和 JDK 17 后执行：
+
+```bash
+gradle -p android-app :app:assembleDebug -PserverUrl=https://你的域名
+```
+
 ## 隐藏管理台
 
 同一个登录框有两个入口：
