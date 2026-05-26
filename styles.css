@@ -1096,7 +1096,8 @@ img {
 }
 
 .coupon-actions button:disabled,
-.admin-coupon-actions button:disabled {
+.admin-coupon-actions button:disabled,
+.admin-content-actions button:disabled {
   cursor: not-allowed;
   opacity: 0.5;
 }
