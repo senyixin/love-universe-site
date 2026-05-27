@@ -4,28 +4,24 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.webkit.GeolocationPermissions;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
+import android.webkit.WebChromeClient.FileChooserParams;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.webkit.WebChromeClient.FileChooserParams;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -33,13 +29,10 @@ import android.widget.TextView;
 public class MainActivity extends Activity {
     private static final int FILE_CHOOSER_REQUEST = 520;
     private static final int LOCATION_REQUEST = 521;
-    private static final String PREFS = "love_universe";
-    private static final String KEY_SERVER_URL = "server_url";
 
     private WebView webView;
-    private LinearLayout setupPanel;
-    private EditText serverUrlInput;
-    private TextView setupMessage;
+    private LinearLayout statusPanel;
+    private TextView statusMessage;
     private ValueCallback<Uri[]> filePathCallback;
     private GeolocationPermissions.Callback geolocationCallback;
     private String geolocationOrigin;
@@ -49,79 +42,50 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         buildLayout();
         configureWebView();
-        String url = getServerUrl();
-        serverUrlInput.setText(url);
-        if (isValidWebUrl(url)) {
-            loadServer(url);
-        } else {
-            showSetup("先填写服务器地址，比如 https://love.example.com");
-        }
+        loadDefaultServer();
     }
 
     private void buildLayout() {
         FrameLayout root = new FrameLayout(this);
         webView = new WebView(this);
+        webView.setBackgroundColor(Color.rgb(255, 250, 245));
         root.addView(webView, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT
         ));
 
-        setupPanel = new LinearLayout(this);
-        setupPanel.setOrientation(LinearLayout.VERTICAL);
-        setupPanel.setGravity(Gravity.CENTER_HORIZONTAL);
-        setupPanel.setPadding(dp(24), dp(28), dp(24), dp(24));
-        setupPanel.setBackgroundColor(Color.rgb(255, 250, 245));
+        statusPanel = new LinearLayout(this);
+        statusPanel.setOrientation(LinearLayout.VERTICAL);
+        statusPanel.setGravity(Gravity.CENTER);
+        statusPanel.setPadding(dp(24), dp(28), dp(24), dp(24));
+        statusPanel.setBackgroundColor(Color.rgb(255, 250, 245));
 
         TextView title = new TextView(this);
-        title.setText("给她的小宇宙");
+        title.setText("给你的小宇宙");
         title.setTextColor(Color.rgb(24, 23, 24));
         title.setTextSize(28);
         title.setGravity(Gravity.CENTER);
         title.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
-        setupPanel.addView(title, matchWrap());
+        statusPanel.addView(title, matchWrap());
 
-        TextView hint = new TextView(this);
-        hint.setText("把 App 指向你服务器上的网站地址，之后就会像专属 App 一样打开。");
-        hint.setTextColor(Color.rgb(113, 105, 108));
-        hint.setTextSize(15);
-        hint.setGravity(Gravity.CENTER);
-        LinearLayout.LayoutParams hintParams = matchWrap();
-        hintParams.setMargins(0, dp(12), 0, dp(18));
-        setupPanel.addView(hint, hintParams);
-
-        serverUrlInput = new EditText(this);
-        serverUrlInput.setSingleLine(true);
-        serverUrlInput.setHint("https://你的域名");
-        serverUrlInput.setInputType(android.text.InputType.TYPE_TEXT_VARIATION_URI);
-        serverUrlInput.setImeOptions(EditorInfo.IME_ACTION_GO);
-        serverUrlInput.setSelectAllOnFocus(true);
-        serverUrlInput.setOnEditorActionListener((view, actionId, event) -> {
-            boolean enterPressed = event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER;
-            if (actionId == EditorInfo.IME_ACTION_GO || enterPressed) {
-                saveAndLoad();
-                return true;
-            }
-            return false;
-        });
-        setupPanel.addView(serverUrlInput, matchWrap());
-
-        Button openButton = new Button(this);
-        openButton.setText("打开网站");
-        openButton.setAllCaps(false);
-        openButton.setOnClickListener(view -> saveAndLoad());
-        LinearLayout.LayoutParams buttonParams = matchWrap();
-        buttonParams.setMargins(0, dp(14), 0, 0);
-        setupPanel.addView(openButton, buttonParams);
-
-        setupMessage = new TextView(this);
-        setupMessage.setTextColor(Color.rgb(167, 52, 81));
-        setupMessage.setTextSize(14);
-        setupMessage.setGravity(Gravity.CENTER);
+        statusMessage = new TextView(this);
+        statusMessage.setText("正在打开她的小宇宙...");
+        statusMessage.setTextColor(Color.rgb(113, 105, 108));
+        statusMessage.setTextSize(15);
+        statusMessage.setGravity(Gravity.CENTER);
         LinearLayout.LayoutParams messageParams = matchWrap();
-        messageParams.setMargins(0, dp(14), 0, 0);
-        setupPanel.addView(setupMessage, messageParams);
+        messageParams.setMargins(0, dp(12), 0, dp(18));
+        statusPanel.addView(statusMessage, messageParams);
 
-        root.addView(setupPanel, new FrameLayout.LayoutParams(
+        Button retryButton = new Button(this);
+        retryButton.setText("重试");
+        retryButton.setAllCaps(false);
+        retryButton.setOnClickListener(view -> loadDefaultServer());
+        LinearLayout.LayoutParams buttonParams = matchWrap();
+        buttonParams.setMargins(0, dp(8), 0, 0);
+        statusPanel.addView(retryButton, buttonParams);
+
+        root.addView(statusPanel, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT
         ));
@@ -155,13 +119,13 @@ public class MainActivity extends Activity {
             @Override
             public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
                 if (request.isForMainFrame()) {
-                    showSetup("网站暂时打不开，检查服务器地址、HTTPS、端口和防火墙。");
+                    showStatus("网站暂时打不开，检查服务器、HTTPS、端口或防火墙后点重试。");
                 }
             }
 
             @Override
             public void onPageFinished(WebView view, String url) {
-                if (isValidWebUrl(url)) hideSetup();
+                if (isValidWebUrl(url)) hideStatus();
             }
         });
 
@@ -197,39 +161,27 @@ public class MainActivity extends Activity {
         });
     }
 
-    private void saveAndLoad() {
-        String url = normalizeServerUrl(serverUrlInput.getText().toString());
+    private void loadDefaultServer() {
+        String url = getServerUrl();
         if (!isValidWebUrl(url)) {
-            setupMessage.setText("服务器地址要以 http:// 或 https:// 开头。");
+            showStatus("App 还没有写入服务器地址，请重新打包。");
             return;
         }
-        getPreferences().edit().putString(KEY_SERVER_URL, url).apply();
-        loadServer(url);
-    }
-
-    private void loadServer(String url) {
-        setupMessage.setText("正在打开...");
+        showStatus("正在打开她的小宇宙...");
         webView.loadUrl(url);
     }
 
     private String getServerUrl() {
-        String saved = getPreferences().getString(KEY_SERVER_URL, "");
-        if (isValidWebUrl(saved)) return saved;
         return normalizeServerUrl(BuildConfig.DEFAULT_SERVER_URL);
     }
 
-    private SharedPreferences getPreferences() {
-        return getSharedPreferences(PREFS, MODE_PRIVATE);
+    private void showStatus(String message) {
+        statusMessage.setText(message);
+        statusPanel.setVisibility(View.VISIBLE);
     }
 
-    private void showSetup(String message) {
-        setupMessage.setText(message);
-        setupPanel.setVisibility(View.VISIBLE);
-    }
-
-    private void hideSetup() {
-        setupPanel.setVisibility(View.GONE);
-        setupMessage.setText("");
+    private void hideStatus() {
+        statusPanel.setVisibility(View.GONE);
     }
 
     private String normalizeServerUrl(String value) {
@@ -285,10 +237,6 @@ public class MainActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        if (setupPanel.getVisibility() == View.VISIBLE) {
-            hideSetup();
-            return;
-        }
         if (webView.canGoBack()) {
             webView.goBack();
             return;
