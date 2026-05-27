@@ -60,7 +60,7 @@ AMAP_WEATHER_KEY="你的高德Web服务Key"
 
 ## 安卓 App
 
-项目里已经包含 `android-app/`，它是一个 Android WebView 外壳，会打开你服务器上的网站。后台、照片、邮件和小票券仍然由服务器处理。
+项目里已经包含 `android-app/`，它是一个 Android WebView 外壳，会直接打开你服务器上的网站。后台、照片、邮件和小票券仍然由服务器处理，安装后桌面名称是「给你的小宇宙」。
 
 在 GitHub 仓库的 Actions 里运行 `Android APK`，输入你的服务器地址，比如：
 
