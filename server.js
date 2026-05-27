@@ -445,7 +445,7 @@ app.post("/api/mood-events", async (req, res, next) => {
       lines: [
         signalEmailIntro(label),
         `时间：${formatDateTime(new Date().toISOString())}`,
-        responseText ? `她写下的话：${responseText}` : ""
+        responseText ? `互动内容：${responseText}` : ""
       ].filter(Boolean)
     });
     res.json({ ok: true, event: { ...event, emailError: undefined } });
