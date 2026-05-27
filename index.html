@@ -1,0 +1,1202 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>??????</title>
+    <meta name="description" content="??????????????">
+    <link rel="preload" href="assets/hero-romance.webp" as="image" type="image/webp">
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="styles.css">
+    <script defer src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script defer src="app.js"></script>
+  </head>
+  <body>
+    <div class="entry" id="entry">
+      <div class="entry-art" aria-hidden="true"></div>
+      <form class="entry-panel" id="entryForm" autocomplete="off">
+        <p class="eyebrow">PRIVATE UNIVERSE</p>
+        <h1>???????</h1>
+        <p class="entry-copy">????????????????????</p>
+        <label class="sr-only" for="passcodeInput">??</label>
+        <div class="passcode-row">
+          <input id="passcodeInput" name="passcode" type="password" inputmode="text" autocomplete="new-password" placeholder="????" aria-describedby="entryMessage">
+          <button type="submit">
+            <i data-lucide="lock-keyhole"></i>
+            <span>??</span>
+          </button>
+        </div>
+        <p class="entry-message" id="entryMessage" aria-live="polite">???????????</p>
+      </form>
+    </div>
+
+    <div class="app" id="app" hidden>
+      <header class="topbar">
+        <a class="brand" href="#home" aria-label="????">
+          <span class="brand-mark">L</span>
+          <span data-partner-name>?</span>
+        </a>
+        <nav class="nav-links" aria-label="???">
+          <a href="#daily">??</a>
+          <a href="#mood">??</a>
+          <a href="#plans">???</a>
+          <a href="#letters">??</a>
+          <a href="#album">??</a>
+        </nav>
+        <div class="top-actions">
+          <button class="icon-button" id="musicButton" type="button" aria-label="????">
+            <i data-lucide="music"></i>
+          </button>
+        </div>
+      </header>
+
+      <main>
+        <section class="hero" id="home">
+          <img class="hero-img" src="assets/hero-romance.webp" alt="">
+          <div class="hero-shade" aria-hidden="true"></div>
+          <div class="hero-content">
+            <p class="eyebrow">FOR <span data-partner-name>?</span></p>
+            <h1><span data-partner-name>?</span>????</h1>
+            <p id="heroLine">??????????????????</p>
+            <div class="hero-actions">
+              <button class="primary-button" type="button" data-scroll-target="#mood">
+                <i data-lucide="heart-handshake"></i>
+                <span>?????</span>
+              </button>
+              <button class="secondary-button" type="button" data-scroll-target="#plans">
+                <i data-lucide="ticket"></i>
+                <span>?????</span>
+              </button>
+            </div>
+            <button class="heart-counter" id="secretHeart" type="button" aria-label="??">
+              <i data-lucide="heart"></i>
+              <span id="heroDays">? 1 ?</span>
+            </button>
+          </div>
+        </section>
+
+        <section class="ticker-band" aria-label="??">
+          <div>
+            <span class="ticker-label">????</span>
+            <strong id="dailyQuote">???????????????</strong>
+          </div>
+          <div>
+            <span class="ticker-label">???</span>
+            <strong id="anniversaryText">? 1 ?</strong>
+          </div>
+          <div>
+            <span class="ticker-label">????</span>
+            <strong id="meetText">??</strong>
+          </div>
+          <div>
+            <span class="ticker-label">?????</span>
+            <strong id="birthdayText">???</strong>
+          </div>
+        </section>
+
+        <section class="section daily-section" id="daily">
+          <div class="section-heading">
+            <p class="eyebrow">TODAY</p>
+            <h2>??????</h2>
+          </div>
+          <div class="daily-grid">
+            <article class="daily-card daily-card-main" id="careCard"></article>
+            <article class="daily-card" id="meetCountdownCard"></article>
+            <article class="daily-card" id="dailyTaskCard"></article>
+            <article class="daily-card" id="periodCareCard"></article>
+            <article class="daily-card" id="feedingCard"></article>
+            <article class="daily-card" id="tripMemoCard"></article>
+          </div>
+        </section>
+
+        <section class="section dialog-section retired-section" id="dialog" hidden>
+          <div class="section-heading">
+            <p class="eyebrow">SOFT TALK</p>
+            <h2>??????</h2>
+          </div>
+          <div class="dialog-shell">
+            <div class="chat-list" id="chatList" aria-live="polite"></div>
+            <div class="dialog-controls">
+              <button class="secondary-button" id="nextLineButton" type="button">
+                <i data-lucide="send"></i>
+                <span>???</span>
+              </button>
+              <button class="ghost-button" id="replayDialogButton" type="button">
+                <i data-lucide="rotate-ccw"></i>
+                <span>??</span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section class="section weather-section retired-section" id="weather" hidden>
+          <div class="section-heading">
+            <p class="eyebrow">SEVEN DAYS</p>
+            <h2>??????</h2>
+          </div>
+          <div class="weather-tools">
+            <form class="city-form" id="cityForm">
+              <label class="sr-only" for="cityInput">??</label>
+              <i data-lucide="map-pin"></i>
+              <input id="cityInput" name="city" type="search" placeholder="??????? ?? / Beijing">
+              <button class="secondary-button" type="submit">
+                <i data-lucide="search"></i>
+                <span>??</span>
+              </button>
+            </form>
+            <button class="primary-button" id="locationButton" type="button">
+              <i data-lucide="crosshair"></i>
+              <span>????</span>
+            </button>
+          </div>
+          <div class="weather-status" id="weatherStatus" aria-live="polite"></div>
+          <div class="care-strip" id="weatherCare">
+            <i data-lucide="sparkles"></i>
+            <span>????????????????</span>
+          </div>
+          <div class="weather-grid" id="weatherGrid"></div>
+        </section>
+
+        <section class="section memories-section retired-section" id="memories" hidden>
+          <div class="section-heading">
+            <p class="eyebrow">OUR DAYS</p>
+            <h2>?????</h2>
+          </div>
+          <div class="timeline" id="timelineList"></div>
+        </section>
+
+        <section class="section mood-section" id="mood">
+          <div class="section-heading">
+            <p class="eyebrow">SIGNALS</p>
+            <h2>?????</h2>
+          </div>
+          <div class="mood-grid" id="moodGrid"></div>
+          <div class="mood-response" id="moodResponse">
+            <i data-lucide="heart-handshake"></i>
+            <span>?????????????????????????</span>
+          </div>
+        </section>
+
+        <section class="section plans-section" id="plans">
+          <div class="section-heading">
+            <p class="eyebrow">COUPONS</p>
+            <h2>?????</h2>
+          </div>
+          <div class="plans-grid coupon-only-grid">
+            <div class="tool-panel retired-panel" hidden>
+              <div class="tool-title">
+                <i data-lucide="dice-5"></i>
+                <h3>??????</h3>
+              </div>
+              <div class="idea-card" id="dateIdeaCard"></div>
+              <button class="secondary-button full-button" id="toggleIdeaDetailsButton" type="button">
+                <i data-lucide="chevrons-down"></i>
+                <span>????</span>
+              </button>
+              <button class="primary-button full-button" id="drawIdeaButton" type="button">
+                <i data-lucide="shuffle"></i>
+                <span>???</span>
+              </button>
+              <div class="idea-tool-list" id="ideaToolList"></div>
+            </div>
+
+            <div class="tool-panel retired-panel" hidden>
+              <div class="tool-title">
+                <i data-lucide="list-checks"></i>
+                <h3>????</h3>
+              </div>
+              <form class="wish-form" id="wishForm">
+                <label class="sr-only" for="wishInput">???</label>
+                <input id="wishInput" name="wish" type="text" placeholder="???????">
+                <button class="icon-button solid" type="submit" aria-label="????">
+                  <i data-lucide="plus"></i>
+                </button>
+              </form>
+              <div class="wish-toolbar">
+                <span id="wishProgressText">??? 0 / 100</span>
+                <div class="wish-progress" aria-hidden="true">
+                  <span id="wishProgressBar"></span>
+                </div>
+              </div>
+              <button class="secondary-button full-button" id="toggleWishListButton" type="button">
+                <i data-lucide="chevrons-down"></i>
+                <span>??????</span>
+              </button>
+              <div class="wish-list" id="wishList"></div>
+            </div>
+
+            <div class="tool-panel">
+              <div class="tool-title">
+                <i data-lucide="ticket"></i>
+                <h3>?????</h3>
+              </div>
+              <button class="secondary-button full-button" id="toggleCouponListButton" type="button">
+                <i data-lucide="chevrons-down"></i>
+                <span>?????</span>
+              </button>
+              <div class="coupon-list" id="couponList"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section practical-section retired-section" id="practical" hidden>
+          <div class="section-heading">
+            <p class="eyebrow">DAILY HELPERS</p>
+            <h2>?????</h2>
+          </div>
+          <div class="practical-grid">
+            <div class="tool-panel">
+              <div class="tool-title">
+                <i data-lucide="calendar-heart"></i>
+                <h3>?????</h3>
+              </div>
+              <div class="practical-list" id="datePlanList"></div>
+            </div>
+
+            <div class="tool-panel">
+              <div class="tool-title">
+                <i data-lucide="utensils"></i>
+                <h3>????</h3>
+              </div>
+              <div class="food-filters">
+                <label><input id="foodNoSpicy" type="checkbox"> ???</label>
+                <label><input id="foodWarmOnly" type="checkbox"> ????</label>
+                <select id="foodBudgetFilter" aria-label="??">
+                  <option value="any">????</option>
+                  <option value="low">???</option>
+                  <option value="mid">???</option>
+                  <option value="high">???</option>
+                </select>
+                <select id="foodDistanceFilter" aria-label="??">
+                  <option value="any">????</option>
+                  <option value="near">??</option>
+                  <option value="normal">???</option>
+                  <option value="far">?????</option>
+                </select>
+              </div>
+              <div class="food-result" id="foodResult"></div>
+              <button class="primary-button full-button" id="drawFoodButton" type="button">
+                <i data-lucide="dice-5"></i>
+                <span>??????</span>
+              </button>
+            </div>
+
+            <div class="tool-panel">
+              <div class="tool-title">
+                <i data-lucide="gift"></i>
+                <h3>????</h3>
+              </div>
+              <div class="practical-list" id="giftList"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section map-section retired-section" id="map" hidden>
+          <div class="section-heading">
+            <p class="eyebrow">FOOTPRINTS</p>
+            <h2>????</h2>
+          </div>
+          <div class="map-layout">
+            <div class="memory-map" id="memoryMap" aria-label="????"></div>
+            <div class="place-column">
+              <form class="place-form" id="placeForm">
+                <label class="sr-only" for="placeInput">??</label>
+                <input id="placeInput" name="place" type="text" placeholder="????">
+                <label class="sr-only" for="placeNoteInput">??</label>
+                <input id="placeNoteInput" name="note" type="text" placeholder="???">
+                <button class="secondary-button" type="submit">
+                  <i data-lucide="map-pinned"></i>
+                  <span>??</span>
+                </button>
+              </form>
+              <div class="place-list" id="placeList"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section letters-section" id="letters">
+          <div class="section-heading">
+            <p class="eyebrow">MESSAGE WALL</p>
+            <h2>???</h2>
+          </div>
+          <div class="guestbook-panel">
+            <div>
+              <h3>?????</h3>
+              <p>??????????????????????</p>
+            </div>
+            <form class="guestbook-form" id="guestbookForm">
+              <select name="guestName" id="guestNameSelect" aria-label="??"></select>
+              <textarea name="guestMessage" rows="3" maxlength="500" placeholder="?????"></textarea>
+              <button class="primary-button" type="submit">
+                <i data-lucide="send"></i>
+                <span>?????</span>
+              </button>
+            </form>
+            <p class="admin-message" id="guestbookMessage" aria-live="polite"></p>
+            <div class="guestbook-list" id="guestbookList"></div>
+          </div>
+          <div class="message-wall" id="messageWall"></div>
+          <div class="letter-grid retired-section" id="letterGrid" hidden></div>
+        </section>
+
+        <section class="section album-section" id="album">
+          <div class="section-heading with-action">
+            <div>
+              <p class="eyebrow">PHOTO BOOK</p>
+              <h2>????</h2>
+            </div>
+            <button class="secondary-button" id="addPhotoButton" type="button">
+              <i data-lucide="upload"></i>
+              <span>????</span>
+            </button>
+          </div>
+          <button class="primary-button album-reveal" id="revealAlbumButton" type="button">
+            <i data-lucide="images"></i>
+            <span>??????</span>
+          </button>
+          <div class="album-grid" id="albumGrid"></div>
+        </section>
+      </main>
+    </div>
+
+    <div class="admin-app" id="adminApp" hidden>
+      <header class="admin-topbar">
+        <div class="admin-brand">
+          <span class="brand-mark">M</span>
+          <span>???</span>
+        </div>
+        <button class="secondary-button" id="adminLogoutButton" type="button">
+          <i data-lucide="log-out"></i>
+          <span>??</span>
+        </button>
+      </header>
+
+      <main class="admin-main">
+        <section class="admin-hero">
+          <p class="eyebrow">COUPON CONTROL</p>
+          <h1>???????</h1>
+          <p>???????????????????????????????????</p>
+        </section>
+
+        <section class="admin-layout">
+          <form class="admin-panel" id="securityForm">
+            <div class="admin-panel-head">
+              <div>
+                <p class="eyebrow">SECURITY</p>
+                <h2>????</h2>
+              </div>
+            </div>
+            <div class="admin-form-grid two-columns">
+              <label>
+                ??????
+                <input name="currentKey" type="password" autocomplete="current-password" required>
+              </label>
+              <label>
+                ?????
+                <input name="newKey" type="password" autocomplete="new-password" minlength="6" required>
+              </label>
+              <label>
+                ?????
+                <input name="confirmKey" type="password" autocomplete="new-password" minlength="6" required>
+              </label>
+            </div>
+            <p class="admin-message" id="securityMessage" aria-live="polite"></p>
+            <button class="primary-button full-button" type="submit">
+              <i data-lucide="key-round"></i>
+              <span>??????</span>
+            </button>
+          </form>
+
+          <form class="admin-panel" id="siteSettingsForm">
+            <div class="admin-panel-head">
+              <div>
+                <p class="eyebrow">SITE SETTINGS</p>
+                <h2>???</h2>
+              </div>
+            </div>
+            <div class="admin-form-grid two-columns">
+              <label>
+                ????
+                <input name="partnerName" type="text" required>
+              </label>
+              <label>
+                ????
+                <input name="yourName" type="text" required>
+              </label>
+              <label>
+                ?????
+                <input name="guestNames" type="text" placeholder="????????????, ??">
+              </label>
+              <label>
+                ?????
+                <input name="startDate" type="date" required>
+              </label>
+              <label>
+                ????
+                <input name="birthday" type="date">
+              </label>
+              <label>
+                ????
+                <input name="nextMeet" type="date">
+              </label>
+              <label>
+                ????
+                <input name="cityName" type="text" required>
+              </label>
+              <label>
+                ????
+                <input name="cityLatitude" type="number" step="0.0001" required>
+              </label>
+              <label>
+                ????
+                <input name="cityLongitude" type="number" step="0.0001" required>
+              </label>
+              <label>
+                ???? adcode
+                <input name="cityAdcode" type="text" inputmode="numeric" placeholder="???? 320381">
+              </label>
+              <label>
+                ????
+                <input name="passcodes" type="text" placeholder="?????" required>
+              </label>
+              <label>
+                ????
+                <input name="songUrl" type="url">
+              </label>
+            </div>
+            <label>
+              ????
+              <textarea name="heroLine" rows="3" required></textarea>
+            </label>
+            <p class="admin-message" id="siteSettingsMessage" aria-live="polite">????????????????????????</p>
+            <button class="primary-button full-button" type="submit">
+              <i data-lucide="save"></i>
+              <span>?????</span>
+            </button>
+          </form>
+
+          <form class="admin-panel" id="dailyToolsAdminForm">
+            <div class="admin-panel-head">
+              <div>
+                <p class="eyebrow">TODAY TOOLS</p>
+                <h2>?????????</h2>
+              </div>
+            </div>
+            <div class="admin-form-grid two-columns">
+              <label>
+                ??????
+                <input name="meetDate" type="date">
+              </label>
+              <label>
+                ????
+                <input name="meetTime" type="time">
+              </label>
+              <label>
+                ????
+                <input name="meetTitle" type="text" placeholder="???????">
+              </label>
+              <label>
+                ????
+                <input name="periodCycleDays" type="number" min="1" max="90" step="1">
+              </label>
+            </div>
+            <label>
+              ??????
+              <textarea name="meetChecklist" rows="3" placeholder="????????????????????"></textarea>
+            </label>
+            <label>
+              ?????
+              <textarea name="careCards" rows="4" placeholder="????"></textarea>
+            </label>
+            <label>
+              ???????
+              <textarea name="dailyTasks" rows="4" placeholder="????"></textarea>
+            </label>
+            <div class="admin-form-grid two-columns">
+              <label>
+                ????????
+                <input name="periodDate" type="date">
+              </label>
+              <label>
+                ??????
+                <textarea name="periodMood" rows="3" placeholder="???????????????"></textarea>
+              </label>
+            </div>
+            <label>
+              ????
+              <textarea name="periodAvoid" rows="3" placeholder="????"></textarea>
+            </label>
+            <label>
+              ??/??/????
+              <textarea name="periodWarm" rows="3" placeholder="????"></textarea>
+            </label>
+            <div class="admin-form-grid two-columns">
+              <label>
+                ?????
+                <textarea name="feedingFoods" rows="4" placeholder="????"></textarea>
+              </label>
+              <label>
+                ?????
+                <textarea name="feedingDrinks" rows="4" placeholder="????"></textarea>
+              </label>
+              <label>
+                ?????
+                <textarea name="feedingSnacks" rows="4" placeholder="????"></textarea>
+              </label>
+              <label>
+                ??/??
+                <textarea name="feedingAvoid" rows="4" placeholder="????"></textarea>
+              </label>
+            </div>
+            <div class="admin-form-grid two-columns">
+              <label>
+                ????
+                <input name="tripPlace" type="text">
+              </label>
+              <label>
+                ????
+                <input name="tripTime" type="text">
+              </label>
+              <label>
+                ??/??
+                <input name="tripTransport" type="text">
+              </label>
+              <label>
+                ??/???
+                <input name="tripHotel" type="text">
+              </label>
+            </div>
+            <label>
+              ????/??????
+              <textarea name="tripNotes" rows="4" placeholder="????"></textarea>
+            </label>
+            <p class="admin-message" id="dailyToolsAdminMessage" aria-live="polite"></p>
+            <button class="primary-button full-button" type="submit">
+              <i data-lucide="save"></i>
+              <span>??????</span>
+            </button>
+          </form>
+
+          <form class="admin-panel retired-admin-panel" id="timelineAdminForm" hidden>
+            <div class="admin-panel-head">
+              <div>
+                <p class="eyebrow">MEMORIES</p>
+                <h2 id="timelineAdminTitle">????</h2>
+              </div>
+              <button class="ghost-button" id="resetTimelineFormButton" type="button">
+                <i data-lucide="rotate-ccw"></i>
+                <span>??</span>
+              </button>
+            </div>
+            <input name="timelineId" type="hidden">
+            <div class="admin-form-grid two-columns">
+              <label>
+                ??
+                <input name="date" type="date" required>
+              </label>
+              <label>
+                ??
+                <input name="title" type="text" required>
+              </label>
+            </div>
+            <label>
+              ??
+              <textarea name="text" rows="3" required></textarea>
+            </label>
+            <p class="admin-message" id="timelineAdminMessage" aria-live="polite"></p>
+            <button class="primary-button full-button" type="submit">
+              <i data-lucide="save"></i>
+              <span>???????</span>
+            </button>
+            <div class="admin-content-list" id="adminTimelineList"></div>
+          </form>
+
+          <form class="admin-panel retired-admin-panel" id="ideaAdminForm" hidden>
+            <div class="admin-panel-head">
+              <div>
+                <p class="eyebrow">DATE IDEAS</p>
+                <h2 id="ideaAdminTitle">??????</h2>
+              </div>
+              <button class="ghost-button" id="resetIdeaFormButton" type="button">
+                <i data-lucide="rotate-ccw"></i>
+                <span>??</span>
+              </button>
+            </div>
+            <input name="ideaId" type="hidden">
+            <div class="admin-form-grid two-columns">
+              <label>
+                ??
+                <input name="title" type="text" required>
+              </label>
+              <label>
+                ??
+                <input name="time" type="text" placeholder="?????" required>
+              </label>
+            </div>
+            <label>
+              ??
+              <input name="tags" type="text" placeholder="???????????, ??">
+            </label>
+            <label>
+              ??
+              <textarea name="text" rows="3" required></textarea>
+            </label>
+            <p class="admin-message" id="ideaAdminMessage" aria-live="polite"></p>
+            <button class="primary-button full-button" type="submit">
+              <i data-lucide="save"></i>
+              <span>??????</span>
+            </button>
+            <div class="admin-content-list" id="adminIdeaList"></div>
+          </form>
+
+          <form class="admin-panel retired-admin-panel" id="ideaToolAdminForm" hidden>
+            <div class="admin-panel-head">
+              <div>
+                <p class="eyebrow">IDEA TOOLS</p>
+                <h2 id="ideaToolAdminTitle">??????</h2>
+              </div>
+              <button class="ghost-button" id="resetIdeaToolFormButton" type="button">
+                <i data-lucide="rotate-ccw"></i>
+                <span>??</span>
+              </button>
+            </div>
+            <input name="ideaToolId" type="hidden">
+            <div class="admin-form-grid two-columns">
+              <label>
+                ????
+                <input name="title" type="text" placeholder="?????????" required>
+              </label>
+              <label>
+                ????
+                <input name="buttonLabel" type="text" placeholder="?????????" required>
+              </label>
+            </div>
+            <label>
+              ????
+              <textarea name="text" rows="3" required></textarea>
+            </label>
+            <label>
+              ????
+              <textarea name="items" rows="6" placeholder="???????????" required></textarea>
+            </label>
+            <p class="admin-message" id="ideaToolAdminMessage" aria-live="polite"></p>
+            <button class="primary-button full-button" type="submit">
+              <i data-lucide="save"></i>
+              <span>??????</span>
+            </button>
+            <div class="admin-content-list" id="adminIdeaToolList"></div>
+          </form>
+
+          <form class="admin-panel retired-admin-panel" id="datePlanAdminForm" hidden>
+            <div class="admin-panel-head">
+              <div>
+                <p class="eyebrow">DATE PLAN</p>
+                <h2 id="datePlanAdminTitle">??????</h2>
+              </div>
+              <button class="ghost-button" id="resetDatePlanFormButton" type="button">
+                <i data-lucide="rotate-ccw"></i>
+                <span>??</span>
+              </button>
+            </div>
+            <input name="datePlanId" type="hidden">
+            <div class="admin-form-grid two-columns">
+              <label>
+                ??
+                <input name="title" type="text" required>
+              </label>
+              <label>
+                ??
+                <input name="date" type="date" required>
+              </label>
+              <label>
+                ??
+                <input name="time" type="text" placeholder="?????">
+              </label>
+              <label>
+                ??
+                <input name="place" type="text" required>
+              </label>
+              <label>
+                ??
+                <input name="budget" type="text" placeholder="???200 ??">
+              </label>
+            </div>
+            <label>
+              ????
+              <textarea name="checklist" rows="4" placeholder="????"></textarea>
+            </label>
+            <label>
+              ??
+              <textarea name="note" rows="3"></textarea>
+            </label>
+            <p class="admin-message" id="datePlanAdminMessage" aria-live="polite"></p>
+            <button class="primary-button full-button" type="submit">
+              <i data-lucide="calendar-heart"></i>
+              <span>??????</span>
+            </button>
+            <div class="admin-content-list" id="adminDatePlanList"></div>
+          </form>
+
+          <form class="admin-panel retired-admin-panel" id="foodAdminForm" hidden>
+            <div class="admin-panel-head">
+              <div>
+                <p class="eyebrow">FOOD BOX</p>
+                <h2 id="foodAdminTitle">????</h2>
+              </div>
+              <button class="ghost-button" id="resetFoodFormButton" type="button">
+                <i data-lucide="rotate-ccw"></i>
+                <span>??</span>
+              </button>
+            </div>
+            <input name="foodId" type="hidden">
+            <div class="admin-form-grid two-columns">
+              <label>
+                ??/??
+                <input name="name" type="text" required>
+              </label>
+              <label>
+                ??
+                <input name="tags" type="text" placeholder="??, ??, ??">
+              </label>
+              <label>
+                ??
+                <select name="budget">
+                  <option value="low">???</option>
+                  <option value="mid" selected>???</option>
+                  <option value="high">???</option>
+                </select>
+              </label>
+              <label>
+                ??
+                <select name="distance">
+                  <option value="near">??</option>
+                  <option value="normal" selected>???</option>
+                  <option value="far">?????</option>
+                </select>
+              </label>
+            </div>
+            <label class="switch-label">
+              <input name="spicy" type="checkbox">
+              <span>???</span>
+            </label>
+            <label class="switch-label">
+              <input name="warm" type="checkbox" checked>
+              <span>???</span>
+            </label>
+            <p class="admin-message" id="foodAdminMessage" aria-live="polite"></p>
+            <button class="primary-button full-button" type="submit">
+              <i data-lucide="utensils"></i>
+              <span>????</span>
+            </button>
+            <div class="admin-content-list" id="adminFoodList"></div>
+          </form>
+
+          <form class="admin-panel retired-admin-panel" id="giftAdminForm" hidden>
+            <div class="admin-panel-head">
+              <div>
+                <p class="eyebrow">GIFT LIST</p>
+                <h2 id="giftAdminTitle">??????</h2>
+              </div>
+              <button class="ghost-button" id="resetGiftFormButton" type="button">
+                <i data-lucide="rotate-ccw"></i>
+                <span>??</span>
+              </button>
+            </div>
+            <input name="giftId" type="hidden">
+            <div class="admin-form-grid two-columns">
+              <label>
+                ??
+                <input name="title" type="text" required>
+              </label>
+              <label>
+                ??
+                <input name="category" type="text" placeholder="?? / ?? / ??">
+              </label>
+              <label>
+                ???
+                <input name="priority" type="text" value="?">
+              </label>
+            </div>
+            <label>
+              ??
+              <textarea name="detail" rows="3" required></textarea>
+            </label>
+            <label>
+              ??
+              <textarea name="note" rows="3"></textarea>
+            </label>
+            <p class="admin-message" id="giftAdminMessage" aria-live="polite"></p>
+            <button class="primary-button full-button" type="submit">
+              <i data-lucide="gift"></i>
+              <span>??????</span>
+            </button>
+            <div class="admin-content-list" id="adminGiftList"></div>
+          </form>
+
+          <form class="admin-panel retired-admin-panel" id="placeAdminForm" hidden>
+            <div class="admin-panel-head">
+              <div>
+                <p class="eyebrow">FOOTPRINTS</p>
+                <h2 id="placeAdminTitle">??????</h2>
+              </div>
+              <button class="ghost-button" id="resetPlaceFormButton" type="button">
+                <i data-lucide="rotate-ccw"></i>
+                <span>??</span>
+              </button>
+            </div>
+            <input name="placeId" type="hidden">
+            <div class="admin-form-grid two-columns">
+              <label>
+                ???
+                <input name="name" type="text" required>
+              </label>
+              <label>
+                ??
+                <input name="note" type="text" required>
+              </label>
+              <label>
+                ???? %
+                <input name="x" type="number" min="4" max="96" step="1" placeholder="??">
+              </label>
+              <label>
+                ???? %
+                <input name="y" type="number" min="4" max="96" step="1" placeholder="??">
+              </label>
+            </div>
+            <p class="admin-message" id="placeAdminMessage" aria-live="polite"></p>
+            <button class="primary-button full-button" type="submit">
+              <i data-lucide="map-pinned"></i>
+              <span>??????</span>
+            </button>
+            <div class="admin-content-list" id="adminPlaceList"></div>
+          </form>
+
+          <form class="admin-panel" id="messageAdminForm">
+            <div class="admin-panel-head">
+              <div>
+                <p class="eyebrow">MESSAGE WALL</p>
+                <h2 id="messageAdminTitle">????</h2>
+              </div>
+              <button class="ghost-button" id="resetMessageFormButton" type="button">
+                <i data-lucide="rotate-ccw"></i>
+                <span>??</span>
+              </button>
+            </div>
+            <input name="messageId" type="hidden">
+            <label>
+              ??
+              <input name="title" type="text" required>
+            </label>
+            <label>
+              ????
+              <textarea name="text" rows="4" required></textarea>
+            </label>
+            <p class="admin-message" id="messageAdminMessage" aria-live="polite"></p>
+            <button class="primary-button full-button" type="submit">
+              <i data-lucide="message-circle-heart"></i>
+              <span>?????</span>
+            </button>
+            <div class="admin-content-list" id="adminMessageList"></div>
+          </form>
+
+          <form class="admin-panel retired-admin-panel" id="letterAdminForm" hidden>
+            <div class="admin-panel-head">
+              <div>
+                <p class="eyebrow">FUTURE MAIL</p>
+                <h2 id="letterAdminTitle">?????</h2>
+              </div>
+              <button class="ghost-button" id="resetLetterFormButton" type="button">
+                <i data-lucide="rotate-ccw"></i>
+                <span>??</span>
+              </button>
+            </div>
+            <input name="letterId" type="hidden">
+            <div class="admin-form-grid two-columns">
+              <label>
+                ??
+                <input name="title" type="text" required>
+              </label>
+              <label>
+                ?????
+                <input name="unlockDays" type="number" min="0" step="1" value="0" required>
+              </label>
+            </div>
+            <label>
+              ????
+              <textarea name="body" rows="5" required></textarea>
+            </label>
+            <p class="admin-message" id="letterAdminMessage" aria-live="polite"></p>
+            <button class="primary-button full-button" type="submit">
+              <i data-lucide="mail-plus"></i>
+              <span>?????</span>
+            </button>
+            <div class="admin-content-list" id="adminLetterList"></div>
+          </form>
+
+          <section class="admin-panel">
+            <div class="admin-panel-head">
+              <div>
+                <p class="eyebrow">PHOTO BOOK</p>
+                <h2>????</h2>
+              </div>
+              <button class="secondary-button" id="adminAddPhotoButton" type="button">
+                <i data-lucide="upload"></i>
+                <span>??</span>
+              </button>
+            </div>
+            <p class="admin-message">????????????????????????????</p>
+            <div class="admin-photo-list" id="adminPhotoList"></div>
+          </section>
+
+          <form class="admin-panel" id="couponAdminForm">
+            <div class="admin-panel-head">
+              <div>
+                <p class="eyebrow">EDIT</p>
+                <h2 id="adminFormTitle">?????</h2>
+              </div>
+              <button class="ghost-button" id="resetCouponFormButton" type="button">
+                <i data-lucide="rotate-ccw"></i>
+                <span>??</span>
+              </button>
+            </div>
+            <input name="couponId" type="hidden">
+            <label>
+              ??
+              <input name="title" type="text" placeholder="?????????" required>
+            </label>
+            <label>
+              ??
+              <textarea name="text" rows="4" placeholder="?????????" required></textarea>
+            </label>
+            <div class="admin-form-grid">
+              <label>
+                ?????
+                <input name="totalQuantity" type="number" min="0" step="1" value="1" required>
+              </label>
+              <label>
+                ????
+                <input name="effectiveDate" type="date">
+              </label>
+              <label>
+                ????
+                <input name="expiryDate" type="date">
+              </label>
+            </div>
+            <label class="switch-label">
+              <input name="pinned" type="checkbox">
+              <span>??????</span>
+            </label>
+            <p class="admin-message" id="adminCouponMessage" aria-live="polite"></p>
+            <button class="primary-button full-button" type="submit">
+              <i data-lucide="save"></i>
+              <span>?????</span>
+            </button>
+          </form>
+
+          <section class="admin-panel">
+            <div class="admin-panel-head">
+              <div>
+                <p class="eyebrow">LIVE</p>
+                <h2>?????</h2>
+              </div>
+              <button class="secondary-button" id="refreshAdminCouponsButton" type="button">
+                <i data-lucide="refresh-cw"></i>
+                <span>??</span>
+              </button>
+            </div>
+            <div class="admin-coupon-list" id="adminCouponList"></div>
+          </section>
+
+          <section class="admin-panel">
+            <div class="admin-panel-head">
+              <div>
+                <p class="eyebrow">MAIL LOG</p>
+                <h2>????</h2>
+              </div>
+              <button class="secondary-button" id="refreshAdminEventsButton" type="button">
+                <i data-lucide="mail-check"></i>
+                <span>??</span>
+              </button>
+            </div>
+            <div class="admin-event-list" id="adminEventList"></div>
+          </section>
+
+          <section class="admin-panel">
+            <div class="admin-panel-head">
+              <div>
+                <p class="eyebrow">GUESTBOOK</p>
+                <h2>?????</h2>
+              </div>
+              <button class="secondary-button" id="refreshGuestbookButton" type="button">
+                <i data-lucide="refresh-cw"></i>
+                <span>??</span>
+              </button>
+            </div>
+            <p class="admin-message" id="guestbookAdminMessage" aria-live="polite">?????????????????</p>
+            <div class="admin-content-list" id="adminGuestbookList"></div>
+          </section>
+
+          <form class="admin-panel" id="mailConfigForm">
+            <div class="admin-panel-head">
+              <div>
+                <p class="eyebrow">QQ MAIL</p>
+                <h2>????</h2>
+              </div>
+              <button class="secondary-button" id="refreshMailConfigButton" type="button">
+                <i data-lucide="refresh-cw"></i>
+                <span>??</span>
+              </button>
+            </div>
+            <label class="switch-label">
+              <input name="enabled" type="checkbox">
+              <span>?? QQ ????</span>
+            </label>
+            <div class="admin-form-grid mail-grid">
+              <label>
+                QQ ????
+                <input name="smtpUser" type="email" placeholder="123456@qq.com">
+              </label>
+              <label>
+                SMTP ???
+                <input name="smtpPass" type="password" autocomplete="new-password" placeholder="?????????">
+              </label>
+              <label>
+                ????
+                <input name="to" type="email" placeholder="??????">
+              </label>
+              <label>
+                ??????
+                <input name="from" type="email" placeholder="??? QQ ????">
+              </label>
+            </div>
+            <p class="admin-message" id="mailConfigMessage" aria-live="polite">QQ ???????????? SMTP????????</p>
+            <button class="primary-button full-button" type="submit">
+              <i data-lucide="mail-check"></i>
+              <span>??????</span>
+            </button>
+          </form>
+
+          <section class="admin-panel">
+            <div class="admin-panel-head">
+              <div>
+                <p class="eyebrow">BACKUP</p>
+                <h2>??????</h2>
+              </div>
+              <button class="secondary-button" id="backupExportButton" type="button">
+                <i data-lucide="download"></i>
+                <span>????</span>
+              </button>
+            </div>
+            <p class="admin-message">????????????????????????????????????? QQ ??????</p>
+            <form class="backup-import-form" id="backupImportForm">
+              <label>
+                ???? JSON
+                <input name="backupFile" type="file" accept="application/json,.json">
+              </label>
+              <button class="primary-button full-button" type="submit">
+                <i data-lucide="upload"></i>
+                <span>??????????</span>
+              </button>
+            </form>
+            <p class="admin-message" id="backupMessage" aria-live="polite"></p>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <dialog class="letter-dialog" id="letterDialog">
+      <button class="dialog-close icon-button" id="closeLetterButton" type="button" aria-label="????">
+        <i data-lucide="x"></i>
+      </button>
+      <p class="eyebrow" id="letterDate">LETTER</p>
+      <h2 id="letterTitle">??</h2>
+      <p id="letterBody">??</p>
+    </dialog>
+
+    <dialog class="photo-dialog" id="photoDialog">
+      <form id="photoForm" enctype="multipart/form-data">
+        <div class="settings-head">
+          <div>
+            <p class="eyebrow">SERVER PHOTO</p>
+            <h2 id="photoDialogTitle">????</h2>
+          </div>
+          <button class="icon-button" id="closePhotoButton" type="button" aria-label="??????">
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+        <input name="photoId" type="hidden">
+        <div class="photo-form-grid">
+          <label>
+            ????
+            <input name="photoImage" type="file" accept="image/*">
+          </label>
+          <label>
+            ??
+            <input name="photoTitle" type="text" placeholder="???????" required>
+          </label>
+        </div>
+        <label class="wide-label">
+          ???
+          <textarea name="photoDate" rows="3" placeholder="???????????"></textarea>
+        </label>
+        <figure class="photo-preview" id="photoPreview" hidden>
+          <img alt="????">
+        </figure>
+        <p class="photo-message" id="photoMessage">?????????? uploads/photos ???????????????</p>
+        <button class="primary-button full-button" type="submit">
+          <i data-lucide="save"></i>
+          <span>??????</span>
+        </button>
+      </form>
+    </dialog>
+
+    <dialog class="easter-dialog" id="easterDialog">
+      <button class="dialog-close icon-button" id="closeEasterButton" type="button" aria-label="????">
+        <i data-lucide="x"></i>
+      </button>
+      <p class="eyebrow">SECRET</p>
+      <h2>??????????</h2>
+      <p id="easterText">???????????????????????????????</p>
+      <div class="burst-hearts" aria-hidden="true">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+    </dialog>
+
+    <dialog class="mood-dialog" id="moodDialog">
+      <button class="dialog-close icon-button" id="closeMoodDialogButton" type="button" aria-label="??????">
+        <i data-lucide="x"></i>
+      </button>
+      <p class="eyebrow">SIGNAL</p>
+      <h2>?????</h2>
+      <form id="moodCallForm">
+        <label class="wide-label" for="moodStatusSelect">
+          ?????
+          <select id="moodStatusSelect" name="status">
+            <option value="">?????????</option>
+            <option value="????">????</option>
+            <option value="???">???</option>
+            <option value="????">????</option>
+            <option value="????">????</option>
+            <option value="???">???</option>
+            <option value="????">????</option>
+          </select>
+        </label>
+        <label class="wide-label" for="moodCallInput">
+          ???????
+          <textarea id="moodCallInput" name="message" rows="5" maxlength="500" placeholder="???????????????"></textarea>
+        </label>
+        <p class="admin-message" id="moodDialogMessage" aria-live="polite"></p>
+        <div class="dialog-controls">
+          <button class="ghost-button" id="cancelMoodDialogButton" type="button">
+            <i data-lucide="x"></i>
+            <span>??</span>
+          </button>
+          <button class="primary-button" type="submit">
+            <i data-lucide="send"></i>
+            <span>???</span>
+          </button>
+        </div>
+      </form>
+    </dialog>
+  </body>
+</html>
