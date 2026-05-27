@@ -130,7 +130,17 @@ const DEFAULTS = {
     cityLatitude: 34.3686,
     cityLongitude: 118.3545,
     cityAdcode: "320381",
-    songUrl: ""
+    songUrl: "",
+    guestNames: ["她", "我"]
+  },
+  dailyTools: {
+    meetTitle: "下次见面",
+    meetDate: daysFromNow(7),
+    careCards: ["今天也要好好吃饭，别把自己照顾得太潦草。", "如果累了就先停一下，我在这里接住你。", "今天记得喝水，早点睡，别硬撑。"],
+    dailyTasks: ["给我发一句今天想吃什么。", "拍一张今天的小照片。", "睡前告诉我今天最开心的一件事。"],
+    bodyCare: ["肚子不舒服就先别喝冰的，热水和外套都安排上。", "今天不舒服的话，任务全部降低难度。", "情绪不高也没关系，先照顾身体。"],
+    feedingSuggestions: ["今天适合热乎一点：汤面、粥、砂锅都可以。", "想吃甜的就奖励一杯奶茶，少冰也算乖。", "如果选择困难，就先吃米饭类，稳稳当当。"],
+    tripMemo: ["提前确认时间和地点。", "手机充满电，带好充电宝。", "见面前别太赶，路上注意安全。"]
   },
   dialogLines: [
     { from: "me", text: "{她}，欢迎来到这个只偏心你的网站。" },
@@ -294,6 +304,7 @@ function loadState() {
     datePlans: DEFAULTS.datePlans.map((item) => ({ ...item, checklist: [...item.checklist] })),
     foodOptions: DEFAULTS.foodOptions.map((item) => ({ ...item, tags: [...item.tags] })),
     giftList: DEFAULTS.giftList.map((item) => ({ ...item })),
+    dailyTools: { ...DEFAULTS.dailyTools, careCards: [...DEFAULTS.dailyTools.careCards], dailyTasks: [...DEFAULTS.dailyTools.dailyTasks], bodyCare: [...DEFAULTS.dailyTools.bodyCare], feedingSuggestions: [...DEFAULTS.dailyTools.feedingSuggestions], tripMemo: [...DEFAULTS.dailyTools.tripMemo] },
     messageWall: DEFAULTS.messageWall.map((item) => ({ ...item })),
     letters: DEFAULTS.letters.map((item) => ({ ...item })),
     wishes: normalizeWishes(saved.wishes, saved.wishlistVersion),
@@ -341,9 +352,29 @@ function applyContent(content) {
   state.datePlans = normalizeDatePlans(content.datePlans);
   state.foodOptions = normalizeFoodOptions(content.foodOptions);
   state.giftList = normalizeGiftList(content.giftList);
+  state.dailyTools = normalizeDailyTools(content.dailyTools);
   state.places = normalizePlaces(content.places);
   state.messageWall = normalizeMessages(content.messageWall);
   state.letters = normalizeLetters(content.letters);
+}
+
+function normalizeDailyTools(value = {}) {
+  const fallback = DEFAULTS.dailyTools;
+  return {
+    meetTitle: String(value.meetTitle || fallback.meetTitle),
+    meetDate: normalizeDateInput(value.meetDate) || state.settings.nextMeet || fallback.meetDate,
+    careCards: normalizeTextList(value.careCards, fallback.careCards),
+    dailyTasks: normalizeTextList(value.dailyTasks, fallback.dailyTasks),
+    bodyCare: normalizeTextList(value.bodyCare, fallback.bodyCare),
+    feedingSuggestions: normalizeTextList(value.feedingSuggestions, fallback.feedingSuggestions),
+    tripMemo: normalizeTextList(value.tripMemo, fallback.tripMemo)
+  };
+}
+
+function normalizeTextList(value, fallback) {
+  const source = Array.isArray(value) ? value : String(value || "").split(/[\n，,]/);
+  const list = source.map((item) => String(item || "").trim()).filter(Boolean);
+  return list.length ? list : [...fallback];
 }
 
 function normalizeTimeline(items) {
@@ -675,15 +706,6 @@ function unlock(animated) {
       $("#entry").style.display = "none";
     }, 280);
   }
-  if (!$("#weatherGrid").children.length) {
-    loadWeather(state.settings.cityLatitude, state.settings.cityLongitude, state.settings.cityName, {
-      adcode: state.settings.cityAdcode
-    });
-  }
-  if (!chatIndex) {
-    revealNextLine();
-    window.setTimeout(revealNextLine, 460);
-  }
   startMusic({ auto: true });
 }
 
@@ -723,6 +745,8 @@ function renderAll() {
   renderPersonalText();
   renderCounters();
   renderDailyQuote();
+  renderDailyTools();
+  renderGuestNameOptions();
   renderTimeline();
   renderAlbum();
   renderMoods();
@@ -737,6 +761,33 @@ function renderAll() {
   renderLetters();
   fillSettingsForm();
   refreshIcons();
+}
+
+function renderDailyTools() {
+  const tools = state.dailyTools || DEFAULTS.dailyTools;
+  const pick = (list) => list[Math.abs(hashCode(`${dayKey()}-${list.join("|")}`)) % list.length] || "";
+  const meetDays = daysUntil(tools.meetDate);
+  $("#careCard").innerHTML = dailyCardHtml("heart", "今日关心卡", pick(tools.careCards), "每天打开都有一句新的照顾。");
+  $("#meetCountdownCard").innerHTML = dailyCardHtml("calendar-heart", tools.meetTitle || "距离见面", meetDays === null ? "等你在后台写下日期" : meetDays <= 0 ? "就是今天，慢慢来见面。" : `还有 ${meetDays} 天见面`, tools.meetDate || "");
+  $("#dailyTaskCard").innerHTML = dailyCardHtml("check-circle-2", "每日任务小纸条", pick(tools.dailyTasks), "她完成后可以来互动信号站告诉我。");
+  $("#periodCareCard").innerHTML = dailyCardHtml("thermometer-sun", "身体照顾提醒", pick(tools.bodyCare), "不舒服时先照顾身体。");
+  $("#feedingCard").innerHTML = dailyCardHtml("utensils", "今日投喂建议", pick(tools.feedingSuggestions), "不知道吃什么就看这里。");
+  $("#tripMemoCard").innerHTML = dailyCardHtml("route", "见面路线/出行备忘", tools.tripMemo.map((item) => `<span>${escapeHtml(item)}</span>`).join(""), "见面前看一眼。", true);
+}
+
+function dailyCardHtml(icon, title, body, meta, rawBody = false) {
+  return `
+    <div class="daily-card-head"><i data-lucide="${icon}"></i><span>${escapeHtml(title)}</span></div>
+    <strong>${rawBody ? body : escapeHtml(body)}</strong>
+    <p>${escapeHtml(meta || "")}</p>
+  `;
+}
+
+function renderGuestNameOptions() {
+  const select = $("#guestNameSelect");
+  if (!select) return;
+  const names = normalizeTextList(state.settings.guestNames, [state.settings.partnerName || "她", state.settings.yourName || "我"]);
+  select.innerHTML = names.map((name) => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join("");
 }
 
 function renderPersonalText() {
@@ -1724,6 +1775,7 @@ function bindAdmin() {
   $("#mailConfigForm").addEventListener("submit", saveMailConfig);
   $("#securityForm").addEventListener("submit", saveSecurityConfig);
   $("#siteSettingsForm").addEventListener("submit", saveSiteSettings);
+  $("#dailyToolsAdminForm").addEventListener("submit", saveDailyTools);
   $("#timelineAdminForm").addEventListener("submit", saveAdminTimeline);
   $("#ideaAdminForm").addEventListener("submit", saveAdminIdea);
   $("#ideaToolAdminForm").addEventListener("submit", saveAdminIdeaTool);
@@ -1843,6 +1895,7 @@ async function saveSiteSettings(event) {
     cityLongitude: Number(form.cityLongitude.value || DEFAULTS.settings.cityLongitude),
     cityAdcode: form.cityAdcode.value.trim() || DEFAULTS.settings.cityAdcode,
     songUrl: form.songUrl.value.trim(),
+    guestNames: normalizeTextList(form.guestNames.value, [form.partnerName.value.trim(), form.yourName.value.trim()]),
     passcodes: form.passcodes.value
       .split(/[，,]/)
       .map((item) => item.trim())
@@ -1868,6 +1921,7 @@ function renderAdminContent() {
   renderAdminPlaces();
   renderAdminMessages();
   renderAdminLetters();
+  fillDailyToolsForm();
 }
 
 function contentPayload() {
@@ -1879,6 +1933,7 @@ function contentPayload() {
     datePlans: state.datePlans,
     foodOptions: state.foodOptions,
     giftList: state.giftList,
+    dailyTools: state.dailyTools,
     places: state.places,
     messageWall: state.messageWall,
     letters: state.letters
@@ -3018,6 +3073,7 @@ async function loadGuestbook(admin = false) {
     const data = await response.json();
     state.guestbook = normalizeGuestbook(data.entries);
     renderGuestbook();
+    renderMessages();
     renderAdminGuestbook();
   } catch {
     renderGuestbook("留言本暂时没有连上服务器。");
@@ -3085,7 +3141,7 @@ function bindLetters() {
 }
 
 function renderMessages() {
-  $("#messageWall").innerHTML = state.messageWall.map((message) => `
+  const fixedMessages = state.messageWall.map((message) => `
     <article class="message-card">
       <i data-lucide="message-circle-heart"></i>
       <div>
@@ -3093,7 +3149,19 @@ function renderMessages() {
         <p>${escapeHtml(personalize(message.text))}</p>
       </div>
     </article>
-  `).join("");
+  `);
+  const guestMessages = state.guestbook.map((entry) => `
+    <article class="message-card guest-message-card">
+      <i data-lucide="message-square-heart"></i>
+      <div>
+        <h3>${escapeHtml(entry.name)}</h3>
+        <p>${escapeHtml(entry.message)}</p>
+        <time>${entry.createdAt ? formatDateTime(entry.createdAt) : "刚刚写下"}</time>
+        ${entry.reply ? `<blockquote>我的回复：${escapeHtml(entry.reply)}</blockquote>` : ""}
+      </div>
+    </article>
+  `);
+  $("#messageWall").innerHTML = [...guestMessages, ...fixedMessages].join("");
   refreshIcons();
 }
 
@@ -3131,6 +3199,7 @@ function fillSettingsForm() {
   form.startDate.value = state.settings.startDate || "";
   form.birthday.value = state.settings.birthday || "";
   form.nextMeet.value = state.settings.nextMeet || "";
+  form.guestNames.value = normalizeTextList(state.settings.guestNames, [state.settings.partnerName, state.settings.yourName]).join(", ");
   form.passcodes.value = (state.settings.passcodes || []).join(", ");
   form.cityName.value = state.settings.cityName || "";
   form.cityLatitude.value = state.settings.cityLatitude || "";
@@ -3140,6 +3209,39 @@ function fillSettingsForm() {
   form.heroLine.value = state.settings.heroLine || "";
 }
 
+function fillDailyToolsForm() {
+  const form = $("#dailyToolsAdminForm");
+  if (!form) return;
+  const tools = state.dailyTools || DEFAULTS.dailyTools;
+  form.meetDate.value = tools.meetDate || state.settings.nextMeet || "";
+  form.meetTitle.value = tools.meetTitle || "";
+  form.careCards.value = normalizeTextList(tools.careCards, DEFAULTS.dailyTools.careCards).join("\n");
+  form.dailyTasks.value = normalizeTextList(tools.dailyTasks, DEFAULTS.dailyTools.dailyTasks).join("\n");
+  form.bodyCare.value = normalizeTextList(tools.bodyCare, DEFAULTS.dailyTools.bodyCare).join("\n");
+  form.feedingSuggestions.value = normalizeTextList(tools.feedingSuggestions, DEFAULTS.dailyTools.feedingSuggestions).join("\n");
+  form.tripMemo.value = normalizeTextList(tools.tripMemo, DEFAULTS.dailyTools.tripMemo).join("\n");
+}
+
+async function saveDailyTools(event) {
+  event.preventDefault();
+  const form = event.currentTarget;
+  state.dailyTools = {
+    meetTitle: form.meetTitle.value.trim() || DEFAULTS.dailyTools.meetTitle,
+    meetDate: form.meetDate.value || state.settings.nextMeet || DEFAULTS.dailyTools.meetDate,
+    careCards: normalizeTextList(form.careCards.value, DEFAULTS.dailyTools.careCards),
+    dailyTasks: normalizeTextList(form.dailyTasks.value, DEFAULTS.dailyTools.dailyTasks),
+    bodyCare: normalizeTextList(form.bodyCare.value, DEFAULTS.dailyTools.bodyCare),
+    feedingSuggestions: normalizeTextList(form.feedingSuggestions.value, DEFAULTS.dailyTools.feedingSuggestions),
+    tripMemo: normalizeTextList(form.tripMemo.value, DEFAULTS.dailyTools.tripMemo)
+  };
+  try {
+    await saveAdminContent("#dailyToolsAdminMessage", "今日功能已保存。");
+    fillDailyToolsForm();
+  } catch (error) {
+    $("#dailyToolsAdminMessage").textContent = error.message;
+  }
+}
+
 function bindMusic() {
   $("#musicButton").addEventListener("click", async () => {
     if (musicState.playing) {
@@ -3147,6 +3249,13 @@ function bindMusic() {
     } else {
       await startMusic();
     }
+    refreshIcons();
+  });
+  $(".brand-mark").addEventListener("click", async (event) => {
+    if (!window.matchMedia("(max-width: 680px)").matches) return;
+    event.preventDefault();
+    if (musicState.playing) stopMusic();
+    else await startMusic();
     refreshIcons();
   });
 }

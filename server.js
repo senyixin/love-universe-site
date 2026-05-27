@@ -50,7 +50,17 @@ const DEFAULT_SITE_CONTENT = {
     cityLatitude: 34.3686,
     cityLongitude: 118.3545,
     cityAdcode: "320381",
-    songUrl: ""
+    songUrl: "",
+    guestNames: ["她", "我"]
+  },
+  dailyTools: {
+    meetTitle: "下次见面",
+    meetDate: dateAfterDays(7),
+    careCards: ["今天也要好好吃饭，别把自己照顾得太潦草。", "如果累了就先停一下，我在这里接住你。", "今天记得喝水，早点睡，别硬撑。"],
+    dailyTasks: ["给我发一句今天想吃什么。", "拍一张今天的小照片。", "睡前告诉我今天最开心的一件事。"],
+    bodyCare: ["肚子不舒服就先别喝冰的，热水和外套都安排上。", "今天不舒服的话，任务全部降低难度。", "情绪不高也没关系，先照顾身体。"],
+    feedingSuggestions: ["今天适合热乎一点：汤面、粥、砂锅都可以。", "想吃甜的就奖励一杯奶茶，少冰也算乖。", "如果选择困难，就先吃米饭类，稳稳当当。"],
+    tripMemo: ["提前确认时间和地点。", "手机充满电，带好充电宝。", "见面前别太赶，路上注意安全。"]
   },
   timeline: [
     { date: "2024-05-20", title: "把今天设成起点", text: "从这一天开始，日子有了可以被倒数和珍藏的理由。" },
@@ -1426,6 +1436,7 @@ function normalizeSiteContent(input = {}) {
     datePlans: normalizeArray(input.datePlans, DEFAULT_SITE_CONTENT.datePlans, normalizeDatePlan),
     foodOptions: normalizeArray(input.foodOptions, DEFAULT_SITE_CONTENT.foodOptions, normalizeFoodOption),
     giftList: normalizeArray(input.giftList, DEFAULT_SITE_CONTENT.giftList, normalizeGiftItem),
+    dailyTools: normalizeDailyTools(input.dailyTools),
     places: normalizeArray(input.places, DEFAULT_SITE_CONTENT.places, normalizePlace),
     messageWall: normalizeArray(input.messageWall, DEFAULT_SITE_CONTENT.messageWall, normalizeMessage),
     letters: normalizeArray(input.letters, DEFAULT_SITE_CONTENT.letters, normalizeLetter)
@@ -1437,6 +1448,9 @@ function normalizeSiteSettings(settings = {}) {
   const passcodes = Array.isArray(settings.passcodes)
     ? settings.passcodes.map((item) => String(item || "").trim()).filter(Boolean)
     : fallback.passcodes;
+  const guestNames = Array.isArray(settings.guestNames)
+    ? settings.guestNames.map((item) => String(item || "").trim()).filter(Boolean)
+    : fallback.guestNames;
   return {
     partnerName: cleanText(settings.partnerName, fallback.partnerName),
     yourName: cleanText(settings.yourName, fallback.yourName),
@@ -1449,8 +1463,28 @@ function normalizeSiteSettings(settings = {}) {
     cityLatitude: normalizeCoordinate(settings.cityLatitude, fallback.cityLatitude, -90, 90),
     cityLongitude: normalizeCoordinate(settings.cityLongitude, fallback.cityLongitude, -180, 180),
     cityAdcode: normalizeAdcode(settings.cityAdcode) || fallback.cityAdcode,
-    songUrl: String(settings.songUrl || "").trim()
+    songUrl: String(settings.songUrl || "").trim(),
+    guestNames: guestNames.length ? guestNames : fallback.guestNames
   };
+}
+
+function normalizeDailyTools(value = {}) {
+  const fallback = DEFAULT_SITE_CONTENT.dailyTools;
+  return {
+    meetTitle: cleanText(value.meetTitle, fallback.meetTitle),
+    meetDate: normalizeDate(value.meetDate) || fallback.meetDate,
+    careCards: normalizeTextList(value.careCards, fallback.careCards),
+    dailyTasks: normalizeTextList(value.dailyTasks, fallback.dailyTasks),
+    bodyCare: normalizeTextList(value.bodyCare, fallback.bodyCare),
+    feedingSuggestions: normalizeTextList(value.feedingSuggestions, fallback.feedingSuggestions),
+    tripMemo: normalizeTextList(value.tripMemo, fallback.tripMemo)
+  };
+}
+
+function normalizeTextList(value, fallback) {
+  const source = Array.isArray(value) ? value : String(value || "").split(/[\n，,]/);
+  const list = source.map((item) => String(item || "").trim()).filter(Boolean);
+  return list.length ? list.slice(0, 80) : fallback;
 }
 
 function normalizeArray(input, fallback, mapper) {

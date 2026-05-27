@@ -37,11 +37,11 @@
           <span data-partner-name>她</span>
         </a>
         <nav class="nav-links" aria-label="主导航">
-          <a href="#dialog">对话</a>
-          <a href="#weather">天气</a>
-          <a href="#memories">回忆</a>
-          <a href="#plans">愿望</a>
-          <a href="#letters">信件</a>
+          <a href="#daily">关心</a>
+          <a href="#mood">互动</a>
+          <a href="#plans">小票券</a>
+          <a href="#letters">留言</a>
+          <a href="#album">相册</a>
         </nav>
         <div class="top-actions">
           <button class="icon-button" id="musicButton" type="button" aria-label="播放音乐">
@@ -59,13 +59,13 @@
             <h1><span data-partner-name>她</span>的小宇宙</h1>
             <p id="heroLine">今天也想认真地，把世界温柔地递给你。</p>
             <div class="hero-actions">
-              <button class="primary-button" type="button" data-scroll-target="#dialog">
-                <i data-lucide="message-circle-heart"></i>
-                <span>打开对话</span>
+              <button class="primary-button" type="button" data-scroll-target="#mood">
+                <i data-lucide="heart-handshake"></i>
+                <span>互动信号站</span>
               </button>
-              <button class="secondary-button" type="button" data-scroll-target="#weather">
-                <i data-lucide="cloud-sun"></i>
-                <span>看天气</span>
+              <button class="secondary-button" type="button" data-scroll-target="#plans">
+                <i data-lucide="ticket"></i>
+                <span>领取小票券</span>
               </button>
             </div>
             <button class="heart-counter" id="secretHeart" type="button" aria-label="心跳">
@@ -94,7 +94,22 @@
           </div>
         </section>
 
-        <section class="section dialog-section" id="dialog">
+        <section class="section daily-section" id="daily">
+          <div class="section-heading">
+            <p class="eyebrow">TODAY</p>
+            <h2>今天的小照顾</h2>
+          </div>
+          <div class="daily-grid">
+            <article class="daily-card daily-card-main" id="careCard"></article>
+            <article class="daily-card" id="meetCountdownCard"></article>
+            <article class="daily-card" id="dailyTaskCard"></article>
+            <article class="daily-card" id="periodCareCard"></article>
+            <article class="daily-card" id="feedingCard"></article>
+            <article class="daily-card" id="tripMemoCard"></article>
+          </div>
+        </section>
+
+        <section class="section dialog-section retired-section" id="dialog" hidden>
           <div class="section-heading">
             <p class="eyebrow">SOFT TALK</p>
             <h2>慢慢说给她听</h2>
@@ -114,7 +129,7 @@
           </div>
         </section>
 
-        <section class="section weather-section" id="weather">
+        <section class="section weather-section retired-section" id="weather" hidden>
           <div class="section-heading">
             <p class="eyebrow">SEVEN DAYS</p>
             <h2>她那边的天空</h2>
@@ -142,30 +157,12 @@
           <div class="weather-grid" id="weatherGrid"></div>
         </section>
 
-        <section class="section memories-section" id="memories">
+        <section class="section memories-section retired-section" id="memories" hidden>
           <div class="section-heading">
             <p class="eyebrow">OUR DAYS</p>
             <h2>回忆时间线</h2>
           </div>
           <div class="timeline" id="timelineList"></div>
-        </section>
-
-        <section class="section album-section" id="album">
-          <div class="section-heading with-action">
-            <div>
-              <p class="eyebrow">PHOTO BOOK</p>
-              <h2>照片相册</h2>
-            </div>
-            <button class="secondary-button" id="addPhotoButton" type="button">
-              <i data-lucide="upload"></i>
-              <span>上传照片</span>
-            </button>
-          </div>
-          <button class="primary-button album-reveal" id="revealAlbumButton" type="button">
-            <i data-lucide="images"></i>
-            <span>查看照片相册</span>
-          </button>
-          <div class="album-grid" id="albumGrid"></div>
         </section>
 
         <section class="section mood-section" id="mood">
@@ -182,11 +179,11 @@
 
         <section class="section plans-section" id="plans">
           <div class="section-heading">
-            <p class="eyebrow">LITTLE PLANS</p>
-            <h2>愿望、约会和小票券</h2>
+            <p class="eyebrow">COUPONS</p>
+            <h2>专属小票券</h2>
           </div>
-          <div class="plans-grid">
-            <div class="tool-panel">
+          <div class="plans-grid coupon-only-grid">
+            <div class="tool-panel retired-panel" hidden>
               <div class="tool-title">
                 <i data-lucide="dice-5"></i>
                 <h3>约会灵感盒子</h3>
@@ -203,7 +200,7 @@
               <div class="idea-tool-list" id="ideaToolList"></div>
             </div>
 
-            <div class="tool-panel">
+            <div class="tool-panel retired-panel" hidden>
               <div class="tool-title">
                 <i data-lucide="list-checks"></i>
                 <h3>愿望清单</h3>
@@ -242,7 +239,7 @@
           </div>
         </section>
 
-        <section class="section practical-section" id="practical">
+        <section class="section practical-section retired-section" id="practical" hidden>
           <div class="section-heading">
             <p class="eyebrow">DAILY HELPERS</p>
             <h2>实用小助手</h2>
@@ -294,7 +291,7 @@
           </div>
         </section>
 
-        <section class="section map-section" id="map">
+        <section class="section map-section retired-section" id="map" hidden>
           <div class="section-heading">
             <p class="eyebrow">FOOTPRINTS</p>
             <h2>地图足迹</h2>
@@ -319,16 +316,16 @@
 
         <section class="section letters-section" id="letters">
           <div class="section-heading">
-            <p class="eyebrow">FUTURE MAIL</p>
-            <h2>留言墙和未来信</h2>
+            <p class="eyebrow">MESSAGE WALL</p>
+            <h2>留言墙</h2>
           </div>
           <div class="guestbook-panel">
             <div>
               <h3>双向留言本</h3>
-              <p>她可以在这里留言，我会在后台看到，也可以回复回来。</p>
+              <p>选择昵称写下留言，时间会自动留在留言墙下面。</p>
             </div>
             <form class="guestbook-form" id="guestbookForm">
-              <input name="guestName" type="text" placeholder="昵称">
+              <select name="guestName" id="guestNameSelect" aria-label="昵称"></select>
               <textarea name="guestMessage" rows="3" maxlength="500" placeholder="写给我的话"></textarea>
               <button class="primary-button" type="submit">
                 <i data-lucide="send"></i>
@@ -339,7 +336,25 @@
             <div class="guestbook-list" id="guestbookList"></div>
           </div>
           <div class="message-wall" id="messageWall"></div>
-          <div class="letter-grid" id="letterGrid"></div>
+          <div class="letter-grid retired-section" id="letterGrid" hidden></div>
+        </section>
+
+        <section class="section album-section" id="album">
+          <div class="section-heading with-action">
+            <div>
+              <p class="eyebrow">PHOTO BOOK</p>
+              <h2>照片相册</h2>
+            </div>
+            <button class="secondary-button" id="addPhotoButton" type="button">
+              <i data-lucide="upload"></i>
+              <span>上传照片</span>
+            </button>
+          </div>
+          <button class="primary-button album-reveal" id="revealAlbumButton" type="button">
+            <i data-lucide="images"></i>
+            <span>查看照片相册</span>
+          </button>
+          <div class="album-grid" id="albumGrid"></div>
         </section>
       </main>
     </div>
@@ -409,6 +424,10 @@
                 <input name="yourName" type="text" required>
               </label>
               <label>
+                留言本昵称
+                <input name="guestNames" type="text" placeholder="用逗号分隔，比如：小诺言, 小鑫">
+              </label>
+              <label>
                 在一起日期
                 <input name="startDate" type="date" required>
               </label>
@@ -456,7 +475,51 @@
             </button>
           </form>
 
-          <form class="admin-panel" id="timelineAdminForm">
+          <form class="admin-panel" id="dailyToolsAdminForm">
+            <div class="admin-panel-head">
+              <div>
+                <p class="eyebrow">TODAY TOOLS</p>
+                <h2>今日关心和实用提醒</h2>
+              </div>
+            </div>
+            <div class="admin-form-grid two-columns">
+              <label>
+                距离见面日期
+                <input name="meetDate" type="date">
+              </label>
+              <label>
+                见面标题
+                <input name="meetTitle" type="text" placeholder="比如：下次见面">
+              </label>
+            </div>
+            <label>
+              今日关心卡
+              <textarea name="careCards" rows="4" placeholder="一行一条"></textarea>
+            </label>
+            <label>
+              每日任务小纸条
+              <textarea name="dailyTasks" rows="4" placeholder="一行一条"></textarea>
+            </label>
+            <label>
+              姨妈/身体照顾提醒
+              <textarea name="bodyCare" rows="4" placeholder="一行一条"></textarea>
+            </label>
+            <label>
+              今日投喂建议
+              <textarea name="feedingSuggestions" rows="4" placeholder="一行一条"></textarea>
+            </label>
+            <label>
+              见面路线/出行备忘
+              <textarea name="tripMemo" rows="5" placeholder="一行一条"></textarea>
+            </label>
+            <p class="admin-message" id="dailyToolsAdminMessage" aria-live="polite"></p>
+            <button class="primary-button full-button" type="submit">
+              <i data-lucide="save"></i>
+              <span>保存今日功能</span>
+            </button>
+          </form>
+
+          <form class="admin-panel retired-admin-panel" id="timelineAdminForm" hidden>
             <div class="admin-panel-head">
               <div>
                 <p class="eyebrow">MEMORIES</p>
@@ -490,7 +553,7 @@
             <div class="admin-content-list" id="adminTimelineList"></div>
           </form>
 
-          <form class="admin-panel" id="ideaAdminForm">
+          <form class="admin-panel retired-admin-panel" id="ideaAdminForm" hidden>
             <div class="admin-panel-head">
               <div>
                 <p class="eyebrow">DATE IDEAS</p>
@@ -528,7 +591,7 @@
             <div class="admin-content-list" id="adminIdeaList"></div>
           </form>
 
-          <form class="admin-panel" id="ideaToolAdminForm">
+          <form class="admin-panel retired-admin-panel" id="ideaToolAdminForm" hidden>
             <div class="admin-panel-head">
               <div>
                 <p class="eyebrow">IDEA TOOLS</p>
@@ -566,7 +629,7 @@
             <div class="admin-content-list" id="adminIdeaToolList"></div>
           </form>
 
-          <form class="admin-panel" id="datePlanAdminForm">
+          <form class="admin-panel retired-admin-panel" id="datePlanAdminForm" hidden>
             <div class="admin-panel-head">
               <div>
                 <p class="eyebrow">DATE PLAN</p>
@@ -616,7 +679,7 @@
             <div class="admin-content-list" id="adminDatePlanList"></div>
           </form>
 
-          <form class="admin-panel" id="foodAdminForm">
+          <form class="admin-panel retired-admin-panel" id="foodAdminForm" hidden>
             <div class="admin-panel-head">
               <div>
                 <p class="eyebrow">FOOD BOX</p>
@@ -670,7 +733,7 @@
             <div class="admin-content-list" id="adminFoodList"></div>
           </form>
 
-          <form class="admin-panel" id="giftAdminForm">
+          <form class="admin-panel retired-admin-panel" id="giftAdminForm" hidden>
             <div class="admin-panel-head">
               <div>
                 <p class="eyebrow">GIFT LIST</p>
@@ -712,7 +775,7 @@
             <div class="admin-content-list" id="adminGiftList"></div>
           </form>
 
-          <form class="admin-panel" id="placeAdminForm">
+          <form class="admin-panel retired-admin-panel" id="placeAdminForm" hidden>
             <div class="admin-panel-head">
               <div>
                 <p class="eyebrow">FOOTPRINTS</p>
@@ -778,7 +841,7 @@
             <div class="admin-content-list" id="adminMessageList"></div>
           </form>
 
-          <form class="admin-panel" id="letterAdminForm">
+          <form class="admin-panel retired-admin-panel" id="letterAdminForm" hidden>
             <div class="admin-panel-head">
               <div>
                 <p class="eyebrow">FUTURE MAIL</p>

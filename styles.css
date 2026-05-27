@@ -137,6 +137,7 @@ img {
 .wish-form input,
 .place-form input,
 .guestbook-form input,
+.guestbook-form select,
 .guestbook-form textarea,
 .food-filters select,
 .photo-dialog input,
@@ -173,6 +174,7 @@ img {
 .wish-form input:focus,
 .place-form input:focus,
 .guestbook-form input:focus,
+.guestbook-form select:focus,
 .guestbook-form textarea:focus,
 .food-filters select:focus,
 .photo-dialog input:focus,
@@ -841,6 +843,69 @@ img {
   line-height: 1.8;
 }
 
+.daily-section {
+  width: min(1180px, calc(100% - 48px));
+}
+
+.daily-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.daily-card {
+  min-width: 0;
+  min-height: 168px;
+  padding: 18px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 16px 44px rgba(24, 23, 24, 0.08);
+}
+
+.daily-card-main {
+  color: #fff;
+  background: linear-gradient(135deg, var(--teal-dark), var(--teal));
+}
+
+.daily-card-head {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 12px;
+  color: var(--teal);
+  font-size: 0.84rem;
+  font-weight: 800;
+}
+
+.daily-card-main .daily-card-head,
+.daily-card-main p {
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.daily-card strong {
+  display: grid;
+  gap: 7px;
+  margin-bottom: 10px;
+  font-size: 1.12rem;
+  line-height: 1.7;
+}
+
+.daily-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.daily-card strong span {
+  display: block;
+  padding: 7px 9px;
+  color: var(--teal-dark);
+  background: #e9f4ee;
+  border-radius: 8px;
+  font-size: 0.92rem;
+}
+
 .plans-section {
   width: 100%;
   max-width: none;
@@ -853,6 +918,10 @@ img {
   display: grid;
   grid-template-columns: 1fr 1.1fr 1fr;
   gap: 16px;
+}
+
+.coupon-only-grid {
+  grid-template-columns: minmax(0, 720px);
 }
 
 .tool-panel {
@@ -1648,6 +1717,22 @@ img {
   line-height: 1.75;
 }
 
+.message-card time,
+.message-card blockquote {
+  display: block;
+  margin-top: 9px;
+  color: var(--teal-dark);
+  font-size: 0.88rem;
+  line-height: 1.65;
+}
+
+.message-card blockquote {
+  padding: 8px 10px;
+  background: #e9f4ee;
+  border-left: 3px solid var(--teal);
+  border-radius: 8px;
+}
+
 .letter-card {
   min-height: 188px;
   text-align: left;
@@ -1807,6 +1892,7 @@ dialog::backdrop {
   }
 
   .ticker-band,
+  .daily-grid,
   .plans-grid,
   .practical-grid,
   .map-layout,
@@ -1845,6 +1931,7 @@ dialog::backdrop {
   .weather-tools,
   .city-form,
   .ticker-band,
+  .daily-grid,
   .plans-grid,
   .practical-grid,
   .map-layout,
@@ -1861,6 +1948,47 @@ dialog::backdrop {
   .photo-form-grid,
   .settings-grid {
     grid-template-columns: 1fr;
+  }
+
+  body {
+    padding-bottom: 76px;
+  }
+
+  .topbar {
+    grid-template-columns: auto 1fr;
+  }
+
+  .top-actions {
+    display: none;
+  }
+
+  .nav-links {
+    position: fixed;
+    left: 12px;
+    right: 12px;
+    bottom: 10px;
+    z-index: 40;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 4px;
+    padding: 8px;
+    background: rgba(255, 250, 245, 0.94);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    box-shadow: 0 12px 34px rgba(24, 23, 24, 0.16);
+    backdrop-filter: blur(16px);
+  }
+
+  .nav-links a {
+    display: grid;
+    place-items: center;
+    min-height: 42px;
+    padding: 6px 4px;
+    font-size: 0.82rem;
+  }
+
+  .brand-mark {
+    cursor: pointer;
   }
 
   .city-form {
