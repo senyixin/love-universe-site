@@ -129,6 +129,7 @@ const DEFAULTS = {
     cityName: "新沂市",
     cityLatitude: 34.3686,
     cityLongitude: 118.3545,
+    cityAdcode: "320381",
     songUrl: ""
   },
   dialogLines: [
@@ -586,7 +587,9 @@ function unlock(animated) {
     }, 280);
   }
   if (!$("#weatherGrid").children.length) {
-    loadWeather(state.settings.cityLatitude, state.settings.cityLongitude, state.settings.cityName);
+    loadWeather(state.settings.cityLatitude, state.settings.cityLongitude, state.settings.cityName, {
+      adcode: state.settings.cityAdcode
+    });
   }
   if (!chatIndex) {
     revealNextLine();
@@ -713,7 +716,9 @@ function bindWeather() {
       ({ coords }) => loadWeather(coords.latitude, coords.longitude, "当前位置"),
       () => {
         $("#weatherStatus").textContent = "定位没有打开，先用默认城市。";
-        loadWeather(state.settings.cityLatitude, state.settings.cityLongitude, state.settings.cityName);
+        loadWeather(state.settings.cityLatitude, state.settings.cityLongitude, state.settings.cityName, {
+          adcode: state.settings.cityAdcode
+        });
       },
       { enableHighAccuracy: true, timeout: 9000, maximumAge: 900000 }
     );
@@ -736,21 +741,27 @@ function bindWeather() {
       state.settings.cityName = [match.name, match.admin1, match.country].filter(Boolean).join(" · ");
       state.settings.cityLatitude = match.latitude;
       state.settings.cityLongitude = match.longitude;
-      loadWeather(match.latitude, match.longitude, state.settings.cityName);
+      state.settings.cityAdcode = match.adcode || "";
+      loadWeather(match.latitude, match.longitude, state.settings.cityName, {
+        adcode: match.adcode,
+        city: city
+      });
     } catch {
       $("#weatherStatus").textContent = "城市查询失败，等网络稳定一点再试。";
     }
   });
 }
 
-async function loadWeather(latitude, longitude, placeName) {
+async function loadWeather(latitude, longitude, placeName, options = {}) {
   $("#weatherStatus").textContent = `正在整理 ${placeName || "当前位置"} 的未来一周天气...`;
   try {
     const params = new URLSearchParams({
-      latitude,
-      longitude,
+      latitude: latitude ?? "",
+      longitude: longitude ?? "",
       place: placeName || "当前位置"
     });
+    if (options.adcode) params.set("adcode", options.adcode);
+    if (options.city || placeName) params.set("city", options.city || placeName || "");
     const response = await fetch(`/api/weather?${params}`);
     if (!response.ok) throw new Error("weather");
     const data = await response.json();
@@ -770,7 +781,8 @@ function renderWeather(daily, placeName, fallback = false) {
     const max = Math.round(daily.temperature_2m_max[index]);
     const min = Math.round(daily.temperature_2m_min[index]);
     const rain = daily.precipitation_probability_max[index] ?? 0;
-    const info = weatherInfo(code);
+    const info = weatherInfo(code, daily.weather_text?.[index]);
+    const wind = daily.wind?.[index];
     return `
       <article class="weather-card">
         <div class="weather-day">
@@ -780,9 +792,9 @@ function renderWeather(daily, placeName, fallback = false) {
         <div class="weather-icon"><i data-lucide="${info.icon}"></i></div>
         <strong class="weather-temp">${min}° / ${max}°</strong>
         <div class="weather-meta">
-          <span>${info.label}</span>
+          <span>${escapeHtml(info.label)}</span>
           <span>降雨 ${rain}%</span>
-          <span>日落 ${shortTime(daily.sunset[index])}</span>
+          <span>${wind ? escapeHtml(wind) : `日落 ${shortTime(daily.sunset[index])}`}</span>
         </div>
       </article>
     `;
@@ -791,7 +803,7 @@ function renderWeather(daily, placeName, fallback = false) {
   $("#weatherGrid").innerHTML = cards;
   $("#weatherStatus").textContent = fallback
     ? `${placeName || "当前位置"} · 天气接口不稳，先显示临时参考`
-    : `${placeName || "当前位置"} · 未来 7 天`;
+    : `${placeName || "当前位置"} · 未来 ${daily.time.length} 天`;
   $("#weatherCare").innerHTML = fallback
     ? `<i data-lucide="umbrella"></i><span>天气接口暂时不稳，出门前再看一眼天空；伞和外套先放进备选。</span>`
     : `<i data-lucide="${careIcon(daily)}"></i><span>${weatherCare(daily)}</span>`;
@@ -830,7 +842,9 @@ function buildFallbackWeather() {
   };
 }
 
-function weatherInfo(code) {
+function weatherInfo(code, text = "") {
+  const label = String(text || "").trim();
+  if (label) return { label, icon: weatherTextIcon(label) };
   if (code === 0) return { label: "晴", icon: "sun" };
   if ([1, 2, 3].includes(code)) return { label: "多云", icon: "cloud-sun" };
   if ([45, 48].includes(code)) return { label: "有雾", icon: "cloud-fog" };
@@ -841,12 +855,23 @@ function weatherInfo(code) {
   return { label: "天气变化", icon: "cloud" };
 }
 
+function weatherTextIcon(text) {
+  if (text.includes("雷")) return "cloud-lightning";
+  if (text.includes("雪") || text.includes("冰雹")) return "snowflake";
+  if (text.includes("雨")) return text.includes("小雨") ? "cloud-drizzle" : "cloud-rain";
+  if (text.includes("雾") || text.includes("霾") || text.includes("沙") || text.includes("尘")) return "cloud-fog";
+  if (text.includes("阴")) return "cloud";
+  if (text.includes("云")) return "cloud-sun";
+  if (text.includes("晴")) return "sun";
+  return "cloud";
+}
+
 function weatherCare(daily) {
   const code = daily.weather_code[0];
   const max = daily.temperature_2m_max[0];
   const min = daily.temperature_2m_min[0];
   const rain = daily.precipitation_probability_max[0] ?? 0;
-  const info = weatherInfo(code);
+  const info = weatherInfo(code, daily.weather_text?.[0]);
 
   if (info.label === "雷雨") return "今天可能有雷雨，尽量早点回家；如果路上害怕，就把电话打过来。";
   if (rain >= 55 || info.label.includes("雨")) return "今天记得带伞，鞋子也选不怕湿的。雨天慢一点走，别急。";
@@ -859,7 +884,9 @@ function weatherCare(daily) {
 
 function careIcon(daily) {
   const code = daily.weather_code[0];
+  const text = daily.weather_text?.[0] || "";
   const rain = daily.precipitation_probability_max[0] ?? 0;
+  if (text) return weatherTextIcon(text);
   if ([95, 96, 99].includes(code)) return "cloud-lightning";
   if (rain >= 55 || [61, 63, 65, 80, 81, 82].includes(code)) return "umbrella";
   if ([71, 73, 75, 77, 85, 86].includes(code)) return "snowflake";
@@ -1579,6 +1606,7 @@ async function saveSiteSettings(event) {
     cityName: form.cityName.value.trim() || DEFAULTS.settings.cityName,
     cityLatitude: Number(form.cityLatitude.value || DEFAULTS.settings.cityLatitude),
     cityLongitude: Number(form.cityLongitude.value || DEFAULTS.settings.cityLongitude),
+    cityAdcode: form.cityAdcode.value.trim() || DEFAULTS.settings.cityAdcode,
     songUrl: form.songUrl.value.trim(),
     passcodes: form.passcodes.value
       .split(/[，,]/)
@@ -2476,6 +2504,7 @@ function fillSettingsForm() {
   form.cityName.value = state.settings.cityName || "";
   form.cityLatitude.value = state.settings.cityLatitude || "";
   form.cityLongitude.value = state.settings.cityLongitude || "";
+  form.cityAdcode.value = state.settings.cityAdcode || "";
   form.songUrl.value = state.settings.songUrl || "";
   form.heroLine.value = state.settings.heroLine || "";
 }
