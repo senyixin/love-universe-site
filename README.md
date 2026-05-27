@@ -48,6 +48,16 @@ npm start
 
 建议用 Nginx、宝塔、PM2 或服务器面板把域名反向代理到 `127.0.0.1:5173`。
 
+## 高德天气
+
+天气已经改成服务端调用高德 Web 服务 API。把你的高德 Key 配到服务器环境变量，或在项目根目录新建 `.env`：
+
+```bash
+AMAP_WEATHER_KEY="你的高德Web服务Key"
+```
+
+也兼容 `GAODE_WEATHER_KEY` 或 `AMAP_KEY`。默认城市是新沂市，后台「小设定」里可以改城市名、经纬度和高德城市 `adcode`，新沂市的 `adcode` 是 `320381`。改完后重启 Node/PM2/宝塔里的这个服务。
+
 ## 安卓 App
 
 项目里已经包含 `android-app/`，它是一个 Android WebView 外壳，会打开你服务器上的网站。后台、照片、邮件和小票券仍然由服务器处理。
