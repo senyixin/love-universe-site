@@ -3,6 +3,9 @@ const fs = require("node:fs");
 const fsp = require("node:fs/promises");
 const https = require("node:https");
 const path = require("node:path");
+
+loadEnvFile(path.resolve(__dirname, ".env"));
+
 const express = require("express");
 const multer = require("multer");
 const nodemailer = require("nodemailer");
@@ -24,6 +27,14 @@ const ADMIN_COOKIE = "love_admin_session";
 const DEFAULT_ADMIN_KEY = process.env.ADMIN_KEY || "only-you-1314520";
 const SESSION_TTL_MS = 8 * 60 * 60 * 1000;
 const adminSessions = new Map();
+const DEFAULT_CITY = {
+  name: "新沂市",
+  admin1: "江苏省",
+  country: "中国",
+  latitude: 34.3686,
+  longitude: 118.3545,
+  adcode: "320381"
+};
 
 const DEFAULT_SITE_CONTENT = {
   settings: {
@@ -37,6 +48,7 @@ const DEFAULT_SITE_CONTENT = {
     cityName: "新沂市",
     cityLatitude: 34.3686,
     cityLongitude: 118.3545,
+    cityAdcode: "320381",
     songUrl: ""
   },
   timeline: [
@@ -192,9 +204,14 @@ app.get("/api/geocode", async (req, res, next) => {
       res.status(400).json({ error: "请输入城市。" });
       return;
     }
-    const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=3&language=zh&format=json`;
-    const data = await fetchJson(url, 8000);
-    res.json({ results: Array.isArray(data.results) ? data.results : [] });
+    const amapKey = getAmapKey();
+    if (!amapKey) {
+      res.json({ results: fallbackGeocode(city), fallback: true, error: "未配置高德天气 Key。" });
+      return;
+    }
+
+    const results = await geocodeCityWithAmap(city, amapKey);
+    res.json({ results, source: "amap" });
   } catch (error) {
     const fallback = fallbackGeocode(req.query.city);
     if (fallback.length) {
@@ -208,23 +225,21 @@ app.get("/api/geocode", async (req, res, next) => {
 app.get("/api/weather", async (req, res) => {
   const latitude = Number(req.query.latitude);
   const longitude = Number(req.query.longitude);
-  const placeName = cleanText(req.query.place, "当前位置");
-  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
-    res.status(400).json({ error: "天气坐标不正确。" });
-    return;
-  }
+  const placeName = cleanText(req.query.place, DEFAULT_CITY.name);
 
   try {
-    const params = new URLSearchParams({
-      latitude: String(latitude),
-      longitude: String(longitude),
-      daily: "weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset",
-      timezone: "auto",
-      forecast_days: "7"
+    const amapKey = getAmapKey();
+    if (!amapKey) throw new Error("未配置高德天气 Key。");
+    const location = await resolveAmapWeatherLocation({
+      amapKey,
+      adcode: req.query.adcode || req.query.city,
+      city: req.query.city,
+      placeName,
+      latitude,
+      longitude
     });
-    const data = await fetchJson(`https://api.open-meteo.com/v1/forecast?${params}`, 10000);
-    if (!data.daily || !Array.isArray(data.daily.time)) throw new Error("天气数据格式不正确。");
-    res.json({ placeName, daily: data.daily, fallback: false });
+    const daily = await fetchAmapWeather(location.adcode, amapKey);
+    res.json({ placeName: location.placeName || placeName, daily, fallback: false, source: "amap" });
   } catch {
     res.json({ placeName, daily: buildFallbackWeather(), fallback: true });
   }
@@ -884,11 +899,211 @@ function renumberCouponOrders(coupons) {
   return coupons;
 }
 
+function getAmapKey() {
+  return cleanText(process.env.AMAP_WEATHER_KEY || process.env.GAODE_WEATHER_KEY || process.env.AMAP_KEY, "");
+}
+
+async function geocodeCityWithAmap(city, amapKey) {
+  const params = new URLSearchParams({
+    key: amapKey,
+    address: cleanText(city, DEFAULT_CITY.name),
+    output: "JSON"
+  });
+  const data = await fetchJson(`https://restapi.amap.com/v3/geocode/geo?${params}`, 8000);
+  assertAmapOk(data, "高德城市查询失败");
+  return (Array.isArray(data.geocodes) ? data.geocodes : [])
+    .map((item) => normalizeAmapGeocode(item))
+    .filter(Boolean);
+}
+
+async function reverseGeocodeWithAmap(latitude, longitude, amapKey) {
+  const params = new URLSearchParams({
+    key: amapKey,
+    location: `${longitude},${latitude}`,
+    extensions: "base",
+    output: "JSON"
+  });
+  const data = await fetchJson(`https://restapi.amap.com/v3/geocode/regeo?${params}`, 8000);
+  assertAmapOk(data, "高德逆地理编码失败");
+  const component = data.regeocode?.addressComponent || {};
+  const adcode = normalizeAdcode(component.adcode);
+  if (!adcode) return null;
+  return {
+    adcode,
+    placeName: formatPlaceName({
+      name: cleanText(component.district || component.city || component.province, DEFAULT_CITY.name),
+      admin1: joinClean([component.province, component.city]),
+      country: "中国"
+    })
+  };
+}
+
+async function resolveAmapWeatherLocation({ amapKey, adcode, city, placeName, latitude, longitude }) {
+  const directAdcode = normalizeAdcode(adcode);
+  if (directAdcode) {
+    return { adcode: directAdcode, placeName: cleanText(placeName, DEFAULT_CITY.name) };
+  }
+
+  if (Number.isFinite(latitude) && Number.isFinite(longitude)) {
+    const reversed = await reverseGeocodeWithAmap(latitude, longitude, amapKey).catch(() => null);
+    if (reversed?.adcode) return reversed;
+  }
+
+  const cityText = cleanText(city || placeName, DEFAULT_CITY.name);
+  const geocodes = await geocodeCityWithAmap(cityText, amapKey).catch(() => []);
+  if (geocodes[0]?.adcode) {
+    return { adcode: geocodes[0].adcode, placeName: formatPlaceName(geocodes[0]) };
+  }
+
+  const fallback = fallbackGeocode(cityText)[0] || DEFAULT_CITY;
+  return { adcode: fallback.adcode, placeName: formatPlaceName(fallback) };
+}
+
+async function fetchAmapWeather(adcode, amapKey) {
+  const params = new URLSearchParams({
+    key: amapKey,
+    city: adcode,
+    extensions: "all",
+    output: "JSON"
+  });
+  const data = await fetchJson(`https://restapi.amap.com/v3/weather/weatherInfo?${params}`, 10000);
+  assertAmapOk(data, "高德天气查询失败");
+  const forecast = Array.isArray(data.forecasts) ? data.forecasts[0] : null;
+  if (!forecast || !Array.isArray(forecast.casts) || !forecast.casts.length) {
+    throw new Error("高德天气数据为空。");
+  }
+  return transformAmapForecast(forecast);
+}
+
+function transformAmapForecast(forecast) {
+  const daily = {
+    time: [],
+    weather_code: [],
+    weather_text: [],
+    wind: [],
+    temperature_2m_max: [],
+    temperature_2m_min: [],
+    precipitation_probability_max: [],
+    sunrise: [],
+    sunset: []
+  };
+
+  forecast.casts.forEach((cast) => {
+    const date = normalizeDate(cast.date) || dateKey(new Date());
+    const weatherText = combineAmapWeather(cast);
+    const dayTemp = normalizeTemperature(cast.daytemp_float ?? cast.daytemp, 24);
+    const nightTemp = normalizeTemperature(cast.nighttemp_float ?? cast.nighttemp, dayTemp);
+    daily.time.push(date);
+    daily.weather_code.push(amapWeatherCode(weatherText));
+    daily.weather_text.push(weatherText);
+    daily.wind.push(combineAmapWind(cast));
+    daily.temperature_2m_max.push(Math.max(dayTemp, nightTemp));
+    daily.temperature_2m_min.push(Math.min(dayTemp, nightTemp));
+    daily.precipitation_probability_max.push(amapRainChance(weatherText));
+    daily.sunrise.push(`${date}T06:00`);
+    daily.sunset.push(`${date}T18:30`);
+  });
+
+  return daily;
+}
+
+function normalizeAmapGeocode(item) {
+  if (!item || typeof item !== "object") return null;
+  const location = parseAmapLocation(item.location);
+  const adcode = normalizeAdcode(item.adcode);
+  if (!location || !adcode) return null;
+  return {
+    name: cleanText(item.district || item.city || item.formatted_address, DEFAULT_CITY.name),
+    admin1: joinClean([item.province, item.city]),
+    country: "中国",
+    latitude: location.latitude,
+    longitude: location.longitude,
+    adcode
+  };
+}
+
+function parseAmapLocation(location) {
+  const [longitude, latitude] = String(location || "").split(",").map(Number);
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return null;
+  return { latitude, longitude };
+}
+
+function assertAmapOk(data, message) {
+  if (data?.status === "1") return;
+  throw new Error(data?.info || message);
+}
+
+function combineAmapWeather(cast) {
+  const day = cleanText(cast.dayweather, "");
+  const night = cleanText(cast.nightweather, "");
+  if (day && night && day !== night) return `${day}转${night}`;
+  return day || night || "天气变化";
+}
+
+function combineAmapWind(cast) {
+  const day = cleanText(cast.daywind, "");
+  const night = cleanText(cast.nightwind, "");
+  const power = cleanText(cast.daypower || cast.nightpower, "");
+  const wind = day && night && day !== night ? `${day}转${night}风` : day ? `${day}风` : night ? `${night}风` : "";
+  return joinClean([wind, power ? `${power}级` : ""]);
+}
+
+function amapWeatherCode(text) {
+  const value = String(text || "");
+  if (value.includes("雷")) return 95;
+  if (value.includes("雪") || value.includes("冰雹")) return 71;
+  if (value.includes("暴雨") || value.includes("大雨")) return 65;
+  if (value.includes("中雨")) return 63;
+  if (value.includes("雨")) return 61;
+  if (value.includes("雾") || value.includes("霾") || value.includes("沙") || value.includes("尘")) return 45;
+  if (value.includes("阴")) return 3;
+  if (value.includes("云")) return 2;
+  if (value.includes("晴")) return 0;
+  return 3;
+}
+
+function amapRainChance(text) {
+  const value = String(text || "");
+  if (value.includes("雷") || value.includes("暴雨")) return 95;
+  if (value.includes("大雨")) return 85;
+  if (value.includes("中雨")) return 65;
+  if (value.includes("雨")) return 55;
+  if (value.includes("雪")) return 45;
+  if (value.includes("阴")) return 25;
+  if (value.includes("云")) return 15;
+  return 8;
+}
+
+function normalizeTemperature(value, fallback) {
+  const number = Number(String(value ?? "").replace(/[^\d.-]/g, ""));
+  return Number.isFinite(number) ? number : fallback;
+}
+
+function normalizeAdcode(value) {
+  const text = String(value || "").trim();
+  return /^\d{6}$/.test(text) ? text : "";
+}
+
+function formatPlaceName(place) {
+  return joinClean([place?.name, place?.admin1, place?.country]) || DEFAULT_CITY.name;
+}
+
+function joinClean(values) {
+  return values
+    .flatMap((value) => Array.isArray(value) ? value : [value])
+    .map((value) => String(value || "").trim())
+    .filter(Boolean)
+    .filter((value, index, list) => list.indexOf(value) === index)
+    .join(" · ");
+}
+
 function buildFallbackWeather() {
   const now = new Date();
   const daily = {
     time: [],
     weather_code: [],
+    weather_text: [],
+    wind: [],
     temperature_2m_max: [],
     temperature_2m_min: [],
     precipitation_probability_max: [],
@@ -904,6 +1119,8 @@ function buildFallbackWeather() {
     const base = 24 + (index % 3);
     daily.time.push(key);
     daily.weather_code.push(codes[index]);
+    daily.weather_text.push(["多云", "多云", "阴", "小雨", "多云", "晴", "阵雨"][index]);
+    daily.wind.push("微风");
     daily.temperature_2m_max.push(base + 4);
     daily.temperature_2m_min.push(base - 3);
     daily.precipitation_probability_max.push(rain[index]);
@@ -922,7 +1139,8 @@ function fallbackGeocode(city) {
       admin1: "江苏省",
       country: "中国",
       latitude: 34.3686,
-      longitude: 118.3545
+      longitude: 118.3545,
+      adcode: "320381"
     }];
   }
   return [];
@@ -1000,6 +1218,7 @@ function normalizeSiteSettings(settings = {}) {
     cityName: cleanText(settings.cityName, fallback.cityName),
     cityLatitude: normalizeCoordinate(settings.cityLatitude, fallback.cityLatitude, -90, 90),
     cityLongitude: normalizeCoordinate(settings.cityLongitude, fallback.cityLongitude, -180, 180),
+    cityAdcode: normalizeAdcode(settings.cityAdcode) || fallback.cityAdcode,
     songUrl: String(settings.songUrl || "").trim()
   };
 }
@@ -1115,6 +1334,20 @@ async function readJson(file, fallback) {
   } catch {
     return fallback;
   }
+}
+
+function loadEnvFile(file) {
+  if (!fs.existsSync(file)) return;
+  const raw = fs.readFileSync(file, "utf8");
+  raw.split(/\r?\n/).forEach((line) => {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) return;
+    const equals = trimmed.indexOf("=");
+    if (equals <= 0) return;
+    const key = trimmed.slice(0, equals).trim();
+    const value = trimmed.slice(equals + 1).trim().replace(/^['"]|['"]$/g, "");
+    if (key && process.env[key] === undefined) process.env[key] = value;
+  });
 }
 
 async function fetchJson(url, timeoutMs) {
