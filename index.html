@@ -170,13 +170,13 @@
 
         <section class="section mood-section" id="mood">
           <div class="section-heading">
-            <p class="eyebrow">CALL ME</p>
-            <h2>她今天的心情</h2>
+            <p class="eyebrow">SIGNALS</p>
+            <h2>互动信号站</h2>
           </div>
           <div class="mood-grid" id="moodGrid"></div>
           <div class="mood-response" id="moodResponse">
             <i data-lucide="heart-handshake"></i>
-            <span>点一下呼唤，把现在的心情悄悄发给我。</span>
+            <span>她点一下，我就能收到抱抱、想你或者今天状态的提醒。</span>
           </div>
         </section>
 
@@ -242,6 +242,58 @@
           </div>
         </section>
 
+        <section class="section practical-section" id="practical">
+          <div class="section-heading">
+            <p class="eyebrow">DAILY HELPERS</p>
+            <h2>实用小助手</h2>
+          </div>
+          <div class="practical-grid">
+            <div class="tool-panel">
+              <div class="tool-title">
+                <i data-lucide="calendar-heart"></i>
+                <h3>约会计划表</h3>
+              </div>
+              <div class="practical-list" id="datePlanList"></div>
+            </div>
+
+            <div class="tool-panel">
+              <div class="tool-title">
+                <i data-lucide="utensils"></i>
+                <h3>点餐盲盒</h3>
+              </div>
+              <div class="food-filters">
+                <label><input id="foodNoSpicy" type="checkbox"> 不吃辣</label>
+                <label><input id="foodWarmOnly" type="checkbox"> 想吃热的</label>
+                <select id="foodBudgetFilter" aria-label="预算">
+                  <option value="any">预算不限</option>
+                  <option value="low">低预算</option>
+                  <option value="mid">中预算</option>
+                  <option value="high">高预算</option>
+                </select>
+                <select id="foodDistanceFilter" aria-label="距离">
+                  <option value="any">距离不限</option>
+                  <option value="near">附近</option>
+                  <option value="normal">不太远</option>
+                  <option value="far">可以跑远点</option>
+                </select>
+              </div>
+              <div class="food-result" id="foodResult"></div>
+              <button class="primary-button full-button" id="drawFoodButton" type="button">
+                <i data-lucide="dice-5"></i>
+                <span>抽今天吃什么</span>
+              </button>
+            </div>
+
+            <div class="tool-panel">
+              <div class="tool-title">
+                <i data-lucide="gift"></i>
+                <h3>礼物清单</h3>
+              </div>
+              <div class="practical-list" id="giftList"></div>
+            </div>
+          </div>
+        </section>
+
         <section class="section map-section" id="map">
           <div class="section-heading">
             <p class="eyebrow">FOOTPRINTS</p>
@@ -269,6 +321,22 @@
           <div class="section-heading">
             <p class="eyebrow">FUTURE MAIL</p>
             <h2>留言墙和未来信</h2>
+          </div>
+          <div class="guestbook-panel">
+            <div>
+              <h3>双向留言本</h3>
+              <p>她可以在这里留言，我会在后台看到，也可以回复回来。</p>
+            </div>
+            <form class="guestbook-form" id="guestbookForm">
+              <input name="guestName" type="text" placeholder="昵称">
+              <textarea name="guestMessage" rows="3" maxlength="500" placeholder="写给我的话"></textarea>
+              <button class="primary-button" type="submit">
+                <i data-lucide="send"></i>
+                <span>写进留言本</span>
+              </button>
+            </form>
+            <p class="admin-message" id="guestbookMessage" aria-live="polite"></p>
+            <div class="guestbook-list" id="guestbookList"></div>
           </div>
           <div class="message-wall" id="messageWall"></div>
           <div class="letter-grid" id="letterGrid"></div>
@@ -498,6 +566,152 @@
             <div class="admin-content-list" id="adminIdeaToolList"></div>
           </form>
 
+          <form class="admin-panel" id="datePlanAdminForm">
+            <div class="admin-panel-head">
+              <div>
+                <p class="eyebrow">DATE PLAN</p>
+                <h2 id="datePlanAdminTitle">新增约会计划</h2>
+              </div>
+              <button class="ghost-button" id="resetDatePlanFormButton" type="button">
+                <i data-lucide="rotate-ccw"></i>
+                <span>清空</span>
+              </button>
+            </div>
+            <input name="datePlanId" type="hidden">
+            <div class="admin-form-grid two-columns">
+              <label>
+                标题
+                <input name="title" type="text" required>
+              </label>
+              <label>
+                日期
+                <input name="date" type="date" required>
+              </label>
+              <label>
+                时间
+                <input name="time" type="text" placeholder="比如：傍晚">
+              </label>
+              <label>
+                地点
+                <input name="place" type="text" required>
+              </label>
+              <label>
+                预算
+                <input name="budget" type="text" placeholder="比如：200 元内">
+              </label>
+            </div>
+            <label>
+              准备清单
+              <textarea name="checklist" rows="4" placeholder="一行一个"></textarea>
+            </label>
+            <label>
+              备注
+              <textarea name="note" rows="3"></textarea>
+            </label>
+            <p class="admin-message" id="datePlanAdminMessage" aria-live="polite"></p>
+            <button class="primary-button full-button" type="submit">
+              <i data-lucide="calendar-heart"></i>
+              <span>保存约会计划</span>
+            </button>
+            <div class="admin-content-list" id="adminDatePlanList"></div>
+          </form>
+
+          <form class="admin-panel" id="foodAdminForm">
+            <div class="admin-panel-head">
+              <div>
+                <p class="eyebrow">FOOD BOX</p>
+                <h2 id="foodAdminTitle">新增菜品</h2>
+              </div>
+              <button class="ghost-button" id="resetFoodFormButton" type="button">
+                <i data-lucide="rotate-ccw"></i>
+                <span>清空</span>
+              </button>
+            </div>
+            <input name="foodId" type="hidden">
+            <div class="admin-form-grid two-columns">
+              <label>
+                菜品/类型
+                <input name="name" type="text" required>
+              </label>
+              <label>
+                标签
+                <input name="tags" type="text" placeholder="热乎, 不辣, 下饭">
+              </label>
+              <label>
+                预算
+                <select name="budget">
+                  <option value="low">低预算</option>
+                  <option value="mid" selected>中预算</option>
+                  <option value="high">高预算</option>
+                </select>
+              </label>
+              <label>
+                距离
+                <select name="distance">
+                  <option value="near">附近</option>
+                  <option value="normal" selected>不太远</option>
+                  <option value="far">可以跑远点</option>
+                </select>
+              </label>
+            </div>
+            <label class="switch-label">
+              <input name="spicy" type="checkbox">
+              <span>可吃辣</span>
+            </label>
+            <label class="switch-label">
+              <input name="warm" type="checkbox" checked>
+              <span>热乎的</span>
+            </label>
+            <p class="admin-message" id="foodAdminMessage" aria-live="polite"></p>
+            <button class="primary-button full-button" type="submit">
+              <i data-lucide="utensils"></i>
+              <span>保存菜品</span>
+            </button>
+            <div class="admin-content-list" id="adminFoodList"></div>
+          </form>
+
+          <form class="admin-panel" id="giftAdminForm">
+            <div class="admin-panel-head">
+              <div>
+                <p class="eyebrow">GIFT LIST</p>
+                <h2 id="giftAdminTitle">新增礼物备忘</h2>
+              </div>
+              <button class="ghost-button" id="resetGiftFormButton" type="button">
+                <i data-lucide="rotate-ccw"></i>
+                <span>清空</span>
+              </button>
+            </div>
+            <input name="giftId" type="hidden">
+            <div class="admin-form-grid two-columns">
+              <label>
+                标题
+                <input name="title" type="text" required>
+              </label>
+              <label>
+                分类
+                <input name="category" type="text" placeholder="口味 / 尺码 / 礼物">
+              </label>
+              <label>
+                优先级
+                <input name="priority" type="text" value="中">
+              </label>
+            </div>
+            <label>
+              细节
+              <textarea name="detail" rows="3" required></textarea>
+            </label>
+            <label>
+              备注
+              <textarea name="note" rows="3"></textarea>
+            </label>
+            <p class="admin-message" id="giftAdminMessage" aria-live="polite"></p>
+            <button class="primary-button full-button" type="submit">
+              <i data-lucide="gift"></i>
+              <span>保存礼物备忘</span>
+            </button>
+            <div class="admin-content-list" id="adminGiftList"></div>
+          </form>
+
           <form class="admin-panel" id="placeAdminForm">
             <div class="admin-panel-head">
               <div>
@@ -686,6 +900,21 @@
             <div class="admin-event-list" id="adminEventList"></div>
           </section>
 
+          <section class="admin-panel">
+            <div class="admin-panel-head">
+              <div>
+                <p class="eyebrow">GUESTBOOK</p>
+                <h2>双向留言本</h2>
+              </div>
+              <button class="secondary-button" id="refreshGuestbookButton" type="button">
+                <i data-lucide="refresh-cw"></i>
+                <span>刷新</span>
+              </button>
+            </div>
+            <p class="admin-message" id="guestbookAdminMessage" aria-live="polite">可以回复、隐藏或删除她写下的留言。</p>
+            <div class="admin-content-list" id="adminGuestbookList"></div>
+          </section>
+
           <form class="admin-panel" id="mailConfigForm">
             <div class="admin-panel-head">
               <div>
@@ -725,6 +954,31 @@
               <span>保存邮箱配置</span>
             </button>
           </form>
+
+          <section class="admin-panel">
+            <div class="admin-panel-head">
+              <div>
+                <p class="eyebrow">BACKUP</p>
+                <h2>数据导入导出</h2>
+              </div>
+              <button class="secondary-button" id="backupExportButton" type="button">
+                <i data-lucide="download"></i>
+                <span>导出备份</span>
+              </button>
+            </div>
+            <p class="admin-message">导出会包含网站内容、小票券、相册元数据、留言本和使用记录，不包含后台密码和 QQ 邮箱授权码。</p>
+            <form class="backup-import-form" id="backupImportForm">
+              <label>
+                导入备份 JSON
+                <input name="backupFile" type="file" accept="application/json,.json">
+              </label>
+              <button class="primary-button full-button" type="submit">
+                <i data-lucide="upload"></i>
+                <span>导入并覆盖服务器数据</span>
+              </button>
+            </form>
+            <p class="admin-message" id="backupMessage" aria-live="polite"></p>
+          </section>
         </section>
       </main>
     </div>
@@ -788,12 +1042,24 @@
     </dialog>
 
     <dialog class="mood-dialog" id="moodDialog">
-      <button class="dialog-close icon-button" id="closeMoodDialogButton" type="button" aria-label="关闭呼唤">
+      <button class="dialog-close icon-button" id="closeMoodDialogButton" type="button" aria-label="关闭互动信号">
         <i data-lucide="x"></i>
       </button>
-      <p class="eyebrow">CALL ME</p>
+      <p class="eyebrow">SIGNAL</p>
       <h2>现在的心情</h2>
       <form id="moodCallForm">
+        <label class="wide-label" for="moodStatusSelect">
+          今天的状态
+          <select id="moodStatusSelect" name="status">
+            <option value="">先不选，只写一句话</option>
+            <option value="想被抱抱">想被抱抱</option>
+            <option value="有点累">有点累</option>
+            <option value="心情很好">心情很好</option>
+            <option value="有点委屈">有点委屈</option>
+            <option value="想你了">想你了</option>
+            <option value="需要哄哄">需要哄哄</option>
+          </select>
+        </label>
         <label class="wide-label" for="moodCallInput">
           输入现在的心情
           <textarea id="moodCallInput" name="message" rows="5" maxlength="500" placeholder="比如：今天有点累，想被抱一下。"></textarea>

@@ -198,6 +198,25 @@ const DEFAULTS = {
       ]
     }
   ],
+  datePlans: [
+    { id: "plan-1", title: "周末半日约会", date: daysFromNow(6), time: "15:00", place: "先去喝奶茶，再散步", budget: "200 元内", checklist: ["带充电宝", "提前看天气", "拍一张合照"], note: "轻松一点，不赶时间。" },
+    { id: "plan-2", title: "下次见面小计划", date: daysFromNow(12), time: "傍晚", place: "她想去的地方", budget: "随心", checklist: ["订好车", "准备小惊喜", "晚饭别太辣"], note: "把主动权交给她。" }
+  ],
+  foodOptions: [
+    { id: "food-1", name: "番茄牛腩饭", tags: ["热乎", "不辣", "米饭"], spicy: false, warm: true, budget: "mid", distance: "near" },
+    { id: "food-2", name: "寿喜锅", tags: ["热乎", "甜口", "适合慢慢吃"], spicy: false, warm: true, budget: "high", distance: "normal" },
+    { id: "food-3", name: "酸菜鱼", tags: ["下饭", "微辣", "热乎"], spicy: true, warm: true, budget: "mid", distance: "normal" },
+    { id: "food-4", name: "烤肉拌饭", tags: ["快一点", "肉肉", "饱"], spicy: false, warm: true, budget: "low", distance: "near" },
+    { id: "food-5", name: "日式拉面", tags: ["汤面", "热乎", "不太辣"], spicy: false, warm: true, budget: "mid", distance: "near" },
+    { id: "food-6", name: "轻食沙拉", tags: ["清爽", "不辣", "负担小"], spicy: false, warm: false, budget: "mid", distance: "near" },
+    { id: "food-7", name: "麻辣烫", tags: ["热乎", "可选辣度", "随便加"], spicy: true, warm: true, budget: "low", distance: "near" },
+    { id: "food-8", name: "椰子鸡", tags: ["清淡", "热乎", "适合聊天"], spicy: false, warm: true, budget: "high", distance: "far" }
+  ],
+  giftList: [
+    { id: "gift-1", title: "花和手写卡片", category: "仪式感", detail: "不用很大束，颜色温柔一点。", priority: "高", note: "适合见面当天。" },
+    { id: "gift-2", title: "她常喝的奶茶备注", category: "口味", detail: "少冰、三分糖，珍珠或芋圆。", priority: "中", note: "后台可以继续补充她的喜好。" },
+    { id: "gift-3", title: "尺码和忌口备忘", category: "备忘", detail: "衣服、鞋码、戒指、过敏和不吃的东西都可以写这里。", priority: "高", note: "买礼物前先看一眼。" }
+  ],
   wishes: COUPLE_WISH_TEXTS.map((text, index) => ({ id: `couple-100-${String(index + 1).padStart(3, "0")}`, text, done: false })),
   coupons: [
     { id: "coupon-1", title: "奶茶免排队券", text: "想喝哪杯都可以，我负责下单和夸你眼光好。" },
@@ -233,6 +252,7 @@ let adminEditingCouponId = "";
 let albumExpanded = false;
 let albumLoaded = false;
 let selectedDateIdea = null;
+let selectedFoodOption = null;
 const ideaToolResults = {};
 const expandedPanels = {
   idea: false,
@@ -243,6 +263,9 @@ const adminEditors = {
   timeline: "",
   idea: "",
   ideaTool: "",
+  datePlan: "",
+  food: "",
+  gift: "",
   place: "",
   message: "",
   letter: ""
@@ -268,10 +291,14 @@ function loadState() {
     timeline: DEFAULTS.timeline.map((item) => ({ ...item })),
     dateIdeas: DEFAULTS.dateIdeas.map((item) => ({ ...item, tags: [...item.tags] })),
     ideaTools: DEFAULTS.ideaTools.map((item) => ({ ...item, items: [...item.items] })),
+    datePlans: DEFAULTS.datePlans.map((item) => ({ ...item, checklist: [...item.checklist] })),
+    foodOptions: DEFAULTS.foodOptions.map((item) => ({ ...item, tags: [...item.tags] })),
+    giftList: DEFAULTS.giftList.map((item) => ({ ...item })),
     messageWall: DEFAULTS.messageWall.map((item) => ({ ...item })),
     letters: DEFAULTS.letters.map((item) => ({ ...item })),
     wishes: normalizeWishes(saved.wishes, saved.wishlistVersion),
-    places: saved.places || DEFAULTS.places
+    places: saved.places || DEFAULTS.places,
+    guestbook: []
   };
 }
 
@@ -311,6 +338,9 @@ function applyContent(content) {
   state.timeline = normalizeTimeline(content.timeline);
   state.dateIdeas = normalizeDateIdeas(content.dateIdeas);
   state.ideaTools = normalizeIdeaTools(content.ideaTools);
+  state.datePlans = normalizeDatePlans(content.datePlans);
+  state.foodOptions = normalizeFoodOptions(content.foodOptions);
+  state.giftList = normalizeGiftList(content.giftList);
   state.places = normalizePlaces(content.places);
   state.messageWall = normalizeMessages(content.messageWall);
   state.letters = normalizeLetters(content.letters);
@@ -350,6 +380,62 @@ function normalizeIdeaTools(items) {
       ? item.items.map((value) => String(value || "").trim()).filter(Boolean)
       : String(item.items || "").split(/[\n，,]/).map((value) => value.trim()).filter(Boolean)
   })).filter((item) => item.items.length);
+}
+
+function normalizeDatePlans(items) {
+  const source = Array.isArray(items) ? items : DEFAULTS.datePlans;
+  return source.map((item) => ({
+    id: item.id || `plan-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+    title: String(item.title || "新的约会计划"),
+    date: normalizeDateInput(item.date) || dayKey(),
+    time: String(item.time || "待定"),
+    place: String(item.place || "地点待定"),
+    budget: String(item.budget || "随心"),
+    checklist: Array.isArray(item.checklist)
+      ? item.checklist.map((value) => String(value || "").trim()).filter(Boolean)
+      : String(item.checklist || "").split(/[\n，,]/).map((value) => value.trim()).filter(Boolean),
+    note: String(item.note || "")
+  }));
+}
+
+function normalizeFoodOptions(items) {
+  const source = Array.isArray(items) ? items : DEFAULTS.foodOptions;
+  return source.map((item) => ({
+    id: item.id || `food-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+    name: String(item.name || "新的菜品"),
+    tags: Array.isArray(item.tags)
+      ? item.tags.map((value) => String(value || "").trim()).filter(Boolean)
+      : String(item.tags || "").split(/[，,]/).map((value) => value.trim()).filter(Boolean),
+    spicy: Boolean(item.spicy),
+    warm: item.warm !== false,
+    budget: ["low", "mid", "high"].includes(item.budget) ? item.budget : "mid",
+    distance: ["near", "normal", "far"].includes(item.distance) ? item.distance : "normal"
+  }));
+}
+
+function normalizeGiftList(items) {
+  const source = Array.isArray(items) ? items : DEFAULTS.giftList;
+  return source.map((item) => ({
+    id: item.id || `gift-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+    title: String(item.title || "新的礼物备忘"),
+    category: String(item.category || "备忘"),
+    detail: String(item.detail || "写下她喜欢的细节。"),
+    priority: String(item.priority || "中"),
+    note: String(item.note || "")
+  }));
+}
+
+function normalizeGuestbook(entries) {
+  const source = Array.isArray(entries) ? entries : [];
+  return source.map((entry) => ({
+    id: entry.id || `guest-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+    name: String(entry.name || "她"),
+    message: String(entry.message || ""),
+    reply: String(entry.reply || ""),
+    createdAt: String(entry.createdAt || ""),
+    repliedAt: String(entry.repliedAt || ""),
+    visible: entry.visible !== false
+  })).filter((entry) => entry.message);
 }
 
 function normalizePlaces(items) {
@@ -477,6 +563,8 @@ async function init() {
   bindAlbum();
   bindMood();
   bindPlans();
+  bindPracticalTools();
+  bindGuestbook();
   bindMap();
   bindLetters();
   bindMusic();
@@ -485,6 +573,7 @@ async function init() {
   await loadContent();
   renderAll();
   loadCoupons();
+  loadGuestbook();
 
   if (state.unlocked) {
     unlock(false);
@@ -611,7 +700,7 @@ async function showAdmin(animated) {
       $("#entry").style.display = "none";
     }, 280);
   }
-  await Promise.all([loadAdminCoupons(), loadAdminEvents(), loadMailConfig(), loadAdminContent(), loadSecurityConfig(), loadServerPhotos()]);
+  await Promise.all([loadAdminCoupons(), loadAdminEvents(), loadMailConfig(), loadAdminContent(), loadSecurityConfig(), loadServerPhotos(), loadGuestbook(true)]);
 }
 
 function showEntry() {
@@ -639,10 +728,12 @@ function renderAll() {
   renderMoods();
   renderDateIdea();
   renderIdeaTools();
+  renderPracticalTools();
   renderWishes();
   renderCoupons();
   renderMap();
   renderMessages();
+  renderGuestbook();
   renderLetters();
   fillSettingsForm();
   refreshIcons();
@@ -1179,9 +1270,14 @@ function renderAdminPhotos(message = "") {
 
 function bindMood() {
   $("#moodGrid").addEventListener("click", (event) => {
-    const button = event.target.closest("[data-mood-call]");
+    const button = event.target.closest("[data-signal-action]");
     if (!button) return;
-    openMoodDialog();
+    const action = button.dataset.signalAction;
+    if (action === "status") {
+      openMoodDialog();
+      return;
+    }
+    sendQuickSignal(action);
   });
   $("#closeMoodDialogButton").addEventListener("click", closeMoodDialog);
   $("#cancelMoodDialogButton").addEventListener("click", closeMoodDialog);
@@ -1190,9 +1286,17 @@ function bindMood() {
 
 function renderMoods() {
   $("#moodGrid").innerHTML = `
-    <button class="mood-button mood-call-button" type="button" data-mood-call="true">
-      <i data-lucide="message-circle-heart"></i>
-      <span>呼唤我</span>
+    <button class="mood-button" type="button" data-signal-action="hug">
+      <i data-lucide="hand-heart"></i>
+      <span>要抱抱</span>
+    </button>
+    <button class="mood-button" type="button" data-signal-action="miss">
+      <i data-lucide="radar"></i>
+      <span>想你雷达</span>
+    </button>
+    <button class="mood-button" type="button" data-signal-action="status">
+      <i data-lucide="traffic-cone"></i>
+      <span>今日状态灯</span>
     </button>
   `;
   refreshIcons();
@@ -1210,33 +1314,63 @@ function closeMoodDialog() {
   $("#moodDialog").close();
 }
 
+async function sendQuickSignal(action) {
+  const configs = {
+    hug: {
+      moodKey: "hug",
+      label: "要抱抱",
+      response: "她想要一个不问原因的抱抱。",
+      ok: "抱抱信号已经发给我了。"
+    },
+    miss: {
+      moodKey: "miss",
+      label: "想你雷达",
+      response: "她现在很想你。",
+      ok: "想你雷达已经亮起来，我会看到。"
+    }
+  };
+  const config = configs[action];
+  if (!config) return;
+  await sendSignal(config, config.ok);
+}
+
 async function sendMoodCall(event) {
   event.preventDefault();
   const input = $("#moodCallInput");
+  const mood = $("#moodStatusSelect").value;
   const message = input.value.trim();
-  if (!message) {
-    $("#moodDialogMessage").textContent = "先写一点现在的心情。";
+  if (!mood && !message) {
+    $("#moodDialogMessage").textContent = "先选一个状态，或者写一点现在的心情。";
     return;
   }
   $("#moodDialogMessage").textContent = "正在发给我...";
+  await sendSignal({
+    moodKey: "status",
+    label: "今日状态灯",
+    response: [mood ? `状态：${mood}` : "", message ? `心情：${message}` : ""].filter(Boolean).join("；")
+  }, "状态灯已经发给我了，我会看到她今天的颜色。", true);
+}
+
+async function sendSignal(payload, okText, closeDialog = false) {
   try {
     const response = await fetch("/api/mood-events", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        moodKey: "call",
-        label: "呼唤",
-        response: message
-      })
+      body: JSON.stringify(payload)
     });
     const data = await response.json().catch(() => ({}));
     if (!response.ok || data.ok === false) throw new Error(data.error || "发送失败");
-    selectedMood = "call";
-    $("#moodResponse").innerHTML = `<i data-lucide="heart-handshake"></i><span>已经发给我了，我会看到她现在的心情。</span>`;
-    closeMoodDialog();
+    selectedMood = payload.moodKey;
+    $("#moodResponse").innerHTML = `<i data-lucide="heart-handshake"></i><span>${escapeHtml(okText)}</span>`;
+    if (closeDialog) closeMoodDialog();
     refreshIcons();
   } catch (error) {
-    $("#moodDialogMessage").textContent = error.message || "暂时没有发出去，再试一次。";
+    if (closeDialog) {
+      $("#moodDialogMessage").textContent = error.message || "暂时没有发出去，再试一次。";
+    } else {
+      $("#moodResponse").innerHTML = `<i data-lucide="wifi-off"></i><span>${escapeHtml(error.message || "暂时没有发出去，再试一次。")}</span>`;
+      refreshIcons();
+    }
   }
 }
 
@@ -1336,6 +1470,94 @@ function drawIdeaTool(id) {
   const index = Math.floor(Math.random() * tool.items.length);
   ideaToolResults[id] = tool.items[index];
   renderIdeaTools();
+}
+
+function bindPracticalTools() {
+  $("#drawFoodButton").addEventListener("click", drawFoodOption);
+  ["foodNoSpicy", "foodWarmOnly", "foodBudgetFilter", "foodDistanceFilter"].forEach((id) => {
+    $(`#${id}`).addEventListener("change", () => {
+      selectedFoodOption = null;
+      renderFoodRoulette();
+    });
+  });
+}
+
+function renderPracticalTools() {
+  renderDatePlans();
+  renderFoodRoulette();
+  renderGiftList();
+}
+
+function renderDatePlans() {
+  const plans = [...state.datePlans].sort((a, b) => String(a.date).localeCompare(String(b.date)));
+  $("#datePlanList").innerHTML = plans.length ? plans.map((plan) => `
+    <article class="practical-card">
+      <div class="practical-card-head">
+        <strong>${escapeHtml(plan.title)}</strong>
+        <span>${formatDate(plan.date)} · ${escapeHtml(plan.time)}</span>
+      </div>
+      <p>${escapeHtml(plan.place)} · 预算 ${escapeHtml(plan.budget)}</p>
+      ${plan.checklist?.length ? `<ul>${plan.checklist.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>` : ""}
+      ${plan.note ? `<em>${escapeHtml(plan.note)}</em>` : ""}
+    </article>
+  `).join("") : `<p class="folded-note">还没有约会计划，后台可以提前排好。</p>`;
+}
+
+function renderFoodRoulette() {
+  const food = selectedFoodOption || filteredFoodOptions()[0];
+  $("#foodResult").innerHTML = food
+    ? `
+      <strong>${escapeHtml(food.name)}</strong>
+      <span>${food.tags.map((tag) => escapeHtml(tag)).join(" / ")}</span>
+      <p>${budgetLabel(food.budget)} · ${distanceLabel(food.distance)} · ${food.spicy ? "可吃辣" : "不辣优先"} · ${food.warm ? "热乎" : "清爽"}</p>
+    `
+    : `<p>这个筛选下暂时没有菜品，放宽一点再抽。</p>`;
+}
+
+function drawFoodOption() {
+  const options = filteredFoodOptions();
+  if (!options.length) {
+    selectedFoodOption = null;
+    renderFoodRoulette();
+    return;
+  }
+  selectedFoodOption = options[Math.floor(Math.random() * options.length)];
+  renderFoodRoulette();
+}
+
+function filteredFoodOptions() {
+  const noSpicy = $("#foodNoSpicy").checked;
+  const warmOnly = $("#foodWarmOnly").checked;
+  const budget = $("#foodBudgetFilter").value;
+  const distance = $("#foodDistanceFilter").value;
+  return state.foodOptions.filter((food) => {
+    if (noSpicy && food.spicy) return false;
+    if (warmOnly && !food.warm) return false;
+    if (budget !== "any" && food.budget !== budget) return false;
+    if (distance !== "any" && food.distance !== distance) return false;
+    return true;
+  });
+}
+
+function renderGiftList() {
+  $("#giftList").innerHTML = state.giftList.length ? state.giftList.map((gift) => `
+    <article class="practical-card gift-card">
+      <div class="practical-card-head">
+        <strong>${escapeHtml(gift.title)}</strong>
+        <span>${escapeHtml(gift.category)} · 优先级 ${escapeHtml(gift.priority)}</span>
+      </div>
+      <p>${escapeHtml(gift.detail)}</p>
+      ${gift.note ? `<em>${escapeHtml(gift.note)}</em>` : ""}
+    </article>
+  `).join("") : `<p class="folded-note">还没有礼物备忘，后台可以慢慢补她的喜好。</p>`;
+}
+
+function budgetLabel(value) {
+  return { low: "低预算", mid: "中预算", high: "高预算" }[value] || "预算随意";
+}
+
+function distanceLabel(value) {
+  return { near: "附近", normal: "不太远", far: "可以跑远点" }[value] || "距离随意";
 }
 
 function renderWishes() {
@@ -1497,6 +1719,7 @@ function bindAdmin() {
   });
   $("#refreshAdminCouponsButton").addEventListener("click", loadAdminCoupons);
   $("#refreshAdminEventsButton").addEventListener("click", loadAdminEvents);
+  $("#refreshGuestbookButton").addEventListener("click", () => loadGuestbook(true));
   $("#refreshMailConfigButton").addEventListener("click", loadMailConfig);
   $("#mailConfigForm").addEventListener("submit", saveMailConfig);
   $("#securityForm").addEventListener("submit", saveSecurityConfig);
@@ -1504,13 +1727,21 @@ function bindAdmin() {
   $("#timelineAdminForm").addEventListener("submit", saveAdminTimeline);
   $("#ideaAdminForm").addEventListener("submit", saveAdminIdea);
   $("#ideaToolAdminForm").addEventListener("submit", saveAdminIdeaTool);
+  $("#datePlanAdminForm").addEventListener("submit", saveAdminDatePlan);
+  $("#foodAdminForm").addEventListener("submit", saveAdminFood);
+  $("#giftAdminForm").addEventListener("submit", saveAdminGift);
   $("#placeAdminForm").addEventListener("submit", saveAdminPlace);
   $("#messageAdminForm").addEventListener("submit", saveAdminMessage);
   $("#letterAdminForm").addEventListener("submit", saveAdminLetter);
+  $("#backupExportButton").addEventListener("click", exportBackup);
+  $("#backupImportForm").addEventListener("submit", importBackup);
   $("#adminAddPhotoButton").addEventListener("click", () => openPhotoEditor());
   $("#resetTimelineFormButton").addEventListener("click", resetTimelineForm);
   $("#resetIdeaFormButton").addEventListener("click", resetIdeaForm);
   $("#resetIdeaToolFormButton").addEventListener("click", resetIdeaToolForm);
+  $("#resetDatePlanFormButton").addEventListener("click", resetDatePlanForm);
+  $("#resetFoodFormButton").addEventListener("click", resetFoodForm);
+  $("#resetGiftFormButton").addEventListener("click", resetGiftForm);
   $("#resetPlaceFormButton").addEventListener("click", resetPlaceForm);
   $("#resetMessageFormButton").addEventListener("click", resetMessageForm);
   $("#resetLetterFormButton").addEventListener("click", resetLetterForm);
@@ -1524,9 +1755,13 @@ function bindAdmin() {
   $("#adminTimelineList").addEventListener("click", (event) => handleAdminContentAction(event, "timeline"));
   $("#adminIdeaList").addEventListener("click", (event) => handleAdminContentAction(event, "idea"));
   $("#adminIdeaToolList").addEventListener("click", (event) => handleAdminContentAction(event, "ideaTool"));
+  $("#adminDatePlanList").addEventListener("click", (event) => handleAdminContentAction(event, "datePlan"));
+  $("#adminFoodList").addEventListener("click", (event) => handleAdminContentAction(event, "food"));
+  $("#adminGiftList").addEventListener("click", (event) => handleAdminContentAction(event, "gift"));
   $("#adminPlaceList").addEventListener("click", (event) => handleAdminContentAction(event, "place"));
   $("#adminMessageList").addEventListener("click", (event) => handleAdminContentAction(event, "message"));
   $("#adminLetterList").addEventListener("click", (event) => handleAdminContentAction(event, "letter"));
+  $("#adminGuestbookList").addEventListener("click", handleAdminGuestbookAction);
   $("#adminPhotoList").addEventListener("click", (event) => {
     const editButton = event.target.closest("[data-edit-photo]");
     if (editButton) {
@@ -1627,6 +1862,9 @@ function renderAdminContent() {
   renderAdminTimeline();
   renderAdminIdeas();
   renderAdminIdeaTools();
+  renderAdminDatePlans();
+  renderAdminFoods();
+  renderAdminGifts();
   renderAdminPlaces();
   renderAdminMessages();
   renderAdminLetters();
@@ -1638,6 +1876,9 @@ function contentPayload() {
     timeline: state.timeline,
     dateIdeas: state.dateIdeas,
     ideaTools: state.ideaTools,
+    datePlans: state.datePlans,
+    foodOptions: state.foodOptions,
+    giftList: state.giftList,
     places: state.places,
     messageWall: state.messageWall,
     letters: state.letters
@@ -1722,6 +1963,57 @@ function fillContentForm(type, id) {
     return;
   }
 
+  if (type === "datePlan") {
+    const item = state.datePlans.find((entry) => entry.id === id);
+    if (!item) return;
+    adminEditors.datePlan = id;
+    const form = $("#datePlanAdminForm");
+    form.datePlanId.value = id;
+    form.title.value = item.title || "";
+    form.date.value = item.date || "";
+    form.time.value = item.time || "";
+    form.place.value = item.place || "";
+    form.budget.value = item.budget || "";
+    form.checklist.value = (item.checklist || []).join("\n");
+    form.note.value = item.note || "";
+    $("#datePlanAdminTitle").textContent = "编辑约会计划";
+    $("#datePlanAdminMessage").textContent = "";
+    return;
+  }
+
+  if (type === "food") {
+    const item = state.foodOptions.find((entry) => entry.id === id);
+    if (!item) return;
+    adminEditors.food = id;
+    const form = $("#foodAdminForm");
+    form.foodId.value = id;
+    form.name.value = item.name || "";
+    form.tags.value = (item.tags || []).join(", ");
+    form.spicy.checked = Boolean(item.spicy);
+    form.warm.checked = item.warm !== false;
+    form.budget.value = item.budget || "mid";
+    form.distance.value = item.distance || "normal";
+    $("#foodAdminTitle").textContent = "编辑菜品";
+    $("#foodAdminMessage").textContent = "";
+    return;
+  }
+
+  if (type === "gift") {
+    const item = state.giftList.find((entry) => entry.id === id);
+    if (!item) return;
+    adminEditors.gift = id;
+    const form = $("#giftAdminForm");
+    form.giftId.value = id;
+    form.title.value = item.title || "";
+    form.category.value = item.category || "";
+    form.priority.value = item.priority || "";
+    form.detail.value = item.detail || "";
+    form.note.value = item.note || "";
+    $("#giftAdminTitle").textContent = "编辑礼物备忘";
+    $("#giftAdminMessage").textContent = "";
+    return;
+  }
+
   if (type === "place") {
     const item = state.places.find((entry) => entry.id === id);
     if (!item) return;
@@ -1769,6 +2061,9 @@ async function deleteContentItem(type, id) {
     timeline: { list: "timeline", label: "这条回忆", message: "#timelineAdminMessage" },
     idea: { list: "dateIdeas", label: "这个约会灵感", message: "#ideaAdminMessage" },
     ideaTool: { list: "ideaTools", label: "这个功能盒子", message: "#ideaToolAdminMessage" },
+    datePlan: { list: "datePlans", label: "这个约会计划", message: "#datePlanAdminMessage" },
+    food: { list: "foodOptions", label: "这个菜品", message: "#foodAdminMessage" },
+    gift: { list: "giftList", label: "这个礼物备忘", message: "#giftAdminMessage" },
     place: { list: "places", label: "这个地图足迹", message: "#placeAdminMessage" },
     message: { list: "messageWall", label: "这条留言", message: "#messageAdminMessage" },
     letter: { list: "letters", label: "这封未来信", message: "#letterAdminMessage" }
@@ -1787,6 +2082,8 @@ async function deleteContentItem(type, id) {
 async function moveContentItem(type, id, direction) {
   const configs = {
     timeline: { list: "timeline", message: "#timelineAdminMessage" },
+    datePlan: { list: "datePlans", message: "#datePlanAdminMessage" },
+    gift: { list: "giftList", message: "#giftAdminMessage" },
     place: { list: "places", message: "#placeAdminMessage" },
     message: { list: "messageWall", message: "#messageAdminMessage" },
     letter: { list: "letters", message: "#letterAdminMessage" }
@@ -1864,6 +2161,69 @@ async function saveAdminIdeaTool(event) {
   }
 }
 
+async function saveAdminDatePlan(event) {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const id = form.datePlanId.value || `plan-${Date.now()}`;
+  upsertContentItem("datePlan", {
+    id,
+    title: form.title.value.trim(),
+    date: form.date.value || dayKey(),
+    time: form.time.value.trim() || "待定",
+    place: form.place.value.trim() || "地点待定",
+    budget: form.budget.value.trim() || "随心",
+    checklist: form.checklist.value.split(/[\n，,]/).map((item) => item.trim()).filter(Boolean),
+    note: form.note.value.trim()
+  });
+  try {
+    await saveAdminContent("#datePlanAdminMessage");
+    resetDatePlanForm(false);
+  } catch (error) {
+    $("#datePlanAdminMessage").textContent = error.message;
+  }
+}
+
+async function saveAdminFood(event) {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const id = form.foodId.value || `food-${Date.now()}`;
+  upsertContentItem("food", {
+    id,
+    name: form.name.value.trim(),
+    tags: form.tags.value.split(/[，,]/).map((item) => item.trim()).filter(Boolean),
+    spicy: form.spicy.checked,
+    warm: form.warm.checked,
+    budget: form.budget.value,
+    distance: form.distance.value
+  });
+  try {
+    await saveAdminContent("#foodAdminMessage");
+    resetFoodForm(false);
+  } catch (error) {
+    $("#foodAdminMessage").textContent = error.message;
+  }
+}
+
+async function saveAdminGift(event) {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const id = form.giftId.value || `gift-${Date.now()}`;
+  upsertContentItem("gift", {
+    id,
+    title: form.title.value.trim(),
+    category: form.category.value.trim(),
+    detail: form.detail.value.trim(),
+    priority: form.priority.value.trim() || "中",
+    note: form.note.value.trim()
+  });
+  try {
+    await saveAdminContent("#giftAdminMessage");
+    resetGiftForm(false);
+  } catch (error) {
+    $("#giftAdminMessage").textContent = error.message;
+  }
+}
+
 async function saveAdminPlace(event) {
   event.preventDefault();
   const form = event.currentTarget;
@@ -1929,6 +2289,9 @@ function upsertContentItem(type, item) {
     timeline: "timeline",
     idea: "dateIdeas",
     ideaTool: "ideaTools",
+    datePlan: "datePlans",
+    food: "foodOptions",
+    gift: "giftList",
     place: "places",
     message: "messageWall",
     letter: "letters"
@@ -1947,6 +2310,9 @@ function resetContentForm(type, clearMessage = true) {
   if (type === "timeline") return resetTimelineForm(clearMessage);
   if (type === "idea") return resetIdeaForm(clearMessage);
   if (type === "ideaTool") return resetIdeaToolForm(clearMessage);
+  if (type === "datePlan") return resetDatePlanForm(clearMessage);
+  if (type === "food") return resetFoodForm(clearMessage);
+  if (type === "gift") return resetGiftForm(clearMessage);
   if (type === "place") return resetPlaceForm(clearMessage);
   if (type === "message") return resetMessageForm(clearMessage);
   return resetLetterForm(clearMessage);
@@ -1978,6 +2344,38 @@ function resetIdeaToolForm(clearMessage = true) {
   form.ideaToolId.value = "";
   $("#ideaToolAdminTitle").textContent = "新增功能盒子";
   if (clearMessage) $("#ideaToolAdminMessage").textContent = "";
+}
+
+function resetDatePlanForm(clearMessage = true) {
+  adminEditors.datePlan = "";
+  const form = $("#datePlanAdminForm");
+  form.reset();
+  form.datePlanId.value = "";
+  form.date.value = dayKey();
+  $("#datePlanAdminTitle").textContent = "新增约会计划";
+  if (clearMessage) $("#datePlanAdminMessage").textContent = "";
+}
+
+function resetFoodForm(clearMessage = true) {
+  adminEditors.food = "";
+  const form = $("#foodAdminForm");
+  form.reset();
+  form.foodId.value = "";
+  form.warm.checked = true;
+  form.budget.value = "mid";
+  form.distance.value = "normal";
+  $("#foodAdminTitle").textContent = "新增菜品";
+  if (clearMessage) $("#foodAdminMessage").textContent = "";
+}
+
+function resetGiftForm(clearMessage = true) {
+  adminEditors.gift = "";
+  const form = $("#giftAdminForm");
+  form.reset();
+  form.giftId.value = "";
+  form.priority.value = "中";
+  $("#giftAdminTitle").textContent = "新增礼物备忘";
+  if (clearMessage) $("#giftAdminMessage").textContent = "";
 }
 
 function resetPlaceForm(clearMessage = true) {
@@ -2047,6 +2445,48 @@ function renderAdminIdeaTools() {
       ${adminContentButtons("ideaTool", item.id)}
     </article>
   `).join("") : `<p class="admin-empty">还没有功能盒子。</p>`;
+  refreshIcons();
+}
+
+function renderAdminDatePlans() {
+  $("#adminDatePlanList").innerHTML = state.datePlans.length ? state.datePlans.map((item, index, list) => `
+    <article class="admin-content-card">
+      <div>
+        <strong>${escapeHtml(item.title)}</strong>
+        <span>${escapeHtml(item.date)} · ${escapeHtml(item.time)} · ${escapeHtml(item.place)}</span>
+        <p>${escapeHtml(item.note || item.budget)}</p>
+      </div>
+      ${adminContentButtons("datePlan", item.id, index, list.length, true)}
+    </article>
+  `).join("") : `<p class="admin-empty">还没有约会计划。</p>`;
+  refreshIcons();
+}
+
+function renderAdminFoods() {
+  $("#adminFoodList").innerHTML = state.foodOptions.length ? state.foodOptions.map((item) => `
+    <article class="admin-content-card">
+      <div>
+        <strong>${escapeHtml(item.name)}</strong>
+        <span>${budgetLabel(item.budget)} · ${distanceLabel(item.distance)} · ${item.spicy ? "可吃辣" : "不辣"} · ${item.warm ? "热乎" : "清爽"}</span>
+        <p>${(item.tags || []).map(escapeHtml).join(" / ")}</p>
+      </div>
+      ${adminContentButtons("food", item.id)}
+    </article>
+  `).join("") : `<p class="admin-empty">还没有菜品。</p>`;
+  refreshIcons();
+}
+
+function renderAdminGifts() {
+  $("#adminGiftList").innerHTML = state.giftList.length ? state.giftList.map((item, index, list) => `
+    <article class="admin-content-card">
+      <div>
+        <strong>${escapeHtml(item.title)}</strong>
+        <span>${escapeHtml(item.category)} · 优先级 ${escapeHtml(item.priority)}</span>
+        <p>${escapeHtml(item.detail)}</p>
+      </div>
+      ${adminContentButtons("gift", item.id, index, list.length, true)}
+    </article>
+  `).join("") : `<p class="admin-empty">还没有礼物备忘。</p>`;
   refreshIcons();
 }
 
@@ -2306,6 +2746,128 @@ function renderAdminEvents() {
   }).join("") : `<p class="admin-empty">还没有使用或心情记录。她使用小票券、点击心情后，这里会出现时间和邮件状态。</p>`;
 }
 
+function renderAdminGuestbook() {
+  const list = $("#adminGuestbookList");
+  if (!list) return;
+  list.innerHTML = state.guestbook.length ? state.guestbook.map((entry) => `
+    <article class="admin-content-card">
+      <div>
+        <strong>${escapeHtml(entry.name)} · ${entry.createdAt ? formatDateTime(entry.createdAt) : "时间未知"}</strong>
+        <p>${escapeHtml(entry.message)}</p>
+        ${entry.reply ? `<span>已回复：${escapeHtml(entry.reply)}</span>` : `<span>还没有回复</span>`}
+      </div>
+      <div class="admin-content-actions">
+        <button class="secondary-button" type="button" data-guestbook-action="reply" data-guestbook-id="${entry.id}">
+          <i data-lucide="reply"></i><span>回复</span>
+        </button>
+        <button class="ghost-button" type="button" data-guestbook-action="hide" data-guestbook-id="${entry.id}">
+          <i data-lucide="${entry.visible ? "eye-off" : "eye"}"></i><span>${entry.visible ? "隐藏" : "显示"}</span>
+        </button>
+        <button class="ghost-button danger" type="button" data-guestbook-action="delete" data-guestbook-id="${entry.id}">
+          <i data-lucide="trash-2"></i><span>删除</span>
+        </button>
+      </div>
+    </article>
+  `).join("") : `<p class="admin-empty">还没有收到留言。</p>`;
+  refreshIcons();
+}
+
+async function handleAdminGuestbookAction(event) {
+  const button = event.target.closest("[data-guestbook-action]");
+  if (!button) return;
+  const id = button.dataset.guestbookId;
+  const entry = state.guestbook.find((item) => item.id === id);
+  if (!entry) return;
+  const action = button.dataset.guestbookAction;
+  if (action === "reply") {
+    const reply = window.prompt("回复她的留言：", entry.reply || "");
+    if (reply === null) return;
+    await updateGuestbookEntry(entry, { reply, visible: entry.visible });
+    return;
+  }
+  if (action === "hide") {
+    await updateGuestbookEntry(entry, { reply: entry.reply, visible: !entry.visible });
+    return;
+  }
+  if (action === "delete" && window.confirm("删除这条留言？")) {
+    await deleteGuestbookEntry(entry.id);
+  }
+}
+
+async function updateGuestbookEntry(entry, payload) {
+  $("#guestbookAdminMessage").textContent = "正在保存留言本...";
+  try {
+    const response = await fetch(`/api/admin/guestbook/${encodeURIComponent(entry.id)}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.error || "保存失败");
+    $("#guestbookAdminMessage").textContent = "留言本已更新。";
+    await loadGuestbook(true);
+  } catch (error) {
+    $("#guestbookAdminMessage").textContent = error.message;
+  }
+}
+
+async function deleteGuestbookEntry(id) {
+  $("#guestbookAdminMessage").textContent = "正在删除...";
+  try {
+    const response = await fetch(`/api/admin/guestbook/${encodeURIComponent(id)}`, { method: "DELETE" });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.error || "删除失败");
+    $("#guestbookAdminMessage").textContent = "已删除。";
+    await loadGuestbook(true);
+  } catch (error) {
+    $("#guestbookAdminMessage").textContent = error.message;
+  }
+}
+
+async function exportBackup() {
+  $("#backupMessage").textContent = "正在导出数据...";
+  try {
+    const response = await fetch("/api/admin/backup");
+    if (!response.ok) throw new Error("导出失败");
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `love-universe-backup-${dayKey()}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+    $("#backupMessage").textContent = "数据备份已导出。";
+  } catch (error) {
+    $("#backupMessage").textContent = error.message || "导出失败";
+  }
+}
+
+async function importBackup(event) {
+  event.preventDefault();
+  const file = event.currentTarget.backupFile.files[0];
+  if (!file) {
+    $("#backupMessage").textContent = "先选择一个备份 JSON 文件。";
+    return;
+  }
+  if (!window.confirm("导入会覆盖服务器上的内容数据、相册元数据、留言本和记录，继续吗？")) return;
+  $("#backupMessage").textContent = "正在读取备份...";
+  try {
+    const text = await file.text();
+    const backup = JSON.parse(text);
+    const response = await fetch("/api/admin/backup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(backup)
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.error || "导入失败");
+    $("#backupMessage").textContent = `已导入：${(data.restored || []).join("、") || "没有可导入的数据"}`;
+    await Promise.all([loadAdminContent(), loadAdminCoupons(), loadAdminEvents(), loadGuestbook(true), loadServerPhotos()]);
+  } catch (error) {
+    $("#backupMessage").textContent = error.message || "导入失败，请确认是正确的 JSON 备份。";
+  }
+}
+
 async function saveAdminCoupon(event) {
   event.preventDefault();
   const form = event.currentTarget;
@@ -2438,6 +3000,75 @@ function renderMap() {
       <p>${escapeHtml(place.note)}</p>
     </article>
   `).join("");
+  refreshIcons();
+}
+
+function bindGuestbook() {
+  $("#guestbookForm").addEventListener("submit", saveGuestbookEntry);
+}
+
+async function loadGuestbook(admin = false) {
+  try {
+    const response = await fetch(admin ? "/api/admin/guestbook" : "/api/guestbook");
+    if (response.status === 401) {
+      showEntry();
+      return;
+    }
+    if (!response.ok) throw new Error("guestbook");
+    const data = await response.json();
+    state.guestbook = normalizeGuestbook(data.entries);
+    renderGuestbook();
+    renderAdminGuestbook();
+  } catch {
+    renderGuestbook("留言本暂时没有连上服务器。");
+  }
+}
+
+async function saveGuestbookEntry(event) {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const payload = {
+    name: form.guestName.value.trim() || (state.settings.partnerName || "她"),
+    message: form.guestMessage.value.trim()
+  };
+  if (!payload.message) {
+    $("#guestbookMessage").textContent = "先写一点想说的话。";
+    return;
+  }
+  $("#guestbookMessage").textContent = "正在送到留言本...";
+  try {
+    const response = await fetch("/api/guestbook", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.error || "留言失败");
+    form.reset();
+    $("#guestbookMessage").textContent = "已经写进留言本，我会在后台看到。";
+    await loadGuestbook();
+  } catch (error) {
+    $("#guestbookMessage").textContent = error.message || "暂时没有写进去，再试一次。";
+  }
+}
+
+function renderGuestbook(message = "") {
+  const list = $("#guestbookList");
+  if (!list) return;
+  if (message) {
+    list.innerHTML = `<p class="folded-note">${escapeHtml(message)}</p>`;
+    return;
+  }
+  list.innerHTML = state.guestbook.length ? state.guestbook.map((entry) => `
+    <article class="guestbook-card">
+      <div>
+        <strong>${escapeHtml(entry.name)}</strong>
+        <span>${entry.createdAt ? formatDateTime(entry.createdAt) : "刚刚"}</span>
+      </div>
+      <p>${escapeHtml(entry.message)}</p>
+      ${entry.reply ? `<blockquote><b>我的回复：</b>${escapeHtml(entry.reply)}</blockquote>` : ""}
+    </article>
+  `).join("") : `<p class="folded-note">这里还空着，她写下第一句后，我就能在后台回复。</p>`;
   refreshIcons();
 }
 

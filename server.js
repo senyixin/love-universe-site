@@ -20,6 +20,7 @@ const PHOTOS_FILE = path.join(DATA_DIR, "photos.json");
 const COUPONS_FILE = path.join(DATA_DIR, "coupons.json");
 const COUPON_EVENTS_FILE = path.join(DATA_DIR, "coupon-events.json");
 const MOOD_EVENTS_FILE = path.join(DATA_DIR, "mood-events.json");
+const GUESTBOOK_FILE = path.join(DATA_DIR, "guestbook.json");
 const MAIL_CONFIG_FILE = path.join(DATA_DIR, "mail-config.json");
 const SITE_CONTENT_FILE = path.join(DATA_DIR, "site-content.json");
 const ADMIN_CONFIG_FILE = path.join(DATA_DIR, "admin-config.json");
@@ -87,6 +88,25 @@ const DEFAULT_SITE_CONTENT = {
       ]
     }
   ],
+  datePlans: [
+    { title: "周末半日约会", date: dateAfterDays(6), time: "15:00", place: "先去喝奶茶，再散步", budget: "200 元内", checklist: ["带充电宝", "提前看天气", "拍一张合照"], note: "轻松一点，不赶时间。" },
+    { title: "下次见面小计划", date: dateAfterDays(12), time: "傍晚", place: "她想去的地方", budget: "随心", checklist: ["订好车", "准备小惊喜", "晚饭别太辣"], note: "把主动权交给她。" }
+  ],
+  foodOptions: [
+    { name: "番茄牛腩饭", tags: ["热乎", "不辣", "米饭"], spicy: false, warm: true, budget: "mid", distance: "near" },
+    { name: "寿喜锅", tags: ["热乎", "甜口", "适合慢慢吃"], spicy: false, warm: true, budget: "high", distance: "normal" },
+    { name: "酸菜鱼", tags: ["下饭", "微辣", "热乎"], spicy: true, warm: true, budget: "mid", distance: "normal" },
+    { name: "烤肉拌饭", tags: ["快一点", "肉肉", "饱"], spicy: false, warm: true, budget: "low", distance: "near" },
+    { name: "日式拉面", tags: ["汤面", "热乎", "不太辣"], spicy: false, warm: true, budget: "mid", distance: "near" },
+    { name: "轻食沙拉", tags: ["清爽", "不辣", "负担小"], spicy: false, warm: false, budget: "mid", distance: "near" },
+    { name: "麻辣烫", tags: ["热乎", "可选辣度", "随便加"], spicy: true, warm: true, budget: "low", distance: "near" },
+    { name: "椰子鸡", tags: ["清淡", "热乎", "适合聊天"], spicy: false, warm: true, budget: "high", distance: "far" }
+  ],
+  giftList: [
+    { title: "花和手写卡片", category: "仪式感", detail: "不用很大束，颜色温柔一点。", priority: "高", note: "适合见面当天。" },
+    { title: "她常喝的奶茶备注", category: "口味", detail: "少冰、三分糖，珍珠或芋圆。", priority: "中", note: "后台可以继续补充她的喜好。" },
+    { title: "尺码和忌口备忘", category: "备忘", detail: "衣服、鞋码、戒指、过敏和不吃的东西都可以写这里。", priority: "高", note: "买礼物前先看一眼。" }
+  ],
   places: [
     { id: "place-1", name: "第一次见面的地方", note: "空气里都是紧张和装作镇定。", x: 25, y: 68 },
     { id: "place-2", name: "最常去的街角", note: "路过很多次，每一次都更像自己的地方。", x: 58, y: 42 },
@@ -117,6 +137,7 @@ ensureJsonFile(PHOTOS_FILE, []);
 ensureJsonFile(COUPONS_FILE, DEFAULT_COUPONS.map(createCoupon));
 ensureJsonFile(COUPON_EVENTS_FILE, []);
 ensureJsonFile(MOOD_EVENTS_FILE, []);
+ensureJsonFile(GUESTBOOK_FILE, []);
 ensureJsonFile(MAIL_CONFIG_FILE, {});
 ensureJsonFile(SITE_CONTENT_FILE, DEFAULT_SITE_CONTENT);
 ensureJsonFile(ADMIN_CONFIG_FILE, createAdminConfig(DEFAULT_ADMIN_KEY));
@@ -148,7 +169,7 @@ const upload = multer({
   }
 });
 
-app.use(express.json());
+app.use(express.json({ limit: "10mb" }));
 app.use("/uploads", express.static(path.join(ROOT, "uploads"), {
   maxAge: "1d",
   immutable: false
@@ -192,6 +213,47 @@ app.get("/api/content", async (_req, res, next) => {
   try {
     const content = await readSiteContent();
     res.json({ content });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get("/api/guestbook", async (_req, res, next) => {
+  try {
+    const entries = await readGuestbook();
+    res.json({ entries: entries.filter((entry) => entry.visible !== false).slice(0, 50) });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post("/api/guestbook", async (req, res, next) => {
+  try {
+    const entry = normalizeGuestbookEntry({
+      name: req.body?.name,
+      message: req.body?.message,
+      createdAt: new Date().toISOString(),
+      visible: true
+    });
+    if (!entry.message) {
+      res.status(400).json({ error: "留言内容不能为空。" });
+      return;
+    }
+    const entries = await readGuestbook();
+    entries.unshift(entry);
+    await writeGuestbook(entries);
+    await recordSignalEvent({
+      moodKey: "guestbook",
+      label: "留言本",
+      response: `${entry.name}：${entry.message}`,
+      subject: "她在留言本写了新留言",
+      lines: [
+        `昵称：${entry.name}`,
+        `时间：${formatDateTime(entry.createdAt)}`,
+        `留言：${entry.message}`
+      ]
+    });
+    res.status(201).json({ entry });
   } catch (error) {
     next(error);
   }
@@ -373,33 +435,19 @@ app.post("/api/coupons/:id/use", async (req, res, next) => {
 
 app.post("/api/mood-events", async (req, res, next) => {
   try {
-    const label = cleanText(req.body?.label, "呼唤");
+    const label = cleanText(req.body?.label, "互动信号");
     const responseText = cleanText(req.body?.response, "");
-    const record = {
-      id: crypto.randomUUID(),
-      moodKey: cleanText(req.body?.moodKey, ""),
+    const event = await recordSignalEvent({
+      moodKey: cleanText(req.body?.moodKey, "signal"),
       label,
       response: responseText,
-      createdAt: new Date().toISOString()
-    };
-    const events = await readJson(MOOD_EVENTS_FILE, []);
-    const event = { ...record, emailStatus: "not_configured" };
-    try {
-      const sent = await sendNotificationEmail({
-        subject: label === "呼唤" ? "她呼唤你了" : `她点了心情：${label}`,
-        lines: [
-          label === "呼唤" ? "她在页面呼唤你了。" : `心情：${label}`,
-          `时间：${formatDateTime(record.createdAt)}`,
-          responseText ? `她写下的心情：${responseText}` : ""
-        ].filter(Boolean)
-      });
-      event.emailStatus = sent ? "sent" : "not_configured";
-    } catch (error) {
-      event.emailStatus = "failed";
-      event.emailError = error.message;
-    }
-    events.unshift(event);
-    await writeJson(MOOD_EVENTS_FILE, events.slice(0, 200));
+      subject: signalEmailSubject(label),
+      lines: [
+        signalEmailIntro(label),
+        `时间：${formatDateTime(new Date().toISOString())}`,
+        responseText ? `她写下的话：${responseText}` : ""
+      ].filter(Boolean)
+    });
     res.json({ ok: true, event: { ...event, emailError: undefined } });
   } catch (error) {
     next(error);
@@ -579,6 +627,67 @@ app.put("/api/admin/content", requireAdmin, async (req, res, next) => {
   }
 });
 
+app.get("/api/admin/guestbook", requireAdmin, async (_req, res, next) => {
+  try {
+    const entries = await readGuestbook();
+    res.json({ entries });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.put("/api/admin/guestbook/:id", requireAdmin, async (req, res, next) => {
+  try {
+    const entries = await readGuestbook();
+    const entry = entries.find((item) => item.id === req.params.id);
+    if (!entry) {
+      res.status(404).json({ error: "没有找到这条留言。" });
+      return;
+    }
+    entry.reply = cleanText(req.body?.reply, "");
+    entry.visible = req.body?.visible !== false;
+    entry.repliedAt = entry.reply ? new Date().toISOString() : "";
+    await writeGuestbook(entries);
+    res.json({ entry });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.delete("/api/admin/guestbook/:id", requireAdmin, async (req, res, next) => {
+  try {
+    const entries = await readGuestbook();
+    const nextEntries = entries.filter((entry) => entry.id !== req.params.id);
+    if (nextEntries.length === entries.length) {
+      res.status(404).json({ error: "没有找到这条留言。" });
+      return;
+    }
+    await writeGuestbook(nextEntries);
+    res.json({ ok: true });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get("/api/admin/backup", requireAdmin, async (_req, res, next) => {
+  try {
+    const backup = await buildBackup();
+    res.setHeader("Content-Disposition", `attachment; filename=love-universe-backup-${todayKey()}.json`);
+    res.json(backup);
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post("/api/admin/backup", requireAdmin, async (req, res, next) => {
+  try {
+    const result = await restoreBackup(req.body || {});
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
+});
+
 app.get("/api/admin/security", requireAdmin, async (_req, res, next) => {
   try {
     const config = await readAdminConfig();
@@ -710,6 +819,49 @@ async function recordCouponEvent(record, coupon) {
   }
   events.unshift(event);
   await writeJson(COUPON_EVENTS_FILE, events.slice(0, 200));
+}
+
+async function recordSignalEvent({ moodKey, label, response, subject, lines }) {
+  const record = {
+    id: crypto.randomUUID(),
+    moodKey: cleanText(moodKey, "signal"),
+    label: cleanText(label, "互动信号"),
+    response: cleanText(response, ""),
+    createdAt: new Date().toISOString()
+  };
+  const events = await readJson(MOOD_EVENTS_FILE, []);
+  const event = { ...record, emailStatus: "not_configured" };
+  try {
+    const sent = await sendNotificationEmail({
+      subject: cleanText(subject, signalEmailSubject(record.label)),
+      lines: Array.isArray(lines) && lines.length
+        ? lines
+        : [signalEmailIntro(record.label), `时间：${formatDateTime(record.createdAt)}`, record.response].filter(Boolean)
+    });
+    event.emailStatus = sent ? "sent" : "not_configured";
+  } catch (error) {
+    event.emailStatus = "failed";
+    event.emailError = error.message;
+  }
+  events.unshift(event);
+  await writeJson(MOOD_EVENTS_FILE, events.slice(0, 300));
+  return event;
+}
+
+function signalEmailSubject(label) {
+  if (label === "想你雷达") return "她想你了";
+  if (label === "要抱抱") return "她想要一个抱抱";
+  if (label === "今日状态灯") return "她更新了今日状态";
+  if (label === "留言本") return "她在留言本写了新留言";
+  return `她发来互动信号：${label}`;
+}
+
+function signalEmailIntro(label) {
+  if (label === "想你雷达") return "她在页面点了想你雷达。";
+  if (label === "要抱抱") return "她在页面点了抱抱按钮。";
+  if (label === "今日状态灯") return "她告诉你今天的状态了。";
+  if (label === "留言本") return "她在双向留言本写了新内容。";
+  return `互动信号：${label}`;
 }
 
 async function sendCouponUseEmail(record, coupon) {
@@ -873,6 +1025,15 @@ async function readPhotos() {
 
 async function writePhotos(photos) {
   return writeJson(PHOTOS_FILE, photos);
+}
+
+async function readGuestbook() {
+  const entries = await readJson(GUESTBOOK_FILE, []);
+  return entries.map(normalizeGuestbookEntry).filter((entry) => entry.message);
+}
+
+async function writeGuestbook(entries) {
+  return writeJson(GUESTBOOK_FILE, entries.map(normalizeGuestbookEntry).filter((entry) => entry.message).slice(0, 300));
 }
 
 async function readCoupons() {
@@ -1183,6 +1344,72 @@ function publicMailConfig(config) {
   };
 }
 
+async function buildBackup() {
+  return {
+    version: 2,
+    exportedAt: new Date().toISOString(),
+    content: await readSiteContent(),
+    coupons: await readJson(COUPONS_FILE, []),
+    photos: await readPhotos(),
+    guestbook: await readGuestbook(),
+    couponEvents: await readJson(COUPON_EVENTS_FILE, []),
+    moodEvents: await readJson(MOOD_EVENTS_FILE, []),
+    mailConfig: publicMailConfig(await readMailConfig()),
+    note: "导出不包含后台密码和 QQ 邮箱授权码。"
+  };
+}
+
+async function restoreBackup(payload) {
+  const source = payload?.content || payload?.coupons || payload?.photos || payload?.guestbook
+    ? payload
+    : payload?.backup || {};
+  const result = [];
+
+  if (source.content) {
+    const content = normalizeSiteContent(source.content);
+    await writeJson(SITE_CONTENT_FILE, content);
+    result.push("网站内容");
+  }
+  if (Array.isArray(source.coupons)) {
+    const coupons = source.coupons.map((coupon, index) => createCoupon(coupon, index));
+    await writeCoupons(coupons);
+    result.push("小票券");
+  }
+  if (Array.isArray(source.photos)) {
+    await writePhotos(source.photos.map(normalizePhotoBackup).filter(Boolean));
+    result.push("相册元数据");
+  }
+  if (Array.isArray(source.guestbook)) {
+    await writeGuestbook(source.guestbook);
+    result.push("双向留言本");
+  }
+  if (Array.isArray(source.couponEvents)) {
+    await writeJson(COUPON_EVENTS_FILE, source.couponEvents.slice(0, 300));
+    result.push("小票券记录");
+  }
+  if (Array.isArray(source.moodEvents)) {
+    await writeJson(MOOD_EVENTS_FILE, source.moodEvents.slice(0, 300));
+    result.push("互动记录");
+  }
+
+  return { ok: true, restored: result };
+}
+
+function normalizePhotoBackup(photo = {}) {
+  const filename = cleanText(photo.filename, "");
+  const src = cleanText(photo.src, filename ? `/uploads/photos/${filename}` : "");
+  if (!src) return null;
+  return {
+    id: cleanText(photo.id, crypto.randomUUID()),
+    title: cleanText(photo.title, "照片"),
+    date: cleanText(photo.date, ""),
+    src,
+    filename,
+    createdAt: cleanText(photo.createdAt, new Date().toISOString()),
+    updatedAt: cleanText(photo.updatedAt, new Date().toISOString())
+  };
+}
+
 async function readSiteContent() {
   const value = await readObjectJson(SITE_CONTENT_FILE, DEFAULT_SITE_CONTENT);
   const content = normalizeSiteContent(value);
@@ -1196,6 +1423,9 @@ function normalizeSiteContent(input = {}) {
     timeline: normalizeArray(input.timeline, DEFAULT_SITE_CONTENT.timeline, normalizeTimelineItem),
     dateIdeas: normalizeArray(input.dateIdeas, DEFAULT_SITE_CONTENT.dateIdeas, normalizeDateIdea),
     ideaTools: normalizeArray(input.ideaTools, DEFAULT_SITE_CONTENT.ideaTools, normalizeIdeaTool),
+    datePlans: normalizeArray(input.datePlans, DEFAULT_SITE_CONTENT.datePlans, normalizeDatePlan),
+    foodOptions: normalizeArray(input.foodOptions, DEFAULT_SITE_CONTENT.foodOptions, normalizeFoodOption),
+    giftList: normalizeArray(input.giftList, DEFAULT_SITE_CONTENT.giftList, normalizeGiftItem),
     places: normalizeArray(input.places, DEFAULT_SITE_CONTENT.places, normalizePlace),
     messageWall: normalizeArray(input.messageWall, DEFAULT_SITE_CONTENT.messageWall, normalizeMessage),
     letters: normalizeArray(input.letters, DEFAULT_SITE_CONTENT.letters, normalizeLetter)
@@ -1260,6 +1490,60 @@ function normalizeIdeaTool(item = {}) {
     text: cleanText(item.text, "写下这个功能要怎么陪她做决定。"),
     buttonLabel: cleanText(item.buttonLabel, "随机抽一个"),
     items: items.slice(0, 200)
+  };
+}
+
+function normalizeDatePlan(item = {}) {
+  const checklist = Array.isArray(item.checklist)
+    ? item.checklist.map((value) => String(value || "").trim()).filter(Boolean)
+    : String(item.checklist || "").split(/[\n，,]/).map((value) => value.trim()).filter(Boolean);
+  return {
+    id: cleanText(item.id, crypto.randomUUID()),
+    title: cleanText(item.title, "新的约会计划"),
+    date: normalizeDate(item.date) || todayKey(),
+    time: cleanText(item.time, "待定"),
+    place: cleanText(item.place, "地点待定"),
+    budget: cleanText(item.budget, "随心"),
+    checklist: checklist.slice(0, 20),
+    note: cleanText(item.note, "把这次约会安排好。")
+  };
+}
+
+function normalizeFoodOption(item = {}) {
+  const tags = Array.isArray(item.tags)
+    ? item.tags.map((value) => String(value || "").trim()).filter(Boolean)
+    : String(item.tags || "").split(/[，,]/).map((value) => value.trim()).filter(Boolean);
+  return {
+    id: cleanText(item.id, crypto.randomUUID()),
+    name: cleanText(item.name, "新的菜品"),
+    tags: tags.slice(0, 8),
+    spicy: Boolean(item.spicy),
+    warm: item.warm !== false,
+    budget: ["low", "mid", "high"].includes(item.budget) ? item.budget : "mid",
+    distance: ["near", "normal", "far"].includes(item.distance) ? item.distance : "normal"
+  };
+}
+
+function normalizeGiftItem(item = {}) {
+  return {
+    id: cleanText(item.id, crypto.randomUUID()),
+    title: cleanText(item.title, "新的礼物备忘"),
+    category: cleanText(item.category, "备忘"),
+    detail: cleanText(item.detail, "写下她喜欢的细节。"),
+    priority: cleanText(item.priority, "中"),
+    note: cleanText(item.note, "")
+  };
+}
+
+function normalizeGuestbookEntry(item = {}) {
+  return {
+    id: cleanText(item.id, crypto.randomUUID()),
+    name: cleanText(item.name, "她"),
+    message: cleanText(item.message, ""),
+    reply: cleanText(item.reply, ""),
+    createdAt: cleanText(item.createdAt, new Date().toISOString()),
+    repliedAt: cleanText(item.repliedAt, ""),
+    visible: item.visible !== false
   };
 }
 
