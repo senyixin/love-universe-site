@@ -9,5 +9,7 @@ public class BootReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         ReminderScheduler.createNotificationChannel(context);
         ReminderScheduler.rescheduleSaved(context);
+        BroadcastReceiver.PendingResult pendingResult = goAsync();
+        ReminderScheduler.checkServerNoticeAsync(context, pendingResult);
     }
 }
