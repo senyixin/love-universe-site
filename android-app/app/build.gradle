@@ -10,6 +10,10 @@ def configuredServerUrl = (project.findProperty("serverUrl") ?: "http://10.0.2.2
 def escapedServerUrl = configuredServerUrl
         .replace("\\", "\\\\")
         .replace("\"", "\\\"")
+def configuredGetuiAppId = (project.findProperty("getuiAppId") ?: System.getenv("GETUI_APP_ID") ?: "hDksxQhiF59e2aFsYnaQf7").toString()
+def escapedGetuiAppId = configuredGetuiAppId
+        .replace("\\", "\\\\")
+        .replace("\"", "\\\"")
 
 android {
     namespace "com.senyixin.loveuniverse"
@@ -22,6 +26,10 @@ android {
         versionCode 1
         versionName "1.0.0"
         buildConfigField "String", "DEFAULT_SERVER_URL", "\"${escapedServerUrl}\""
+        buildConfigField "String", "GETUI_APP_ID", "\"${escapedGetuiAppId}\""
+        manifestPlaceholders = [
+                GETUI_APPID: configuredGetuiAppId
+        ]
     }
 
     buildFeatures {
@@ -35,6 +43,8 @@ android {
 }
 
 dependencies {
+    implementation "com.getui:gtsdk:3.3.13.0"
+    implementation "com.getui:gtc:3.3.1.0"
     implementation platform("com.google.firebase:firebase-bom:33.7.0")
     implementation "com.google.firebase:firebase-messaging"
 }
