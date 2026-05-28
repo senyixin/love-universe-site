@@ -22,6 +22,7 @@ const COUPON_EVENTS_FILE = path.join(DATA_DIR, "coupon-events.json");
 const MOOD_EVENTS_FILE = path.join(DATA_DIR, "mood-events.json");
 const GUESTBOOK_FILE = path.join(DATA_DIR, "guestbook.json");
 const PERIOD_STATE_FILE = path.join(DATA_DIR, "period-state.json");
+const APP_NOTICES_FILE = path.join(DATA_DIR, "app-notices.json");
 const MAIL_CONFIG_FILE = path.join(DATA_DIR, "mail-config.json");
 const SITE_CONTENT_FILE = path.join(DATA_DIR, "site-content.json");
 const ADMIN_CONFIG_FILE = path.join(DATA_DIR, "admin-config.json");
@@ -169,6 +170,7 @@ ensureJsonFile(COUPON_EVENTS_FILE, []);
 ensureJsonFile(MOOD_EVENTS_FILE, []);
 ensureJsonFile(GUESTBOOK_FILE, []);
 ensureJsonFile(PERIOD_STATE_FILE, {});
+ensureJsonFile(APP_NOTICES_FILE, []);
 ensureJsonFile(MAIL_CONFIG_FILE, {});
 ensureJsonFile(SITE_CONTENT_FILE, DEFAULT_SITE_CONTENT);
 ensureJsonFile(ADMIN_CONFIG_FILE, createAdminConfig(DEFAULT_ADMIN_KEY));
@@ -324,6 +326,15 @@ app.post("/api/period-state", async (req, res, next) => {
 
     await writeJson(PERIOD_STATE_FILE, nextState);
     res.json({ ok: true, state: normalizePeriodState(nextState) });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get("/api/app-notices/latest", async (_req, res, next) => {
+  try {
+    const notices = await readJson(APP_NOTICES_FILE, []);
+    res.json({ notice: Array.isArray(notices) ? notices[0] || null : null });
   } catch (error) {
     next(error);
   }
@@ -673,6 +684,24 @@ app.get("/api/admin/mood-events", requireAdmin, async (_req, res, next) => {
   try {
     const events = await readJson(MOOD_EVENTS_FILE, []);
     res.json({ events: events.slice(0, 30) });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post("/api/admin/app-notices", requireAdmin, async (req, res, next) => {
+  try {
+    const notice = {
+      id: crypto.randomUUID(),
+      title: cleanText(req.body?.title, "给你的小宇宙"),
+      message: cleanText(req.body?.message, "我给你发了一条小宇宙提醒，打开 App 看看吧。"),
+      createdAt: new Date().toISOString()
+    };
+    const notices = await readJson(APP_NOTICES_FILE, []);
+    const nextNotices = Array.isArray(notices) ? notices : [];
+    nextNotices.unshift(notice);
+    await writeJson(APP_NOTICES_FILE, nextNotices.slice(0, 50));
+    res.status(201).json({ ok: true, notice });
   } catch (error) {
     next(error);
   }
@@ -1443,6 +1472,7 @@ async function buildBackup() {
     guestbook: await readGuestbook(),
     couponEvents: await readJson(COUPON_EVENTS_FILE, []),
     moodEvents: await readJson(MOOD_EVENTS_FILE, []),
+    appNotices: await readJson(APP_NOTICES_FILE, []),
     periodState: normalizePeriodState(await readJson(PERIOD_STATE_FILE, {})),
     mailConfig: publicMailConfig(await readMailConfig()),
     note: "导出不包含后台密码和 QQ 邮箱授权码。"
@@ -1480,6 +1510,10 @@ async function restoreBackup(payload) {
   if (Array.isArray(source.moodEvents)) {
     await writeJson(MOOD_EVENTS_FILE, source.moodEvents.slice(0, 300));
     result.push("互动记录");
+  }
+  if (Array.isArray(source.appNotices)) {
+    await writeJson(APP_NOTICES_FILE, source.appNotices.slice(0, 50));
+    result.push("App 提醒记录");
   }
   if (source.periodState && typeof source.periodState === "object") {
     await writeJson(PERIOD_STATE_FILE, normalizePeriodState(source.periodState));
