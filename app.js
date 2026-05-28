@@ -15,252 +15,252 @@ const daysFromNow = (days) => {
 };
 
 const COUPLE_WISH_TEXTS = [
-  "??????????",
-  "??????????",
-  "???????????",
-  "?????????",
-  "????????",
-  "???????",
-  "???????????",
-  "??????",
-  "??????",
-  "???????",
-  "????????",
-  "???????",
-  "??????????",
-  "?????????",
-  "????????",
-  "???????????",
-  "??????????",
-  "??????????",
-  "???????",
-  "?????????",
-  "??????????",
-  "???????",
-  "?????????",
-  "????????",
-  "??????",
-  "????????",
-  "????????????",
-  "??????????",
-  "???????",
-  "????????",
-  "?????",
-  "???????????",
-  "???????",
-  "???????????",
-  "??????",
-  "????????",
-  "?????????",
-  "???????",
-  "????????",
-  "?????????",
-  "??????????",
-  "?????",
-  "??????? vlog",
-  "????????",
-  "???????",
-  "???????????",
-  "?????????",
-  "??????",
-  "???????",
-  "??????????",
-  "??????",
-  "?????????????",
-  "???????????",
-  "?????????",
-  "?????????",
-  "??????????",
-  "???????",
-  "???????",
-  "????????",
-  "????????????",
-  "???????????",
-  "???????????",
-  "??????????",
-  "?????",
-  "?????????",
-  "?????",
-  "?????????",
-  "???????????",
-  "??????????",
-  "???????????",
-  "?????????",
-  "??????????",
-  "????????",
-  "???????",
-  "?????????",
-  "????????",
-  "???????????",
-  "????????",
-  "?????? 10 ???",
-  "???????????",
-  "????????????",
-  "?????????????",
-  "???????????",
-  "???????????????",
-  "??????????",
-  "???????????",
-  "??????????",
-  "???????????",
-  "??????????",
-  "?????????????",
-  "?????????",
-  "??????",
-  "????????????",
-  "??????????",
-  "?????????",
-  "?????? 7 ?????",
-  "?????????",
-  "??????????",
-  "????????????",
-  "???? 100 ??????"
+  "一起去海边看一次日出",
+  "拍一组真正喜欢的合照",
+  "做一本只属于我们的相册",
+  "挑一个周末短途旅行",
+  "一起坐一次摩天轮",
+  "一起看一场烟花",
+  "一起去露营或住一次帐篷",
+  "一起去看星星",
+  "一起去看日落",
+  "一起在雨天散步",
+  "一起去一次游乐园",
+  "一起坐旋转木马",
+  "一起去动物园或水族馆",
+  "一起去博物馆慢慢逛",
+  "一起看一场演唱会",
+  "一起看一场话剧或音乐剧",
+  "一起去电影院看午夜场",
+  "一起在家开电影马拉松",
+  "一起读同一本书",
+  "一起交换一封手写信",
+  "一起写未来一年的愿望",
+  "一起做一次蛋糕",
+  "一起做一顿完整晚餐",
+  "一起包饺子或汤圆",
+  "一起准备早餐",
+  "一起去菜市场买菜",
+  "一起尝试一家没去过的小店",
+  "一起做一次咖啡或奶茶",
+  "一起吃一次火锅",
+  "一起吃一次路边摊",
+  "一起去野餐",
+  "一起在阳台或窗边喝饮料",
+  "一起去公园骑车",
+  "一起跑步或散步打卡一周",
+  "一起爬一次山",
+  "一起去健身或打球",
+  "一起学一支简单的舞",
+  "一起拼一幅拼图",
+  "一起搭乐高或模型",
+  "一起玩一次双人游戏",
+  "一起做手工戒指或手链",
+  "一起画对方",
+  "一起录一段日常 vlog",
+  "一起拍一组拍立得",
+  "一起做情侣头像",
+  "一起换一次情侣手机壁纸",
+  "一起挑一件情侣小物",
+  "一起买一束花",
+  "一起种一盆植物",
+  "一起给房间做一次布置",
+  "一起整理衣柜",
+  "一起大扫除再奖励一顿好吃的",
+  "一起去宜家或家居店逛逛",
+  "一起规划未来的小家",
+  "一起做一张旅行地图",
+  "一起去另一个城市过夜",
+  "一起坐高铁旅行",
+  "一起坐船或渡轮",
+  "一起住一次景观房",
+  "一起在陌生城市迷路一会儿",
+  "一起去她想去很久的地方",
+  "一起去你想带她去的地方",
+  "一起在街边拍城市夜景",
+  "一起去看雪",
+  "一起堆雪人或打雪仗",
+  "一起泡温泉",
+  "一起去花海或植物园",
+  "一起看樱花、银杏或枫叶",
+  "一起去图书馆待一下午",
+  "一起去咖啡馆各做各的事",
+  "一起去陶艺店做杯子",
+  "一起去香薰或蜡烛手作",
+  "一起参加一次市集",
+  "一起逛一次夜市",
+  "一起做一次盲盒约会",
+  "一起给对方挑衣服",
+  "一起拍证件照风格的合照",
+  "一起去看婚纱橱窗",
+  "一起给对方写 10 个优点",
+  "一起互相做一次心情采访",
+  "一起制定吵架后的和好规则",
+  "一起认真说一次谢谢和对不起",
+  "一起做一次手机相册整理",
+  "一起把聊天记录里喜欢的话存起来",
+  "一起做一个纪念日歌单",
+  "一起听同一首歌循环一晚",
+  "一起互相推荐三部电影",
+  "一起做一次早餐床边服务",
+  "一起给对方准备小惊喜",
+  "一起庆祝一个不重要的小日子",
+  "一起过一次零点生日",
+  "一起倒数跨年",
+  "一起做一顿年夜饭或节日餐",
+  "一起给未来的自己录音",
+  "一起存一个旅行基金",
+  "一起完成一次 7 天拍照挑战",
+  "一起互换一天的歌单",
+  "一起做一张情侣问答卷",
+  "一起给彼此取一个新的昵称",
+  "一起把这 100 件事打卡完成"
 ];
 
 const DEFAULTS = {
   settings: {
     partnerName: "Shannon",
-    yourName: "?",
-    heroLine: "??????????????????",
-    passcodes: ["0520", "520", "???", "shannon", "Shannon"],
+    yourName: "我",
+    heroLine: "今天也想认真地，把世界温柔地递给你。",
+    passcodes: ["0520", "520", "我爱你", "shannon", "Shannon"],
     startDate: "2024-05-20",
     birthday: "2026-08-20",
     nextMeet: "2026-06-01",
-    cityName: "???",
+    cityName: "新沂市",
     cityLatitude: 34.3686,
     cityLongitude: 118.3545,
     cityAdcode: "320381",
     songUrl: "",
-    guestNames: ["?", "?"]
+    guestNames: ["她", "我"]
   },
   dailyTools: {
-    meetTitle: "????",
+    meetTitle: "下次见面",
     meetDate: daysFromNow(7),
     meetTime: "18:00",
-    meetChecklist: ["??/????", "???/????", "?????", "????????"],
-    careCards: ["???????????????", "???????????????", "?????????????????", "????????????", "??????????????", "????????????????????"],
-    dailyTasks: ["??????????", "???????????????", "??????????", "?????????????"],
+    meetChecklist: ["买票/确认车次", "订酒店/确认地址", "带好小礼物", "提前写下想吃什么"],
+    careCards: ["今天记得喝水，杯子先放到手边。", "早点睡，别把今天的累带到明天。", "别空腹太久，先吃一点也算照顾自己。", "出门前看一眼要不要带伞。", "抱抱提醒：今天也可以软一点。", "夸夸她一句：你认真生活的样子真的很好看。"],
+    dailyTasks: ["今天拍一张自拍给我。", "今天早点睡，睡前给我一句晚安。", "今天想吃什么告诉我。", "今天喝够两杯水再来领夸奖。"],
     periodDate: "",
     periodCycleDays: 28,
-    periodAvoid: ["????", "??????", "?????"],
-    periodWarm: ["?????", "??/?????", "????????"],
-    periodMood: "????????????????????????",
-    feedingFoods: ["?????", "????", "???", "???", "???", "????"],
-    feedingDrinks: ["????", "???", "????", "?????", "???"],
-    feedingSnacks: ["??", "???", "???", "??", "???"],
-    feedingAvoid: ["??", "??", "????"],
-    tripPlace: "???????",
-    tripTime: "??",
-    tripTransport: "??/?????",
-    tripHotel: "??/??????",
-    tripNotes: ["?????????", "????????", "????????????"]
+    periodAvoid: ["少冰少辣", "别空腹喝咖啡", "别硬撑太久"],
+    periodWarm: ["热水放手边", "暖贴/外套准备好", "累了就把任务降级"],
+    periodMood: "情绪照顾模式：不催、不讲大道理，先抱抱再慢慢说。",
+    feedingFoods: ["番茄牛腩饭", "砂锅米线", "椰子鸡", "寿喜锅", "热汤面", "烤肉拌饭"],
+    feedingDrinks: ["少冰奶茶", "热可可", "椰乳拿铁", "蜂蜜柚子茶", "温豆浆"],
+    feedingSnacks: ["蛋挞", "小蛋糕", "水果杯", "烤肠", "酸奶碗"],
+    feedingAvoid: ["太冰", "太辣", "空腹甜饮"],
+    tripPlace: "下次见面的地方",
+    tripTime: "待定",
+    tripTransport: "车次/路线待填写",
+    tripHotel: "酒店/落脚点待填写",
+    tripNotes: ["身份证和充电器别忘", "提前确认出发时间", "路上注意安全，到站告诉我"]
   },
   dialogLines: [
-    { from: "me", text: "{?}???????????????" },
-    { from: "her", text: "??????????" },
-    { from: "me", text: "?????????????????????????" },
-    { from: "me", text: "???????????????????????" },
-    { from: "her", text: "????????" },
-    { from: "me", text: "????????????????????????" }
+    { from: "me", text: "{她}，欢迎来到这个只偏心你的网站。" },
+    { from: "her", text: "这里真的只属于我吗？" },
+    { from: "me", text: "嗯。这里的天气、信件、回忆和小愿望，都站在你这边。" },
+    { from: "me", text: "如果今天累了，就先把世界放一放。我来负责想你。" },
+    { from: "her", text: "那如果我想你呢？" },
+    { from: "me", text: "那就点一下那颗心。我会把它当成今天最重要的通知。" }
   ],
   quotes: [
-    "???????????????",
-    "?????????????????????",
-    "??????????????",
-    "?????????????????????",
-    "?????????????????????",
-    "???????????????????",
-    "???????????????"
+    "喜欢你这件事，今天也没有下班。",
+    "见不到你的时候，我就把想念折成很小的句子。",
+    "愿你今天的风，都绕开不开心。",
+    "你不用一直很厉害，你被爱的时候也可以很软。",
+    "普通的一天，因为想到你，突然有了纪念意义。",
+    "如果世界吵闹，我就给你留一盏安静的灯。",
+    "今天也站在你这边，毫无原则地。"
   ],
   timeline: [
-    { date: "2024-05-20", title: "???????", text: "???????????????????????" },
-    { date: "2024-08-14", title: "?????????", text: "???????????????????????" },
-    { date: "2025-02-14", title: "????????", text: "????????????????????" },
-    { date: "2026-05-25", title: "??????", text: "????????????????" }
+    { date: "2024-05-20", title: "把今天设成起点", text: "从这一天开始，日子有了可以被倒数和珍藏的理由。" },
+    { date: "2024-08-14", title: "第一次认真计划旅行", text: "地图上每一个被圈起来的地方，都像在提前等我们。" },
+    { date: "2025-02-14", title: "一封没有寄丢的信", text: "很多话说出口会害羞，写下来就会一直发光。" },
+    { date: "2026-05-25", title: "这个网站诞生", text: "它不算大，但每一个角落都向着你。" }
   ],
   photos: [
-    { id: "rainy-cafe", title: "????", date: "?????????", src: "assets/photos/photo-rainy-cafe.webp" },
-    { id: "travel-morning", title: "??????", date: "????????????", src: "assets/photos/photo-travel-morning.webp" },
-    { id: "park-picnic", title: "????", date: "?????????????", src: "assets/photos/photo-park-picnic.webp" }
+    { id: "rainy-cafe", title: "雨天咖啡", date: "想和你慢慢坐一下午", src: "assets/photos/photo-rainy-cafe.webp" },
+    { id: "travel-morning", title: "出发前的早晨", date: "下一趟旅行已经在心里排队", src: "assets/photos/photo-travel-morning.webp" },
+    { id: "park-picnic", title: "傍晚野餐", date: "蓝色小时里，灯和你都很温柔", src: "assets/photos/photo-park-picnic.webp" }
   ],
   moods: {
-    happy: { label: "??", icon: "smile", response: "???????????????????????????????????????" },
-    tired: { label: "??", icon: "cloud-rain", response: "?????????????????????????????????" },
-    miss: { label: "??", icon: "heart", response: "?????????????????????????????" },
-    angry: { label: "??", icon: "frown", response: "?????????????????????????????????" },
-    sleepy: { label: "???", icon: "moon", response: "???????????????????????????????????" },
-    hug: { label: "???", icon: "hand-heart", response: "?????????????????????????" }
+    happy: { label: "开心", icon: "smile", response: "那今天就把快乐放大一点：买一杯喜欢的饮料，拍一张好看的云，晚上把好事讲给我听。" },
+    tired: { label: "累了", icon: "cloud-rain", response: "今天可以不用逞强。先喝水，慢慢呼吸，把难的事分小一点；我会一直在。" },
+    miss: { label: "想你", icon: "heart", response: "收到。你的想念已经被我小心放好，等见面的时候一口气还给你。" },
+    angry: { label: "生气", icon: "frown", response: "可以生气，可以不讲道理一会儿。等你愿意说的时候，我认真听，不抢话。" },
+    sleepy: { label: "睡不着", icon: "moon", response: "把手机亮度调低，肩膀放松一点。今晚的烦心事先交给明天，我们先哄你睡觉。" },
+    hug: { label: "要抱抱", icon: "hand-heart", response: "抱抱已经发出：不问原因，不设条件，只负责把你接住。" }
   },
   dateIdeas: [
-    { title: "?????", time: "2 ??", tags: ["??", "??", "??"], text: "??????????????????????????????????" },
-    { title: "??????", time: "90 ??", tags: ["??", "??", "??"], text: "????????????????????????????????" },
-    { title: "??????", time: "1 ?", tags: ["??", "??", "??"], text: "????????????????????????????????" },
-    { title: "???????", time: "??", tags: ["??", "??", "??"], text: "??????????????????????????????????" },
-    { title: "?????", time: "??", tags: ["??", "??", "??"], text: "??????????????????????????" },
-    { title: "????", time: "??", tags: ["??", "??", "??"], text: "?????????????????????????????????" },
-    { title: "?????", time: "2 ??", tags: ["??", "??", "??"], text: "?????????????????????????????????????" },
-    { title: "??????", time: "1 ?", tags: ["??", "??", "??"], text: "????????????????????????????????" },
-    { title: "??????", time: "??", tags: ["??", "??", "??"], text: "??????????????????????????????" },
-    { title: "?????", time: "??", tags: ["??", "??", "??"], text: "??????????????????????????????" },
-    { title: "????????", time: "??", tags: ["??", "??", "??"], text: "???????????????? 9 ???????????????" },
-    { title: "?????", time: "1 ?", tags: ["??", "??", "??"], text: "?????????????????????????????" },
-    { title: "???????", time: "??", tags: ["??", "??", "??"], text: "?????????????????????????????" },
-    { title: "??????", time: "1 ??", tags: ["??", "??", "??"], text: "???? 10 ?????????????????????????????" },
-    { title: "??????", time: "1 ??", tags: ["??", "??", "??"], text: "?????????????????????????????" }
+    { title: "雨天电影局", time: "2 小时", tags: ["电影", "热饮", "抱枕"], text: "选一部都没看过的电影，准备热饮和零食，谁先猜中剧情谁获得一个小奖励。" },
+    { title: "城市散步盲盒", time: "90 分钟", tags: ["散步", "拍照", "甜品"], text: "随便选一个地铁站下车，沿着最漂亮的街走，遇见第一家甜品店就进去。" },
+    { title: "一起做饭实验", time: "1 晚", tags: ["做饭", "音乐", "打分"], text: "每人选一道菜，给对方的作品打分。最低分负责洗碗，最高分负责被夸。" },
+    { title: "日出或夜景计划", time: "半天", tags: ["风景", "相机", "外套"], text: "挑一个视野好的地方，看日出或夜景。带外套，也带一点不用赶时间的心情。" },
+    { title: "奶茶路线图", time: "下午", tags: ["奶茶", "街区", "小票"], text: "挑三家没喝过的店，给每一杯取名字，最后选出今日冠军。" },
+    { title: "晚风骑行", time: "傍晚", tags: ["骑行", "落日", "耳机"], text: "找一条不赶路的路，骑到天色变软。中途停下来拍一张只有你们懂的照片。" },
+    { title: "旧照片复刻", time: "2 小时", tags: ["照片", "回忆", "造型"], text: "选一张以前的合照，在同样姿势或同样情绪里复刻一次，顺便看看你们变得多亲近。" },
+    { title: "超市随机晚餐", time: "1 晚", tags: ["超市", "料理", "随机"], text: "每人只许选三样食材，回家拼成一顿饭。不好吃也算一次值得笑的作品。" },
+    { title: "书店交换书签", time: "下午", tags: ["书店", "安静", "礼物"], text: "各自挑一本想让对方翻开的书，再给对方写一张藏在书里的小纸条。" },
+    { title: "夜市评分员", time: "晚上", tags: ["夜市", "小吃", "排名"], text: "从第一家摊位吃到最后，给每样小吃起一个很认真或很离谱的奖项。" },
+    { title: "彼此的一日摄影师", time: "半天", tags: ["拍照", "街区", "滤镜"], text: "今天只负责把对方拍好看。最后各选 9 张，拼成一张属于这天的小相册。" },
+    { title: "居家手作夜", time: "1 晚", tags: ["手作", "蜡烛", "歌单"], text: "做香薰、拼图、串珠或小摆件，作品不需要完美，但要写上日期。" },
+    { title: "随机公交终点站", time: "半天", tags: ["公交", "探索", "照片"], text: "选一辆顺眼的公交坐到一个陌生站点，在附近找一家小店坐下来。" },
+    { title: "情侣问答电台", time: "1 小时", tags: ["聊天", "录音", "问题"], text: "每人准备 10 个问题，像录电台一样认真回答。可以把好笑的片段留给以后听。" },
+    { title: "为她的一小时", time: "1 小时", tags: ["偏爱", "陪伴", "放松"], text: "这一小时只做她想做的事：散步、发呆、逛店、吃甜品，都不催。" }
   ],
   ideaTools: [
     {
       id: "food-roulette",
-      title: "??????",
-      text: "?????????????????????????",
-      buttonLabel: "??????",
+      title: "随机点餐盲盒",
+      text: "不知道吃什么的时候抽一下，先让选择困难休息一会儿。",
+      buttonLabel: "抽今天吃什么",
       items: [
-        "??", "??", "??", "???", "??", "??", "???", "??", "??", "??", "??", "??",
-        "??", "??", "????", "???", "??", "??", "???", "???", "??", "???",
-        "???", "????", "???", "?????"
+        "川菜", "湘菜", "粤菜", "东北菜", "火锅", "烧烤", "麻辣烫", "米线", "拉面", "日料", "韩餐", "泰餐",
+        "披萨", "汉堡", "轻食沙拉", "小龙虾", "烤肉", "砂锅", "煲仔饭", "黄焖鸡", "冒菜", "酸菜鱼",
+        "螺蛳粉", "饺子馄饨", "粥粉面", "甜品下午茶"
       ]
     }
   ],
   datePlans: [
-    { id: "plan-1", title: "??????", date: daysFromNow(6), time: "15:00", place: "?????????", budget: "200 ??", checklist: ["????", "?????", "?????"], note: "??????????" },
-    { id: "plan-2", title: "???????", date: daysFromNow(12), time: "??", place: "??????", budget: "??", checklist: ["???", "?????", "?????"], note: "????????" }
+    { id: "plan-1", title: "周末半日约会", date: daysFromNow(6), time: "15:00", place: "先去喝奶茶，再散步", budget: "200 元内", checklist: ["带充电宝", "提前看天气", "拍一张合照"], note: "轻松一点，不赶时间。" },
+    { id: "plan-2", title: "下次见面小计划", date: daysFromNow(12), time: "傍晚", place: "她想去的地方", budget: "随心", checklist: ["订好车", "准备小惊喜", "晚饭别太辣"], note: "把主动权交给她。" }
   ],
   foodOptions: [
-    { id: "food-1", name: "?????", tags: ["??", "??", "??"], spicy: false, warm: true, budget: "mid", distance: "near" },
-    { id: "food-2", name: "???", tags: ["??", "??", "?????"], spicy: false, warm: true, budget: "high", distance: "normal" },
-    { id: "food-3", name: "???", tags: ["??", "??", "??"], spicy: true, warm: true, budget: "mid", distance: "normal" },
-    { id: "food-4", name: "????", tags: ["???", "??", "?"], spicy: false, warm: true, budget: "low", distance: "near" },
-    { id: "food-5", name: "????", tags: ["??", "??", "???"], spicy: false, warm: true, budget: "mid", distance: "near" },
-    { id: "food-6", name: "????", tags: ["??", "??", "???"], spicy: false, warm: false, budget: "mid", distance: "near" },
-    { id: "food-7", name: "???", tags: ["??", "????", "???"], spicy: true, warm: true, budget: "low", distance: "near" },
-    { id: "food-8", name: "???", tags: ["??", "??", "????"], spicy: false, warm: true, budget: "high", distance: "far" }
+    { id: "food-1", name: "番茄牛腩饭", tags: ["热乎", "不辣", "米饭"], spicy: false, warm: true, budget: "mid", distance: "near" },
+    { id: "food-2", name: "寿喜锅", tags: ["热乎", "甜口", "适合慢慢吃"], spicy: false, warm: true, budget: "high", distance: "normal" },
+    { id: "food-3", name: "酸菜鱼", tags: ["下饭", "微辣", "热乎"], spicy: true, warm: true, budget: "mid", distance: "normal" },
+    { id: "food-4", name: "烤肉拌饭", tags: ["快一点", "肉肉", "饱"], spicy: false, warm: true, budget: "low", distance: "near" },
+    { id: "food-5", name: "日式拉面", tags: ["汤面", "热乎", "不太辣"], spicy: false, warm: true, budget: "mid", distance: "near" },
+    { id: "food-6", name: "轻食沙拉", tags: ["清爽", "不辣", "负担小"], spicy: false, warm: false, budget: "mid", distance: "near" },
+    { id: "food-7", name: "麻辣烫", tags: ["热乎", "可选辣度", "随便加"], spicy: true, warm: true, budget: "low", distance: "near" },
+    { id: "food-8", name: "椰子鸡", tags: ["清淡", "热乎", "适合聊天"], spicy: false, warm: true, budget: "high", distance: "far" }
   ],
   giftList: [
-    { id: "gift-1", title: "??????", category: "???", detail: "?????????????", priority: "?", note: "???????" },
-    { id: "gift-2", title: "????????", category: "??", detail: "?????????????", priority: "?", note: "?????????????" },
-    { id: "gift-3", title: "???????", category: "??", detail: "????????????????????????", priority: "?", note: "?????????" }
+    { id: "gift-1", title: "花和手写卡片", category: "仪式感", detail: "不用很大束，颜色温柔一点。", priority: "高", note: "适合见面当天。" },
+    { id: "gift-2", title: "她常喝的奶茶备注", category: "口味", detail: "少冰、三分糖，珍珠或芋圆。", priority: "中", note: "后台可以继续补充她的喜好。" },
+    { id: "gift-3", title: "尺码和忌口备忘", category: "备忘", detail: "衣服、鞋码、戒指、过敏和不吃的东西都可以写这里。", priority: "高", note: "买礼物前先看一眼。" }
   ],
   wishes: COUPLE_WISH_TEXTS.map((text, index) => ({ id: `couple-100-${String(index + 1).padStart(3, "0")}`, text, done: false })),
   coupons: [
-    { id: "coupon-1", title: "??????", text: "????????????????????" },
-    { id: "coupon-2", title: "??????", text: "??????????????" },
-    { id: "coupon-3", title: "?????", text: "???????????" },
-    { id: "coupon-4", title: "?????", text: "????????????????" }
+    { id: "coupon-1", title: "奶茶免排队券", text: "想喝哪杯都可以，我负责下单和夸你眼光好。" },
+    { id: "coupon-2", title: "无条件抱抱券", text: "不讲道理也能用，优先级最高。" },
+    { id: "coupon-3", title: "电影选择权", text: "今晚看什么，你说了算。" },
+    { id: "coupon-4", title: "哄睡语音券", text: "睡不着的时候兑换，直到你困为止。" }
   ],
   places: [
-    { id: "place-1", name: "????????", note: "?????????????", x: 25, y: 68 },
-    { id: "place-2", name: "??????", note: "??????????????????", x: 58, y: 42 },
-    { id: "place-3", name: "???", note: "???????????", x: 76, y: 28 }
+    { id: "place-1", name: "第一次见面的地方", note: "空气里都是紧张和装作镇定。", x: 25, y: 68 },
+    { id: "place-2", name: "最常去的街角", note: "路过很多次，每一次都更像自己的地方。", x: 58, y: 42 },
+    { id: "place-3", name: "下一站", note: "还没去，但已经很期待。", x: 76, y: 28 }
   ],
   messageWall: [
-    { id: "message-1", title: "????", text: "?????????????????" },
-    { id: "message-2", title: "??????", text: "??????????????????????????" }
+    { id: "message-1", title: "置顶留言", text: "这里可以放你想让她每次都看见的话。" },
+    { id: "message-2", title: "今天也偏心你", text: "如果今天不太顺，就先把难过寄存在这里，我会慢慢接住。" }
   ],
   letters: [
-    { id: "letter-1", title: "??????", openAt: daysFromNow(0), unlockAfterDays: 0, body: "{?}?????????????????????????????????????" },
-    { id: "letter-2", title: "?????", openAt: daysFromNow(3), unlockAfterDays: 3, body: "??????????????????????????????????????" },
-    { id: "letter-3", title: "?????", openAt: daysFromNow(7), unlockAfterDays: 7, body: "??????????????????????????????" },
-    { id: "letter-4", title: "???????", openAt: daysFromNow(14), unlockAfterDays: 14, body: "????????????????????????????????????" }
+    { id: "letter-1", title: "今天就能打开", openAt: daysFromNow(0), unlockAfterDays: 0, body: "{她}，这个网站的第一封信想告诉你：你不用成为完美的一天，我也照样喜欢今天的你。" },
+    { id: "letter-2", title: "三天后的信", openAt: daysFromNow(3), unlockAfterDays: 3, body: "如果你打开了这封信，说明我们又一起经过了三个普通日子。谢谢你让普通变得值得。" },
+    { id: "letter-3", title: "下次见面前", openAt: daysFromNow(7), unlockAfterDays: 7, body: "见面前我总会有点期待过头。想牵手，想看你笑，想把路走慢一点。" },
+    { id: "letter-4", title: "留给某个不开心", openAt: daysFromNow(14), unlockAfterDays: 14, body: "不开心来的时候，不要一个人硬扛。你可以把难过说得乱七八糟，我会慢慢听懂。" }
   ]
 };
 
@@ -414,7 +414,7 @@ function normalizeDailyTools(value = {}) {
 }
 
 function normalizeTextList(value, fallback) {
-  const source = Array.isArray(value) ? value : String(value || "").split(/[\n?,]/);
+  const source = Array.isArray(value) ? value : String(value || "").split(/[\n，,]/);
   const list = source.map((item) => String(item || "").trim()).filter(Boolean);
   return list.length ? list : [...fallback];
 }
@@ -424,8 +424,8 @@ function normalizeTimeline(items) {
   return source.map((item) => ({
     id: item.id || `timeline-${Date.now()}-${Math.random().toString(16).slice(2)}`,
     date: normalizeDateInput(item.date) || dayKey(),
-    title: String(item.title || "????"),
-    text: String(item.text || "????????")
+    title: String(item.title || "新的回忆"),
+    text: String(item.text || "把这一刻写下来。")
   }));
 }
 
@@ -433,12 +433,12 @@ function normalizeDateIdeas(items) {
   const source = Array.isArray(items) ? items : DEFAULTS.dateIdeas;
   return source.map((item) => ({
     id: item.id || `idea-${Date.now()}-${Math.random().toString(16).slice(2)}`,
-    title: String(item.title || "??????"),
-    time: String(item.time || "??"),
+    title: String(item.title || "新的约会灵感"),
+    time: String(item.time || "随时"),
     tags: Array.isArray(item.tags)
       ? item.tags.map((tag) => String(tag || "").trim()).filter(Boolean)
-      : String(item.tags || "").split(/[?,]/).map((tag) => tag.trim()).filter(Boolean),
-    text: String(item.text || "????????????")
+      : String(item.tags || "").split(/[，,]/).map((tag) => tag.trim()).filter(Boolean),
+    text: String(item.text || "写下这次约会要怎么发生。")
   }));
 }
 
@@ -446,12 +446,12 @@ function normalizeIdeaTools(items) {
   const source = Array.isArray(items) ? items : DEFAULTS.ideaTools;
   return source.map((item) => ({
     id: item.id || `idea-tool-${Date.now()}-${Math.random().toString(16).slice(2)}`,
-    title: String(item.title || "??????"),
-    text: String(item.text || "???????????????"),
-    buttonLabel: String(item.buttonLabel || "?????"),
+    title: String(item.title || "新的功能盒子"),
+    text: String(item.text || "写下这个功能要怎么陪她做决定。"),
+    buttonLabel: String(item.buttonLabel || "随机抽一个"),
     items: Array.isArray(item.items)
       ? item.items.map((value) => String(value || "").trim()).filter(Boolean)
-      : String(item.items || "").split(/[\n?,]/).map((value) => value.trim()).filter(Boolean)
+      : String(item.items || "").split(/[\n，,]/).map((value) => value.trim()).filter(Boolean)
   })).filter((item) => item.items.length);
 }
 
@@ -459,14 +459,14 @@ function normalizeDatePlans(items) {
   const source = Array.isArray(items) ? items : DEFAULTS.datePlans;
   return source.map((item) => ({
     id: item.id || `plan-${Date.now()}-${Math.random().toString(16).slice(2)}`,
-    title: String(item.title || "??????"),
+    title: String(item.title || "新的约会计划"),
     date: normalizeDateInput(item.date) || dayKey(),
-    time: String(item.time || "??"),
-    place: String(item.place || "????"),
-    budget: String(item.budget || "??"),
+    time: String(item.time || "待定"),
+    place: String(item.place || "地点待定"),
+    budget: String(item.budget || "随心"),
     checklist: Array.isArray(item.checklist)
       ? item.checklist.map((value) => String(value || "").trim()).filter(Boolean)
-      : String(item.checklist || "").split(/[\n?,]/).map((value) => value.trim()).filter(Boolean),
+      : String(item.checklist || "").split(/[\n，,]/).map((value) => value.trim()).filter(Boolean),
     note: String(item.note || "")
   }));
 }
@@ -475,10 +475,10 @@ function normalizeFoodOptions(items) {
   const source = Array.isArray(items) ? items : DEFAULTS.foodOptions;
   return source.map((item) => ({
     id: item.id || `food-${Date.now()}-${Math.random().toString(16).slice(2)}`,
-    name: String(item.name || "????"),
+    name: String(item.name || "新的菜品"),
     tags: Array.isArray(item.tags)
       ? item.tags.map((value) => String(value || "").trim()).filter(Boolean)
-      : String(item.tags || "").split(/[?,]/).map((value) => value.trim()).filter(Boolean),
+      : String(item.tags || "").split(/[，,]/).map((value) => value.trim()).filter(Boolean),
     spicy: Boolean(item.spicy),
     warm: item.warm !== false,
     budget: ["low", "mid", "high"].includes(item.budget) ? item.budget : "mid",
@@ -490,10 +490,10 @@ function normalizeGiftList(items) {
   const source = Array.isArray(items) ? items : DEFAULTS.giftList;
   return source.map((item) => ({
     id: item.id || `gift-${Date.now()}-${Math.random().toString(16).slice(2)}`,
-    title: String(item.title || "??????"),
-    category: String(item.category || "??"),
-    detail: String(item.detail || "?????????"),
-    priority: String(item.priority || "?"),
+    title: String(item.title || "新的礼物备忘"),
+    category: String(item.category || "备忘"),
+    detail: String(item.detail || "写下她喜欢的细节。"),
+    priority: String(item.priority || "中"),
     note: String(item.note || "")
   }));
 }
@@ -502,7 +502,7 @@ function normalizeGuestbook(entries) {
   const source = Array.isArray(entries) ? entries : [];
   return source.map((entry) => ({
     id: entry.id || `guest-${Date.now()}-${Math.random().toString(16).slice(2)}`,
-    name: String(entry.name || "?"),
+    name: String(entry.name || "她"),
     message: String(entry.message || ""),
     reply: String(entry.reply || ""),
     createdAt: String(entry.createdAt || ""),
@@ -515,8 +515,8 @@ function normalizePlaces(items) {
   const source = Array.isArray(items) ? items : DEFAULTS.places;
   return source.map((item) => ({
     id: item.id || `place-${Date.now()}-${Math.random().toString(16).slice(2)}`,
-    name: String(item.name || "????"),
-    note: String(item.note || "?????????"),
+    name: String(item.name || "新的地点"),
+    note: String(item.note || "这里会有新的故事。"),
     x: clampPercent(item.x, 50),
     y: clampPercent(item.y, 50)
   }));
@@ -526,8 +526,8 @@ function normalizeMessages(items) {
   const source = Array.isArray(items) ? items : DEFAULTS.messageWall;
   return source.map((item) => ({
     id: item.id || `message-${Date.now()}-${Math.random().toString(16).slice(2)}`,
-    title: String(item.title || "????"),
-    text: String(item.text || "??????????")
+    title: String(item.title || "新的留言"),
+    text: String(item.text || "把想说的话写在这里。")
   }));
 }
 
@@ -537,10 +537,10 @@ function normalizeLetters(items) {
     const unlockAfterDays = Math.max(0, Math.floor(Number(item.unlockAfterDays || 0)));
     return {
       id: item.id || `letter-${Date.now()}-${Math.random().toString(16).slice(2)}`,
-      title: String(item.title || "?????"),
+      title: String(item.title || "新的未来信"),
       openAt: normalizeDateInput(item.openAt) || daysFromNow(unlockAfterDays),
       unlockAfterDays,
-      body: String(item.body || "?????????")
+      body: String(item.body || "这封信还没有正文。")
     };
   });
 }
@@ -591,8 +591,8 @@ function refreshIcons() {
 
 function personalize(text) {
   return String(text)
-    .replaceAll("{?}", state.settings.partnerName || "?")
-    .replaceAll("{?}", state.settings.yourName || "?");
+    .replaceAll("{她}", state.settings.partnerName || "她")
+    .replaceAll("{我}", state.settings.yourName || "我");
 }
 
 function daysBetween(from, to = new Date()) {
@@ -621,12 +621,12 @@ function timeUntilText(dateString, timeString = "00:00") {
   const target = new Date(`${date}T${time}:00`);
   if (Number.isNaN(target.getTime())) return "";
   const diff = target - new Date();
-  if (diff <= 0) return "??????????";
+  if (diff <= 0) return "就是现在，好好见面。";
   const hoursTotal = Math.ceil(diff / 3600000);
   const days = Math.floor(hoursTotal / 24);
   const hours = hoursTotal % 24;
-  if (days <= 0) return `?? ${hours} ????`;
-  return `?? ${days} ? ${hours} ????`;
+  if (days <= 0) return `还有 ${hours} 小时见面`;
+  return `还有 ${days} 天 ${hours} 小时见面`;
 }
 
 function formatDate(dateString) {
@@ -637,7 +637,7 @@ function formatDate(dateString) {
 
 function formatDateTime(value) {
   const d = new Date(value);
-  if (Number.isNaN(d.getTime())) return "????";
+  if (Number.isNaN(d.getTime())) return "时间未知";
   return d.toLocaleString("zh-CN", {
     year: "numeric",
     month: "2-digit",
@@ -724,7 +724,7 @@ function bindEntry() {
     panel.classList.remove("is-wrong");
     void panel.offsetWidth;
     panel.classList.add("is-wrong");
-    $("#entryMessage").textContent = "??????????????";
+    $("#entryMessage").textContent = "门听见了，但还想再确认一次。";
   });
 }
 
@@ -836,49 +836,49 @@ function renderDailyTools() {
   const snack = pick(tools.feedingSnacks, "snack");
   const countdown = timeUntilText(tools.meetDate, tools.meetTime);
   const periodMeta = tools.periodDate
-    ? `?? ${formatDate(tools.periodDate)} ? ?? ${tools.periodCycleDays} ?`
-    : "????????????????";
+    ? `预计 ${formatDate(tools.periodDate)} · 周期 ${tools.periodCycleDays} 天`
+    : "后台可以填写预计日期和照顾备注。";
 
-  $("#careCard").innerHTML = dailyCardHtml("heart", "?????", care, "????????????????");
+  $("#careCard").innerHTML = dailyCardHtml("heart", "今日关心卡", care, "每天自动随机一条，替代天气提醒。");
   $("#meetCountdownCard").innerHTML = dailyCardHtml(
     "calendar-heart",
-    tools.meetTitle || "????",
-    `${countdown || "???????????"}${dailyListHtml(tools.meetChecklist)}`,
+    tools.meetTitle || "距离见面",
+    `${countdown || "等你在后台写下见面时间"}${dailyListHtml(tools.meetChecklist)}`,
     tools.meetDate ? `${tools.meetDate} ${tools.meetTime || ""}` : "",
     true
   );
   $("#dailyTaskCard").innerHTML = dailyCardHtml(
     "check-circle-2",
-    "???????",
-    `${escapeHtml(task)}<button class="daily-action-button" type="button" data-daily-signal="task" data-daily-text="${escapeHtml(task)}">??????</button>`,
-    "?????????????",
+    "每日任务小纸条",
+    `${escapeHtml(task)}<button class="daily-action-button" type="button" data-daily-signal="task" data-daily-text="${escapeHtml(task)}">完成并告诉我</button>`,
+    "她点完成后会发到你的邮箱。",
     true
   );
   $("#periodCareCard").innerHTML = dailyCardHtml(
     "thermometer-sun",
-    "??/??????",
-    `${dailyListHtml(tools.periodAvoid, "??")}${dailyListHtml(tools.periodWarm, "??")}${escapeHtml(tools.periodMood)}`,
+    "姨妈/身体照顾提醒",
+    `${dailyListHtml(tools.periodAvoid, "忌口")}${dailyListHtml(tools.periodWarm, "照顾")}${escapeHtml(tools.periodMood)}`,
     periodMeta,
     true
   );
   $("#feedingCard").innerHTML = dailyCardHtml(
     "utensils",
-    "??????",
-    `${dailyListHtml([`??${food}`, `??${drink}`, `????${snack}`])}${dailyListHtml(tools.feedingAvoid, "??")}`,
-    "?????????????????????",
+    "今日投喂建议",
+    `${dailyListHtml([`吃：${food}`, `喝：${drink}`, `小零食：${snack}`])}${dailyListHtml(tools.feedingAvoid, "少碰")}`,
+    "后台维护她喜欢的奶茶、菜品、小零食和忌口。",
     true
   );
   $("#tripMemoCard").innerHTML = dailyCardHtml(
     "route",
-    "????/????",
+    "见面路线/出行备忘",
     dailyListHtml([
-      `???${tools.tripPlace}`,
-      `???${tools.tripTime}`,
-      `??/???${tools.tripTransport}`,
-      `??/????${tools.tripHotel}`,
+      `地点：${tools.tripPlace}`,
+      `时间：${tools.tripTime}`,
+      `车次/路线：${tools.tripTransport}`,
+      `酒店/落脚点：${tools.tripHotel}`,
       ...tools.tripNotes
     ]),
-    "???????????",
+    "见面前直接在手机里看。",
     true
   );
   refreshIcons();
@@ -890,13 +890,13 @@ function bindDailyTools() {
     if (!button) return;
     const text = button.dataset.dailyText || "";
     button.disabled = true;
-    button.textContent = "?????...";
+    button.textContent = "正在告诉我...";
     await sendSignal({
       moodKey: "daily-task",
-      label: "???????",
-      response: `?????????${text}`
-    }, "???????????");
-    button.textContent = "?????";
+      label: "每日任务小纸条",
+      response: `她完成了今日任务：${text}`
+    }, "每日任务已经告诉我了。");
+    button.textContent = "已经告诉我";
   });
 }
 
@@ -915,27 +915,27 @@ function dailyListHtml(list, label = "") {
 function renderGuestNameOptions() {
   const select = $("#guestNameSelect");
   if (!select) return;
-  const names = normalizeTextList(state.settings.guestNames, [state.settings.partnerName || "?", state.settings.yourName || "?"]);
+  const names = normalizeTextList(state.settings.guestNames, [state.settings.partnerName || "她", state.settings.yourName || "我"]);
   select.innerHTML = names.map((name) => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join("");
 }
 
 function renderPersonalText() {
   $all("[data-partner-name]").forEach((node) => {
-    node.textContent = state.settings.partnerName || "?";
+    node.textContent = state.settings.partnerName || "她";
   });
   $("#heroLine").textContent = personalize(state.settings.heroLine);
 }
 
 function renderCounters() {
   const together = daysBetween(state.settings.startDate);
-  $("#heroDays").textContent = `? ${together} ?`;
-  $("#anniversaryText").textContent = `????? ${together} ?`;
+  $("#heroDays").textContent = `第 ${together} 天`;
+  $("#anniversaryText").textContent = `我们已经第 ${together} 天`;
 
   const meet = daysUntil(state.settings.nextMeet);
-  $("#meetText").textContent = meet === null ? "??????" : meet <= 0 ? "????" : `?? ${meet} ?`;
+  $("#meetText").textContent = meet === null ? "等你写下日期" : meet <= 0 ? "就是今天" : `还有 ${meet} 天`;
 
   const birthday = daysUntil(state.settings.birthday, true);
-  $("#birthdayText").textContent = birthday === null ? "??????" : birthday === 0 ? "????" : `?? ${birthday} ?`;
+  $("#birthdayText").textContent = birthday === null ? "等你写下日期" : birthday === 0 ? "今天生日" : `还有 ${birthday} 天`;
 }
 
 function renderDailyQuote() {
@@ -978,15 +978,15 @@ function revealNextLine() {
 function bindWeather() {
   $("#locationButton").addEventListener("click", () => {
     if (!navigator.geolocation) {
-      $("#weatherStatus").textContent = "????????????????????";
+      $("#weatherStatus").textContent = "这个浏览器暂时拿不到定位，先用默认城市。";
       return;
     }
 
-    $("#weatherStatus").textContent = "??????????...";
+    $("#weatherStatus").textContent = "正在靠近她那边的天空...";
     navigator.geolocation.getCurrentPosition(
-      ({ coords }) => loadWeather(coords.latitude, coords.longitude, "????"),
+      ({ coords }) => loadWeather(coords.latitude, coords.longitude, "当前位置"),
       () => {
-        $("#weatherStatus").textContent = "??????????????";
+        $("#weatherStatus").textContent = "定位没有打开，先用默认城市。";
         loadWeather(state.settings.cityLatitude, state.settings.cityLongitude, state.settings.cityName, {
           adcode: state.settings.cityAdcode
         });
@@ -999,17 +999,17 @@ function bindWeather() {
     event.preventDefault();
     const city = $("#cityInput").value.trim();
     if (!city) return;
-    $("#weatherStatus").textContent = `??? ${city}...`;
+    $("#weatherStatus").textContent = `正在找 ${city}...`;
     try {
       const response = await fetch(`/api/geocode?city=${encodeURIComponent(city)}`);
       if (!response.ok) throw new Error("city");
       const data = await response.json();
       const match = data.results && data.results[0];
       if (!match) {
-        $("#weatherStatus").textContent = "????????????????";
+        $("#weatherStatus").textContent = "没有找到这个城市，换个名字试试。";
         return;
       }
-      state.settings.cityName = [match.name, match.admin1, match.country].filter(Boolean).join(" ? ");
+      state.settings.cityName = [match.name, match.admin1, match.country].filter(Boolean).join(" · ");
       state.settings.cityLatitude = match.latitude;
       state.settings.cityLongitude = match.longitude;
       state.settings.cityAdcode = match.adcode || "";
@@ -1018,18 +1018,18 @@ function bindWeather() {
         city: city
       });
     } catch {
-      $("#weatherStatus").textContent = "?????????????????";
+      $("#weatherStatus").textContent = "城市查询失败，等网络稳定一点再试。";
     }
   });
 }
 
 async function loadWeather(latitude, longitude, placeName, options = {}) {
-  $("#weatherStatus").textContent = `???? ${placeName || "????"} ???????...`;
+  $("#weatherStatus").textContent = `正在整理 ${placeName || "当前位置"} 的未来一周天气...`;
   try {
     const params = new URLSearchParams({
       latitude: latitude ?? "",
       longitude: longitude ?? "",
-      place: placeName || "????"
+      place: placeName || "当前位置"
     });
     if (options.adcode) params.set("adcode", options.adcode);
     if (options.city || placeName) params.set("city", options.city || placeName || "");
@@ -1057,15 +1057,15 @@ function renderWeather(daily, placeName, fallback = false) {
     return `
       <article class="weather-card">
         <div class="weather-day">
-          <span>${index === 0 ? "??" : weekday(date)}</span>
+          <span>${index === 0 ? "今天" : weekday(date)}</span>
           <span>${formatDate(date)}</span>
         </div>
         <div class="weather-icon"><i data-lucide="${info.icon}"></i></div>
-        <strong class="weather-temp">${min}? / ${max}?</strong>
+        <strong class="weather-temp">${min}° / ${max}°</strong>
         <div class="weather-meta">
           <span>${escapeHtml(info.label)}</span>
-          <span>?? ${rain}%</span>
-          <span>${wind ? escapeHtml(wind) : `?? ${shortTime(daily.sunset[index])}`}</span>
+          <span>降雨 ${rain}%</span>
+          <span>${wind ? escapeHtml(wind) : `日落 ${shortTime(daily.sunset[index])}`}</span>
         </div>
       </article>
     `;
@@ -1073,10 +1073,10 @@ function renderWeather(daily, placeName, fallback = false) {
 
   $("#weatherGrid").innerHTML = cards;
   $("#weatherStatus").textContent = fallback
-    ? `${placeName || "????"} ? ??????????????`
-    : `${placeName || "????"} ? ?? ${daily.time.length} ?`;
+    ? `${placeName || "当前位置"} · 天气接口不稳，先显示临时参考`
+    : `${placeName || "当前位置"} · 未来 ${daily.time.length} 天`;
   $("#weatherCare").innerHTML = fallback
-    ? `<i data-lucide="umbrella"></i><span>?????????????????????????????</span>`
+    ? `<i data-lucide="umbrella"></i><span>天气接口暂时不稳，出门前再看一眼天空；伞和外套先放进备选。</span>`
     : `<i data-lucide="${careIcon(daily)}"></i><span>${weatherCare(daily)}</span>`;
   refreshIcons();
 }
@@ -1116,24 +1116,24 @@ function buildFallbackWeather() {
 function weatherInfo(code, text = "") {
   const label = String(text || "").trim();
   if (label) return { label, icon: weatherTextIcon(label) };
-  if (code === 0) return { label: "?", icon: "sun" };
-  if ([1, 2, 3].includes(code)) return { label: "??", icon: "cloud-sun" };
-  if ([45, 48].includes(code)) return { label: "??", icon: "cloud-fog" };
-  if ([51, 53, 55, 56, 57].includes(code)) return { label: "??", icon: "cloud-drizzle" };
-  if ([61, 63, 65, 66, 67, 80, 81, 82].includes(code)) return { label: "??", icon: "cloud-rain" };
-  if ([71, 73, 75, 77, 85, 86].includes(code)) return { label: "??", icon: "snowflake" };
-  if ([95, 96, 99].includes(code)) return { label: "??", icon: "cloud-lightning" };
-  return { label: "????", icon: "cloud" };
+  if (code === 0) return { label: "晴", icon: "sun" };
+  if ([1, 2, 3].includes(code)) return { label: "多云", icon: "cloud-sun" };
+  if ([45, 48].includes(code)) return { label: "有雾", icon: "cloud-fog" };
+  if ([51, 53, 55, 56, 57].includes(code)) return { label: "小雨", icon: "cloud-drizzle" };
+  if ([61, 63, 65, 66, 67, 80, 81, 82].includes(code)) return { label: "下雨", icon: "cloud-rain" };
+  if ([71, 73, 75, 77, 85, 86].includes(code)) return { label: "下雪", icon: "snowflake" };
+  if ([95, 96, 99].includes(code)) return { label: "雷雨", icon: "cloud-lightning" };
+  return { label: "天气变化", icon: "cloud" };
 }
 
 function weatherTextIcon(text) {
-  if (text.includes("?")) return "cloud-lightning";
-  if (text.includes("?") || text.includes("??")) return "snowflake";
-  if (text.includes("?")) return text.includes("??") ? "cloud-drizzle" : "cloud-rain";
-  if (text.includes("?") || text.includes("?") || text.includes("?") || text.includes("?")) return "cloud-fog";
-  if (text.includes("?")) return "cloud";
-  if (text.includes("?")) return "cloud-sun";
-  if (text.includes("?")) return "sun";
+  if (text.includes("雷")) return "cloud-lightning";
+  if (text.includes("雪") || text.includes("冰雹")) return "snowflake";
+  if (text.includes("雨")) return text.includes("小雨") ? "cloud-drizzle" : "cloud-rain";
+  if (text.includes("雾") || text.includes("霾") || text.includes("沙") || text.includes("尘")) return "cloud-fog";
+  if (text.includes("阴")) return "cloud";
+  if (text.includes("云")) return "cloud-sun";
+  if (text.includes("晴")) return "sun";
   return "cloud";
 }
 
@@ -1144,13 +1144,13 @@ function weatherCare(daily) {
   const rain = daily.precipitation_probability_max[0] ?? 0;
   const info = weatherInfo(code, daily.weather_text?.[0]);
 
-  if (info.label === "??") return "??????????????????????????????";
-  if (rain >= 55 || info.label.includes("?")) return "??????????????????????????";
-  if (info.label.includes("?")) return "???????????????????????????";
-  if (max >= 33) return "????????????????????????";
-  if (min <= 8) return "???????????????????????????";
-  if (info.label === "?") return "????????????????????????????";
-  return "?????????????????????????????????";
+  if (info.label === "雷雨") return "今天可能有雷雨，尽量早点回家；如果路上害怕，就把电话打过来。";
+  if (rain >= 55 || info.label.includes("雨")) return "今天记得带伞，鞋子也选不怕湿的。雨天慢一点走，别急。";
+  if (info.label.includes("雪")) return "今天有雪意，围巾和手套可以上线；手冷的时候就当我牵着。";
+  if (max >= 33) return "今天会热，少晒一点，多喝水，冰饮可以有但别太猛。";
+  if (min <= 8) return "今天偏冷，外套穿厚一点。风大的时候，别把自己交给硬撑。";
+  if (info.label === "晴") return "今天适合散步、拍照和晒一点太阳。记得涂防晒，也记得开心。";
+  return "天气还算温和，适合把节奏放稳一点；出门前看一眼包里有没有纸巾和水。";
 }
 
 function careIcon(daily) {
@@ -1225,8 +1225,8 @@ async function loadServerPhotos() {
   } catch {
     state.serverPhotos = [];
     albumLoaded = false;
-    renderAlbum("??????????????????? Node ??????????");
-    renderAdminPhotos("??????????");
+    renderAlbum("相册服务器还没连上，先显示样例照片。用 Node 服务启动后就能上传。");
+    renderAdminPhotos("相册服务器还没连上。");
   }
 }
 
@@ -1252,10 +1252,10 @@ function openPhotoEditor(photoId = "") {
   form.elements.photoImage.required = !photo;
   form.photoTitle.value = photo?.title || "";
   form.photoDate.value = photo?.date || "";
-  $("#photoDialogTitle").textContent = photo ? "???????" : "????";
+  $("#photoDialogTitle").textContent = photo ? "编辑服务器照片" : "上传照片";
   $("#photoMessage").textContent = photo
-    ? "??????????????????????????????"
-    : "???????????????????????????";
+    ? "可以只改标题和文案；如果重新选择照片，会替换服务器上的图片。"
+    : "选择本地照片后会上传到服务器，页面再从服务器接口读取。";
   showPhotoPreview(photo?.src || "");
   $("#photoDialog").showModal();
   refreshIcons();
@@ -1270,28 +1270,28 @@ async function savePhotoFromForm(event) {
   const file = form.elements.photoImage.files[0];
 
   if (!title) {
-    $("#photoMessage").textContent = "??????";
+    $("#photoMessage").textContent = "标题要填好。";
     return;
   }
 
   if (!id && !file) {
-    $("#photoMessage").textContent = "???????????";
+    $("#photoMessage").textContent = "请先选择一张本地照片。";
     return;
   }
 
   const formData = new FormData();
   formData.append("title", title);
-  formData.append("date", date || "???????????????????");
+  formData.append("date", date || "这张照片背后，有一段只有你们懂的时间。");
 
   const submit = form.querySelector("button[type='submit']");
   submit.disabled = true;
-  $("#photoMessage").textContent = file ? "?????????????..." : "????????...";
+  $("#photoMessage").textContent = file ? "正在压缩照片并保存到服务器..." : "正在保存到服务器...";
 
   try {
     if (file) {
       const optimized = await optimizeImageFile(file);
       formData.append("photo", optimized.blob, optimized.filename);
-      $("#photoMessage").textContent = `??? ${formatBytes(file.size)} ? ${formatBytes(optimized.blob.size)}?????...`;
+      $("#photoMessage").textContent = `已压缩 ${formatBytes(file.size)} → ${formatBytes(optimized.blob.size)}，正在上传...`;
     }
     const response = await fetch(id ? `/api/photos/${encodeURIComponent(id)}` : "/api/photos", {
       method: id ? "PUT" : "POST",
@@ -1302,7 +1302,7 @@ async function savePhotoFromForm(event) {
     await loadServerPhotos();
     $("#photoDialog").close();
   } catch {
-    $("#photoMessage").textContent = "???????? Node ?????????????? jpg/png/webp/gif?";
+    $("#photoMessage").textContent = "保存失败，请确认 Node 服务正在运行，并且图片格式是 jpg/png/webp/gif。";
   } finally {
     submit.disabled = false;
   }
@@ -1314,7 +1314,7 @@ async function deleteServerPhoto(id) {
     if (!response.ok) throw new Error("delete");
     await loadServerPhotos();
   } catch {
-    console.error("?????????");
+    console.error("删除服务器照片失败");
   }
 }
 
@@ -1377,15 +1377,15 @@ function formatBytes(bytes) {
 function renderAlbum(message = "") {
   $("#addPhotoButton").hidden = !albumExpanded;
   $("#revealAlbumButton").innerHTML = albumExpanded
-    ? `<i data-lucide="chevrons-up"></i><span>??????</span>`
-    : `<i data-lucide="images"></i><span>??????</span>`;
+    ? `<i data-lucide="chevrons-up"></i><span>收起照片相册</span>`
+    : `<i data-lucide="images"></i><span>查看照片相册</span>`;
   if (!albumExpanded) {
     $("#albumGrid").innerHTML = `
       <article class="album-teaser">
         <i data-lucide="images"></i>
         <div>
-          <h3>??????</h3>
-          <p>?????????????????????</p>
+          <h3>照片先藏起来</h3>
+          <p>点击查看时再加载图片，页面打开会更快一点。</p>
         </div>
       </article>
     `;
@@ -1404,10 +1404,10 @@ function renderAlbum(message = "") {
     <article class="photo-card">
       ${photo.server ? `
         <div class="photo-actions">
-          <button class="icon-button" data-edit-photo="${photo.id}" type="button" aria-label="????"><i data-lucide="pencil"></i></button>
-          <button class="icon-button" data-remove-photo="${photo.id}" type="button" aria-label="????"><i data-lucide="x"></i></button>
+          <button class="icon-button" data-edit-photo="${photo.id}" type="button" aria-label="编辑照片"><i data-lucide="pencil"></i></button>
+          <button class="icon-button" data-remove-photo="${photo.id}" type="button" aria-label="移除照片"><i data-lucide="x"></i></button>
         </div>
-        <span class="photo-badge">???</span>
+        <span class="photo-badge">服务器</span>
       ` : ""}
       <img src="${photo.src}" alt="${escapeHtml(photo.title)}" loading="lazy">
       <div class="photo-info">
@@ -1436,15 +1436,15 @@ function renderAdminPhotos(message = "") {
       <div class="admin-content-actions">
         <button class="secondary-button" data-edit-photo="${photo.id}" type="button">
           <i data-lucide="pencil"></i>
-          <span>??</span>
+          <span>编辑</span>
         </button>
         <button class="ghost-button danger" data-remove-photo="${photo.id}" type="button">
           <i data-lucide="trash-2"></i>
-          <span>??</span>
+          <span>删除</span>
         </button>
       </div>
     </article>
-  `).join("") : `<p class="admin-empty">?????????????</p>`;
+  `).join("") : `<p class="admin-empty">还没有上传到服务器的照片。</p>`;
   refreshIcons();
 }
 
@@ -1468,15 +1468,15 @@ function renderMoods() {
   $("#moodGrid").innerHTML = `
     <button class="mood-button" type="button" data-signal-action="hug">
       <i data-lucide="hand-heart"></i>
-      <span>???</span>
+      <span>要抱抱</span>
     </button>
     <button class="mood-button" type="button" data-signal-action="miss">
       <i data-lucide="radar"></i>
-      <span>????</span>
+      <span>想你雷达</span>
     </button>
     <button class="mood-button" type="button" data-signal-action="status">
       <i data-lucide="traffic-cone"></i>
-      <span>?????</span>
+      <span>今日状态灯</span>
     </button>
   `;
   refreshIcons();
@@ -1498,15 +1498,15 @@ async function sendQuickSignal(action) {
   const configs = {
     hug: {
       moodKey: "hug",
-      label: "???",
-      response: "?????????????",
-      ok: "???????????"
+      label: "要抱抱",
+      response: "她想要一个不问原因的抱抱。",
+      ok: "抱抱信号已经发给我了。"
     },
     miss: {
       moodKey: "miss",
-      label: "????",
-      response: "???????",
-      ok: "???????????????"
+      label: "想你雷达",
+      response: "她现在很想你。",
+      ok: "想你雷达已经亮起来，我会看到。"
     }
   };
   const config = configs[action];
@@ -1520,15 +1520,15 @@ async function sendMoodCall(event) {
   const mood = $("#moodStatusSelect").value;
   const message = input.value.trim();
   if (!mood && !message) {
-    $("#moodDialogMessage").textContent = "??????????????????";
+    $("#moodDialogMessage").textContent = "先选一个状态，或者写一点现在的心情。";
     return;
   }
-  $("#moodDialogMessage").textContent = "?????...";
+  $("#moodDialogMessage").textContent = "正在发给我...";
   await sendSignal({
     moodKey: "status",
-    label: "?????",
-    response: [mood ? `???${mood}` : "", message ? `???${message}` : ""].filter(Boolean).join("?")
-  }, "?????????????????????", true);
+    label: "今日状态灯",
+    response: [mood ? `状态：${mood}` : "", message ? `心情：${message}` : ""].filter(Boolean).join("；")
+  }, "状态灯已经发给我了，我会看到她今天的颜色。", true);
 }
 
 async function sendSignal(payload, okText, closeDialog = false) {
@@ -1539,17 +1539,17 @@ async function sendSignal(payload, okText, closeDialog = false) {
       body: JSON.stringify(payload)
     });
     const data = await response.json().catch(() => ({}));
-    if (response.status === 404) throw new Error("????????????????????");
-    if (!response.ok || data.ok === false) throw new Error(data.error || "????");
+    if (response.status === 404) throw new Error("服务器还没部署互动接口，请更新云端代码。");
+    if (!response.ok || data.ok === false) throw new Error(data.error || "发送失败");
     selectedMood = payload.moodKey;
     $("#moodResponse").innerHTML = `<i data-lucide="heart-handshake"></i><span>${escapeHtml(okText)}</span>`;
     if (closeDialog) closeMoodDialog();
     refreshIcons();
   } catch (error) {
     if (closeDialog) {
-      $("#moodDialogMessage").textContent = error.message || "?????????????";
+      $("#moodDialogMessage").textContent = error.message || "暂时没有发出去，再试一次。";
     } else {
-      $("#moodResponse").innerHTML = `<i data-lucide="wifi-off"></i><span>${escapeHtml(error.message || "?????????????")}</span>`;
+      $("#moodResponse").innerHTML = `<i data-lucide="wifi-off"></i><span>${escapeHtml(error.message || "暂时没有发出去，再试一次。")}</span>`;
       refreshIcons();
     }
   }
@@ -1616,15 +1616,15 @@ function renderDateIdea(random = false, forcedIdea = null) {
   selectedDateIdea = idea;
   $("#dateIdeaCard").innerHTML = `
     <h4>${idea.title}</h4>
-    <p class="idea-summary">${expandedPanels.idea ? escapeHtml(idea.text) : "????????????????????"}</p>
+    <p class="idea-summary">${expandedPanels.idea ? escapeHtml(idea.text) : "今天先给你一个标题，想看具体玩法再展开。"}</p>
     <div class="idea-tags">
       <span>${idea.time}</span>
       ${idea.tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join("")}
     </div>
   `;
   $("#toggleIdeaDetailsButton").innerHTML = expandedPanels.idea
-    ? `<i data-lucide="chevrons-up"></i><span>????</span>`
-    : `<i data-lucide="chevrons-down"></i><span>????</span>`;
+    ? `<i data-lucide="chevrons-up"></i><span>收起详情</span>`
+    : `<i data-lucide="chevrons-down"></i><span>展开详情</span>`;
   refreshIcons();
 }
 
@@ -1675,13 +1675,13 @@ function renderDatePlans() {
     <article class="practical-card">
       <div class="practical-card-head">
         <strong>${escapeHtml(plan.title)}</strong>
-        <span>${formatDate(plan.date)} ? ${escapeHtml(plan.time)}</span>
+        <span>${formatDate(plan.date)} · ${escapeHtml(plan.time)}</span>
       </div>
-      <p>${escapeHtml(plan.place)} ? ?? ${escapeHtml(plan.budget)}</p>
+      <p>${escapeHtml(plan.place)} · 预算 ${escapeHtml(plan.budget)}</p>
       ${plan.checklist?.length ? `<ul>${plan.checklist.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>` : ""}
       ${plan.note ? `<em>${escapeHtml(plan.note)}</em>` : ""}
     </article>
-  `).join("") : `<p class="folded-note">?????????????????</p>`;
+  `).join("") : `<p class="folded-note">还没有约会计划，后台可以提前排好。</p>`;
 }
 
 function renderFoodRoulette() {
@@ -1690,9 +1690,9 @@ function renderFoodRoulette() {
     ? `
       <strong>${escapeHtml(food.name)}</strong>
       <span>${food.tags.map((tag) => escapeHtml(tag)).join(" / ")}</span>
-      <p>${budgetLabel(food.budget)} ? ${distanceLabel(food.distance)} ? ${food.spicy ? "???" : "????"} ? ${food.warm ? "??" : "??"}</p>
+      <p>${budgetLabel(food.budget)} · ${distanceLabel(food.distance)} · ${food.spicy ? "可吃辣" : "不辣优先"} · ${food.warm ? "热乎" : "清爽"}</p>
     `
-    : `<p>???????????????????</p>`;
+    : `<p>这个筛选下暂时没有菜品，放宽一点再抽。</p>`;
 }
 
 function drawFoodOption() {
@@ -1725,33 +1725,33 @@ function renderGiftList() {
     <article class="practical-card gift-card">
       <div class="practical-card-head">
         <strong>${escapeHtml(gift.title)}</strong>
-        <span>${escapeHtml(gift.category)} ? ??? ${escapeHtml(gift.priority)}</span>
+        <span>${escapeHtml(gift.category)} · 优先级 ${escapeHtml(gift.priority)}</span>
       </div>
       <p>${escapeHtml(gift.detail)}</p>
       ${gift.note ? `<em>${escapeHtml(gift.note)}</em>` : ""}
     </article>
-  `).join("") : `<p class="folded-note">????????????????????</p>`;
+  `).join("") : `<p class="folded-note">还没有礼物备忘，后台可以慢慢补她的喜好。</p>`;
 }
 
 function budgetLabel(value) {
-  return { low: "???", mid: "???", high: "???" }[value] || "????";
+  return { low: "低预算", mid: "中预算", high: "高预算" }[value] || "预算随意";
 }
 
 function distanceLabel(value) {
-  return { near: "??", normal: "???", far: "?????" }[value] || "????";
+  return { near: "附近", normal: "不太远", far: "可以跑远点" }[value] || "距离随意";
 }
 
 function renderWishes() {
   const doneCount = state.wishes.filter((wish) => wish.done).length;
   const total = state.wishes.length || 1;
-  $("#wishProgressText").textContent = `??? ${doneCount} / ${total}`;
+  $("#wishProgressText").textContent = `已完成 ${doneCount} / ${total}`;
   $("#wishProgressBar").style.width = `${Math.round((doneCount / total) * 100)}%`;
 
   $("#toggleWishListButton").innerHTML = expandedPanels.wishes
-    ? `<i data-lucide="chevrons-up"></i><span>??????</span>`
-    : `<i data-lucide="chevrons-down"></i><span>??????</span>`;
+    ? `<i data-lucide="chevrons-up"></i><span>收起愿望清单</span>`
+    : `<i data-lucide="chevrons-down"></i><span>展开愿望清单</span>`;
   if (!expandedPanels.wishes) {
-    $("#wishList").innerHTML = `<p class="folded-note">??????????????????????</p>`;
+    $("#wishList").innerHTML = `<p class="folded-note">清单已收起，展开后可以打卡、添加或删除愿望。</p>`;
     refreshIcons();
     return;
   }
@@ -1760,7 +1760,7 @@ function renderWishes() {
     <label class="wish-item ${wish.done ? "done" : ""}">
       <input type="checkbox" data-wish-toggle="${wish.id}" ${wish.done ? "checked" : ""}>
       <span>${escapeHtml(wish.text)}</span>
-      <button class="icon-button" type="button" data-remove-wish="${wish.id}" aria-label="????">
+      <button class="icon-button" type="button" data-remove-wish="${wish.id}" aria-label="删除愿望">
         <i data-lucide="trash-2"></i>
       </button>
     </label>
@@ -1785,7 +1785,7 @@ async function loadCoupons() {
       sortOrder: index * 10,
       effectiveDate: "",
       expiryDate: "",
-      status: { usable: true, label: "????", reason: "" },
+      status: { usable: true, label: "本地预览", reason: "" },
       useHistory: []
     }));
   }
@@ -1802,7 +1802,7 @@ function normalizeCouponList(coupons) {
     availableQuantity: numberOr(coupon.availableQuantity, 0),
     pinned: Boolean(coupon.pinned),
     sortOrder: numberOr(coupon.sortOrder, index * 10),
-    status: coupon.status || { usable: true, label: "???", reason: "" },
+    status: coupon.status || { usable: true, label: "可使用", reason: "" },
     useHistory: Array.isArray(coupon.useHistory) ? coupon.useHistory : []
   }));
 }
@@ -1822,7 +1822,7 @@ async function runCouponAction(id, action) {
       body: JSON.stringify({})
     });
     const data = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(data.error || "????");
+    if (!response.ok) throw new Error(data.error || "操作失败");
     await loadCoupons();
   } catch (error) {
     const coupon = state.coupons.find((item) => item.id === id);
@@ -1835,14 +1835,14 @@ async function runCouponAction(id, action) {
 
 function renderCoupons() {
   $("#toggleCouponListButton").innerHTML = expandedPanels.coupons
-    ? `<i data-lucide="chevrons-up"></i><span>?????</span>`
-    : `<i data-lucide="chevrons-down"></i><span>?????</span>`;
+    ? `<i data-lucide="chevrons-up"></i><span>收起小票券</span>`
+    : `<i data-lucide="chevrons-down"></i><span>展开小票券</span>`;
   if (!expandedPanels.coupons) {
     const available = state.coupons.reduce((sum, coupon) => sum + Number(coupon.availableQuantity || 0), 0);
     const claimed = state.coupons.reduce((sum, coupon) => sum + Number(coupon.claimedQuantity || 0), 0);
     $("#couponList").innerHTML = `
       <article class="folded-note">
-        ??? ${state.coupons.length} ???????? ${available} ???????? ${claimed} ??
+        现在有 ${state.coupons.length} 种小票券，可领取 ${available} 张，已领取未使用 ${claimed} 张。
       </article>
     `;
     refreshIcons();
@@ -1860,31 +1860,31 @@ function renderCoupons() {
           <div class="coupon-title-row">
             <h4>${escapeHtml(coupon.title)}</h4>
             <div class="coupon-title-badges">
-              ${coupon.pinned ? `<span class="coupon-pin-badge">??</span>` : ""}
-              <span class="coupon-status ${active ? "is-live" : "is-muted"}">${escapeHtml(coupon.status?.label || "???")}</span>
+              ${coupon.pinned ? `<span class="coupon-pin-badge">置顶</span>` : ""}
+              <span class="coupon-status ${active ? "is-live" : "is-muted"}">${escapeHtml(coupon.status?.label || "可使用")}</span>
             </div>
           </div>
           <p>${escapeHtml(coupon.text)}</p>
           <div class="coupon-stats">
-            <span>?? ${coupon.availableQuantity}</span>
-            <span>?? ${coupon.claimedQuantity}</span>
-            <span>?? ${coupon.usedQuantity}</span>
+            <span>可领 ${coupon.availableQuantity}</span>
+            <span>已领 ${coupon.claimedQuantity}</span>
+            <span>已用 ${coupon.usedQuantity}</span>
           </div>
           <div class="coupon-dates">
-            <span>???${coupon.effectiveDate || "??"}</span>
-            <span>???${coupon.expiryDate || "??"}</span>
+            <span>生效：${coupon.effectiveDate || "立即"}</span>
+            <span>到期：${coupon.expiryDate || "长期"}</span>
           </div>
-          ${latest ? `<p class="coupon-used-time">?????${formatDateTime(latest.usedAt)}</p>` : ""}
+          ${latest ? `<p class="coupon-used-time">上次使用：${formatDateTime(latest.usedAt)}</p>` : ""}
           ${coupon.inlineMessage ? `<p class="coupon-error">${escapeHtml(coupon.inlineMessage)}</p>` : ""}
         </div>
         <div class="coupon-actions">
           <button class="secondary-button" type="button" data-coupon="${coupon.id}" data-coupon-action="claim" ${canClaim ? "" : "disabled"}>
             <i data-lucide="ticket"></i>
-            <span>??</span>
+            <span>领取</span>
           </button>
           <button class="primary-button" type="button" data-coupon="${coupon.id}" data-coupon-action="use" ${canUse ? "" : "disabled"}>
             <i data-lucide="stamp"></i>
-            <span>??</span>
+            <span>使用</span>
           </button>
         </div>
       </article>
@@ -1974,10 +1974,10 @@ async function loadSecurityConfig() {
     const data = await response.json();
     state.securityConfig = data.config || {};
     $("#securityMessage").textContent = state.securityConfig.updatedAt
-      ? `?????${formatDateTime(state.securityConfig.updatedAt)}`
-      : "?????????????????????";
+      ? `上次修改：${formatDateTime(state.securityConfig.updatedAt)}`
+      : "当前使用默认后台密码，建议正式部署前修改。";
   } catch {
-    $("#securityMessage").textContent = "???????????????";
+    $("#securityMessage").textContent = "后台密码状态暂时没有读取成功。";
   }
 }
 
@@ -1988,11 +1988,11 @@ async function saveSecurityConfig(event) {
   const newKey = form.newKey.value.trim();
   const confirmKey = form.confirmKey.value.trim();
   if (newKey !== confirmKey) {
-    $("#securityMessage").textContent = "??????????????";
+    $("#securityMessage").textContent = "两次输入的新后台密码不一致。";
     return;
   }
 
-  $("#securityMessage").textContent = "????????...";
+  $("#securityMessage").textContent = "正在保存后台密码...";
   try {
     const response = await fetch("/api/admin/security", {
       method: "PUT",
@@ -2000,10 +2000,10 @@ async function saveSecurityConfig(event) {
       body: JSON.stringify({ currentKey, newKey })
     });
     const data = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(data.error || "????");
+    if (!response.ok) throw new Error(data.error || "保存失败");
     form.reset();
     state.securityConfig = data.config || {};
-    $("#securityMessage").textContent = "???????????????????";
+    $("#securityMessage").textContent = "后台密码已更新，下次登录请使用新密码。";
   } catch (error) {
     $("#securityMessage").textContent = error.message;
   }
@@ -2027,14 +2027,14 @@ async function saveSiteSettings(event) {
     songUrl: form.songUrl.value.trim(),
     guestNames: normalizeTextList(form.guestNames.value, [form.partnerName.value.trim(), form.yourName.value.trim()]),
     passcodes: form.passcodes.value
-      .split(/[?,]/)
+      .split(/[，,]/)
       .map((item) => item.trim())
       .filter(Boolean)
   };
   if (!state.settings.passcodes.length) state.settings.passcodes = DEFAULTS.settings.passcodes;
 
   try {
-    await saveAdminContent("#siteSettingsMessage", "???????????");
+    await saveAdminContent("#siteSettingsMessage", "小设定已保存到服务器。");
     fillSettingsForm();
   } catch (error) {
     $("#siteSettingsMessage").textContent = error.message;
@@ -2070,15 +2070,15 @@ function contentPayload() {
   };
 }
 
-async function saveAdminContent(messageSelector, successText = "??????????????????") {
-  if (messageSelector) $(messageSelector).textContent = "????????...";
+async function saveAdminContent(messageSelector, successText = "已保存，她那边刷新后会看到最新内容。") {
+  if (messageSelector) $(messageSelector).textContent = "正在保存到服务器...";
   const response = await fetch("/api/admin/content", {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ content: contentPayload() })
   });
   const data = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(data.error || "????");
+  if (!response.ok) throw new Error(data.error || "保存失败");
   applyContent(data.content || {});
   renderAll();
   renderAdminContent();
@@ -2113,7 +2113,7 @@ function fillContentForm(type, id) {
     form.date.value = item.date || "";
     form.title.value = item.title || "";
     form.text.value = item.text || "";
-    $("#timelineAdminTitle").textContent = "????";
+    $("#timelineAdminTitle").textContent = "编辑回忆";
     $("#timelineAdminMessage").textContent = "";
     return;
   }
@@ -2128,7 +2128,7 @@ function fillContentForm(type, id) {
     form.time.value = item.time || "";
     form.tags.value = (item.tags || []).join(", ");
     form.text.value = item.text || "";
-    $("#ideaAdminTitle").textContent = "??????";
+    $("#ideaAdminTitle").textContent = "编辑约会灵感";
     $("#ideaAdminMessage").textContent = "";
     return;
   }
@@ -2143,7 +2143,7 @@ function fillContentForm(type, id) {
     form.buttonLabel.value = item.buttonLabel || "";
     form.text.value = item.text || "";
     form.items.value = (item.items || []).join("\n");
-    $("#ideaToolAdminTitle").textContent = "??????";
+    $("#ideaToolAdminTitle").textContent = "编辑功能盒子";
     $("#ideaToolAdminMessage").textContent = "";
     return;
   }
@@ -2161,7 +2161,7 @@ function fillContentForm(type, id) {
     form.budget.value = item.budget || "";
     form.checklist.value = (item.checklist || []).join("\n");
     form.note.value = item.note || "";
-    $("#datePlanAdminTitle").textContent = "??????";
+    $("#datePlanAdminTitle").textContent = "编辑约会计划";
     $("#datePlanAdminMessage").textContent = "";
     return;
   }
@@ -2178,7 +2178,7 @@ function fillContentForm(type, id) {
     form.warm.checked = item.warm !== false;
     form.budget.value = item.budget || "mid";
     form.distance.value = item.distance || "normal";
-    $("#foodAdminTitle").textContent = "????";
+    $("#foodAdminTitle").textContent = "编辑菜品";
     $("#foodAdminMessage").textContent = "";
     return;
   }
@@ -2194,7 +2194,7 @@ function fillContentForm(type, id) {
     form.priority.value = item.priority || "";
     form.detail.value = item.detail || "";
     form.note.value = item.note || "";
-    $("#giftAdminTitle").textContent = "??????";
+    $("#giftAdminTitle").textContent = "编辑礼物备忘";
     $("#giftAdminMessage").textContent = "";
     return;
   }
@@ -2209,7 +2209,7 @@ function fillContentForm(type, id) {
     form.note.value = item.note || "";
     form.x.value = item.x ?? "";
     form.y.value = item.y ?? "";
-    $("#placeAdminTitle").textContent = "??????";
+    $("#placeAdminTitle").textContent = "编辑地图足迹";
     $("#placeAdminMessage").textContent = "";
     return;
   }
@@ -2222,7 +2222,7 @@ function fillContentForm(type, id) {
     form.messageId.value = id;
     form.title.value = item.title || "";
     form.text.value = item.text || "";
-    $("#messageAdminTitle").textContent = "????";
+    $("#messageAdminTitle").textContent = "编辑留言";
     $("#messageAdminMessage").textContent = "";
     return;
   }
@@ -2236,28 +2236,28 @@ function fillContentForm(type, id) {
     form.title.value = item.title || "";
     form.unlockDays.value = Math.max(0, daysUntil(item.openAt) || 0);
     form.body.value = item.body || "";
-    $("#letterAdminTitle").textContent = "?????";
+    $("#letterAdminTitle").textContent = "编辑未来信";
     $("#letterAdminMessage").textContent = "";
   }
 }
 
 async function deleteContentItem(type, id) {
   const configs = {
-    timeline: { list: "timeline", label: "????", message: "#timelineAdminMessage" },
-    idea: { list: "dateIdeas", label: "??????", message: "#ideaAdminMessage" },
-    ideaTool: { list: "ideaTools", label: "??????", message: "#ideaToolAdminMessage" },
-    datePlan: { list: "datePlans", label: "??????", message: "#datePlanAdminMessage" },
-    food: { list: "foodOptions", label: "????", message: "#foodAdminMessage" },
-    gift: { list: "giftList", label: "??????", message: "#giftAdminMessage" },
-    place: { list: "places", label: "??????", message: "#placeAdminMessage" },
-    message: { list: "messageWall", label: "????", message: "#messageAdminMessage" },
-    letter: { list: "letters", label: "?????", message: "#letterAdminMessage" }
+    timeline: { list: "timeline", label: "这条回忆", message: "#timelineAdminMessage" },
+    idea: { list: "dateIdeas", label: "这个约会灵感", message: "#ideaAdminMessage" },
+    ideaTool: { list: "ideaTools", label: "这个功能盒子", message: "#ideaToolAdminMessage" },
+    datePlan: { list: "datePlans", label: "这个约会计划", message: "#datePlanAdminMessage" },
+    food: { list: "foodOptions", label: "这个菜品", message: "#foodAdminMessage" },
+    gift: { list: "giftList", label: "这个礼物备忘", message: "#giftAdminMessage" },
+    place: { list: "places", label: "这个地图足迹", message: "#placeAdminMessage" },
+    message: { list: "messageWall", label: "这条留言", message: "#messageAdminMessage" },
+    letter: { list: "letters", label: "这封未来信", message: "#letterAdminMessage" }
   };
   const config = configs[type];
-  if (!config || !window.confirm(`??${config.label}?`)) return;
+  if (!config || !window.confirm(`删除${config.label}？`)) return;
   state[config.list] = state[config.list].filter((item) => item.id !== id);
   try {
-    await saveAdminContent(config.message, "???????");
+    await saveAdminContent(config.message, "已删除并同步。");
     resetContentForm(type, false);
   } catch (error) {
     $(config.message).textContent = error.message;
@@ -2281,7 +2281,7 @@ async function moveContentItem(type, id, direction) {
   if (index < 0 || nextIndex < 0 || nextIndex >= list.length) return;
   [list[index], list[nextIndex]] = [list[nextIndex], list[index]];
   try {
-    await saveAdminContent(config.message, "??????????");
+    await saveAdminContent(config.message, "排序已保存到服务器。");
   } catch (error) {
     $(config.message).textContent = error.message;
   }
@@ -2314,7 +2314,7 @@ async function saveAdminIdea(event) {
     id,
     title: form.title.value.trim(),
     time: form.time.value.trim(),
-    tags: form.tags.value.split(/[?,]/).map((tag) => tag.trim()).filter(Boolean),
+    tags: form.tags.value.split(/[，,]/).map((tag) => tag.trim()).filter(Boolean),
     text: form.text.value.trim()
   };
   upsertContentItem("idea", item);
@@ -2335,7 +2335,7 @@ async function saveAdminIdeaTool(event) {
     title: form.title.value.trim(),
     text: form.text.value.trim(),
     buttonLabel: form.buttonLabel.value.trim(),
-    items: form.items.value.split(/[\n?,]/).map((value) => value.trim()).filter(Boolean)
+    items: form.items.value.split(/[\n，,]/).map((value) => value.trim()).filter(Boolean)
   };
   upsertContentItem("ideaTool", item);
   try {
@@ -2354,10 +2354,10 @@ async function saveAdminDatePlan(event) {
     id,
     title: form.title.value.trim(),
     date: form.date.value || dayKey(),
-    time: form.time.value.trim() || "??",
-    place: form.place.value.trim() || "????",
-    budget: form.budget.value.trim() || "??",
-    checklist: form.checklist.value.split(/[\n?,]/).map((item) => item.trim()).filter(Boolean),
+    time: form.time.value.trim() || "待定",
+    place: form.place.value.trim() || "地点待定",
+    budget: form.budget.value.trim() || "随心",
+    checklist: form.checklist.value.split(/[\n，,]/).map((item) => item.trim()).filter(Boolean),
     note: form.note.value.trim()
   });
   try {
@@ -2375,7 +2375,7 @@ async function saveAdminFood(event) {
   upsertContentItem("food", {
     id,
     name: form.name.value.trim(),
-    tags: form.tags.value.split(/[?,]/).map((item) => item.trim()).filter(Boolean),
+    tags: form.tags.value.split(/[，,]/).map((item) => item.trim()).filter(Boolean),
     spicy: form.spicy.checked,
     warm: form.warm.checked,
     budget: form.budget.value,
@@ -2398,7 +2398,7 @@ async function saveAdminGift(event) {
     title: form.title.value.trim(),
     category: form.category.value.trim(),
     detail: form.detail.value.trim(),
-    priority: form.priority.value.trim() || "?",
+    priority: form.priority.value.trim() || "中",
     note: form.note.value.trim()
   });
   try {
@@ -2509,7 +2509,7 @@ function resetTimelineForm(clearMessage = true) {
   form.reset();
   form.timelineId.value = "";
   form.date.value = dayKey();
-  $("#timelineAdminTitle").textContent = "????";
+  $("#timelineAdminTitle").textContent = "新增回忆";
   if (clearMessage) $("#timelineAdminMessage").textContent = "";
 }
 
@@ -2518,7 +2518,7 @@ function resetIdeaForm(clearMessage = true) {
   const form = $("#ideaAdminForm");
   form.reset();
   form.ideaId.value = "";
-  $("#ideaAdminTitle").textContent = "??????";
+  $("#ideaAdminTitle").textContent = "新增约会灵感";
   if (clearMessage) $("#ideaAdminMessage").textContent = "";
 }
 
@@ -2527,7 +2527,7 @@ function resetIdeaToolForm(clearMessage = true) {
   const form = $("#ideaToolAdminForm");
   form.reset();
   form.ideaToolId.value = "";
-  $("#ideaToolAdminTitle").textContent = "??????";
+  $("#ideaToolAdminTitle").textContent = "新增功能盒子";
   if (clearMessage) $("#ideaToolAdminMessage").textContent = "";
 }
 
@@ -2537,7 +2537,7 @@ function resetDatePlanForm(clearMessage = true) {
   form.reset();
   form.datePlanId.value = "";
   form.date.value = dayKey();
-  $("#datePlanAdminTitle").textContent = "??????";
+  $("#datePlanAdminTitle").textContent = "新增约会计划";
   if (clearMessage) $("#datePlanAdminMessage").textContent = "";
 }
 
@@ -2549,7 +2549,7 @@ function resetFoodForm(clearMessage = true) {
   form.warm.checked = true;
   form.budget.value = "mid";
   form.distance.value = "normal";
-  $("#foodAdminTitle").textContent = "????";
+  $("#foodAdminTitle").textContent = "新增菜品";
   if (clearMessage) $("#foodAdminMessage").textContent = "";
 }
 
@@ -2558,8 +2558,8 @@ function resetGiftForm(clearMessage = true) {
   const form = $("#giftAdminForm");
   form.reset();
   form.giftId.value = "";
-  form.priority.value = "?";
-  $("#giftAdminTitle").textContent = "??????";
+  form.priority.value = "中";
+  $("#giftAdminTitle").textContent = "新增礼物备忘";
   if (clearMessage) $("#giftAdminMessage").textContent = "";
 }
 
@@ -2568,7 +2568,7 @@ function resetPlaceForm(clearMessage = true) {
   const form = $("#placeAdminForm");
   form.reset();
   form.placeId.value = "";
-  $("#placeAdminTitle").textContent = "??????";
+  $("#placeAdminTitle").textContent = "新增地图足迹";
   if (clearMessage) $("#placeAdminMessage").textContent = "";
 }
 
@@ -2577,7 +2577,7 @@ function resetMessageForm(clearMessage = true) {
   const form = $("#messageAdminForm");
   form.reset();
   form.messageId.value = "";
-  $("#messageAdminTitle").textContent = "????";
+  $("#messageAdminTitle").textContent = "新增留言";
   if (clearMessage) $("#messageAdminMessage").textContent = "";
 }
 
@@ -2587,7 +2587,7 @@ function resetLetterForm(clearMessage = true) {
   form.reset();
   form.letterId.value = "";
   form.unlockDays.value = 0;
-  $("#letterAdminTitle").textContent = "?????";
+  $("#letterAdminTitle").textContent = "新增未来信";
   if (clearMessage) $("#letterAdminMessage").textContent = "";
 }
 
@@ -2601,7 +2601,7 @@ function renderAdminTimeline() {
       </div>
       ${adminContentButtons("timeline", item.id, index, list.length, true)}
     </article>
-  `).join("") : `<p class="admin-empty">??????</p>`;
+  `).join("") : `<p class="admin-empty">还没有回忆。</p>`;
   refreshIcons();
 }
 
@@ -2610,12 +2610,12 @@ function renderAdminIdeas() {
     <article class="admin-content-card">
       <div>
         <strong>${escapeHtml(item.title)}</strong>
-        <span>${escapeHtml(item.time)} ? ${(item.tags || []).map(escapeHtml).join(" / ")}</span>
+        <span>${escapeHtml(item.time)} · ${(item.tags || []).map(escapeHtml).join(" / ")}</span>
         <p>${escapeHtml(item.text)}</p>
       </div>
       ${adminContentButtons("idea", item.id)}
     </article>
-  `).join("") : `<p class="admin-empty">????????</p>`;
+  `).join("") : `<p class="admin-empty">还没有约会灵感。</p>`;
   refreshIcons();
 }
 
@@ -2624,12 +2624,12 @@ function renderAdminIdeaTools() {
     <article class="admin-content-card">
       <div>
         <strong>${escapeHtml(item.title)}</strong>
-        <span>${escapeHtml(item.buttonLabel)} ? ${(item.items || []).length} ???</span>
+        <span>${escapeHtml(item.buttonLabel)} · ${(item.items || []).length} 个选项</span>
         <p>${escapeHtml(item.text)}</p>
       </div>
       ${adminContentButtons("ideaTool", item.id)}
     </article>
-  `).join("") : `<p class="admin-empty">????????</p>`;
+  `).join("") : `<p class="admin-empty">还没有功能盒子。</p>`;
   refreshIcons();
 }
 
@@ -2638,12 +2638,12 @@ function renderAdminDatePlans() {
     <article class="admin-content-card">
       <div>
         <strong>${escapeHtml(item.title)}</strong>
-        <span>${escapeHtml(item.date)} ? ${escapeHtml(item.time)} ? ${escapeHtml(item.place)}</span>
+        <span>${escapeHtml(item.date)} · ${escapeHtml(item.time)} · ${escapeHtml(item.place)}</span>
         <p>${escapeHtml(item.note || item.budget)}</p>
       </div>
       ${adminContentButtons("datePlan", item.id, index, list.length, true)}
     </article>
-  `).join("") : `<p class="admin-empty">????????</p>`;
+  `).join("") : `<p class="admin-empty">还没有约会计划。</p>`;
   refreshIcons();
 }
 
@@ -2652,12 +2652,12 @@ function renderAdminFoods() {
     <article class="admin-content-card">
       <div>
         <strong>${escapeHtml(item.name)}</strong>
-        <span>${budgetLabel(item.budget)} ? ${distanceLabel(item.distance)} ? ${item.spicy ? "???" : "??"} ? ${item.warm ? "??" : "??"}</span>
+        <span>${budgetLabel(item.budget)} · ${distanceLabel(item.distance)} · ${item.spicy ? "可吃辣" : "不辣"} · ${item.warm ? "热乎" : "清爽"}</span>
         <p>${(item.tags || []).map(escapeHtml).join(" / ")}</p>
       </div>
       ${adminContentButtons("food", item.id)}
     </article>
-  `).join("") : `<p class="admin-empty">??????</p>`;
+  `).join("") : `<p class="admin-empty">还没有菜品。</p>`;
   refreshIcons();
 }
 
@@ -2666,12 +2666,12 @@ function renderAdminGifts() {
     <article class="admin-content-card">
       <div>
         <strong>${escapeHtml(item.title)}</strong>
-        <span>${escapeHtml(item.category)} ? ??? ${escapeHtml(item.priority)}</span>
+        <span>${escapeHtml(item.category)} · 优先级 ${escapeHtml(item.priority)}</span>
         <p>${escapeHtml(item.detail)}</p>
       </div>
       ${adminContentButtons("gift", item.id, index, list.length, true)}
     </article>
-  `).join("") : `<p class="admin-empty">????????</p>`;
+  `).join("") : `<p class="admin-empty">还没有礼物备忘。</p>`;
   refreshIcons();
 }
 
@@ -2680,12 +2680,12 @@ function renderAdminPlaces() {
     <article class="admin-content-card">
       <div>
         <strong>${escapeHtml(item.name)}</strong>
-        <span>?? ${item.x}% / ${item.y}%</span>
+        <span>位置 ${item.x}% / ${item.y}%</span>
         <p>${escapeHtml(item.note)}</p>
       </div>
       ${adminContentButtons("place", item.id, index, list.length, true)}
     </article>
-  `).join("") : `<p class="admin-empty">????????</p>`;
+  `).join("") : `<p class="admin-empty">还没有地图足迹。</p>`;
   refreshIcons();
 }
 
@@ -2698,7 +2698,7 @@ function renderAdminMessages() {
       </div>
       ${adminContentButtons("message", item.id, index, list.length, true)}
     </article>
-  `).join("") : `<p class="admin-empty">??????</p>`;
+  `).join("") : `<p class="admin-empty">还没有留言。</p>`;
   refreshIcons();
 }
 
@@ -2709,13 +2709,13 @@ function renderAdminLetters() {
       <article class="admin-content-card">
         <div>
           <strong>${escapeHtml(item.title)}</strong>
-          <span>${diff > 0 ? `?? ${diff} ???` : "?????"} ? ${escapeHtml(item.openAt)}</span>
+          <span>${diff > 0 ? `还有 ${diff} 天解锁` : "现在可打开"} · ${escapeHtml(item.openAt)}</span>
           <p>${escapeHtml(item.body)}</p>
         </div>
         ${adminContentButtons("letter", item.id, index, list.length, true)}
       </article>
     `;
-  }).join("") : `<p class="admin-empty">???????</p>`;
+  }).join("") : `<p class="admin-empty">还没有未来信。</p>`;
   refreshIcons();
 }
 
@@ -2725,20 +2725,20 @@ function adminContentButtons(type, id, index = 0, total = 0, sortable = false) {
       ${sortable ? `
         <button class="ghost-button" type="button" data-admin-content-type="${type}" data-admin-content-id="${id}" data-admin-content-action="move-up" ${index <= 0 ? "disabled" : ""}>
           <i data-lucide="arrow-up"></i>
-          <span>??</span>
+          <span>上移</span>
         </button>
         <button class="ghost-button" type="button" data-admin-content-type="${type}" data-admin-content-id="${id}" data-admin-content-action="move-down" ${index >= total - 1 ? "disabled" : ""}>
           <i data-lucide="arrow-down"></i>
-          <span>??</span>
+          <span>下移</span>
         </button>
       ` : ""}
       <button class="secondary-button" type="button" data-admin-content-type="${type}" data-admin-content-id="${id}" data-admin-content-action="edit">
         <i data-lucide="pencil"></i>
-        <span>??</span>
+        <span>编辑</span>
       </button>
       <button class="ghost-button danger" type="button" data-admin-content-type="${type}" data-admin-content-id="${id}" data-admin-content-action="delete">
         <i data-lucide="trash-2"></i>
-        <span>??</span>
+        <span>删除</span>
       </button>
     </div>
   `;
@@ -2756,7 +2756,7 @@ async function loadMailConfig() {
     state.mailConfig = data.config || null;
     fillMailConfigForm(state.mailConfig);
   } catch {
-    $("#mailConfigMessage").textContent = "?????????????";
+    $("#mailConfigMessage").textContent = "邮箱配置暂时没有读取成功。";
   }
 }
 
@@ -2770,7 +2770,7 @@ async function saveMailConfig(event) {
     to: form.to.value.trim(),
     from: form.from.value.trim()
   };
-  $("#mailConfigMessage").textContent = "????????...";
+  $("#mailConfigMessage").textContent = "正在保存邮箱配置...";
   try {
     const response = await fetch("/api/admin/mail-config", {
       method: "PUT",
@@ -2778,12 +2778,12 @@ async function saveMailConfig(event) {
       body: JSON.stringify(payload)
     });
     const data = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(data.error || "????");
+    if (!response.ok) throw new Error(data.error || "保存失败");
     state.mailConfig = data.config;
     fillMailConfigForm(data.config);
     $("#mailConfigMessage").textContent = data.config.hasPassword
-      ? "???????????????????? QQ ???????"
-      : "????????????????????";
+      ? "已保存。她使用小票券、点击心情时都会通过 QQ 邮箱发送通知。"
+      : "已保存，但还没有授权码，暂时不能发邮件。";
   } catch (error) {
     $("#mailConfigMessage").textContent = error.message;
   }
@@ -2798,8 +2798,8 @@ function fillMailConfigForm(config) {
   form.to.value = config.to || "";
   form.from.value = config.from || config.smtpUser || "";
   $("#mailConfigMessage").textContent = config.hasPassword
-    ? `QQ ????????????????????${config.updatedAt ? `?????${formatDateTime(config.updatedAt)}` : ""}`
-    : "QQ ???????????? SMTP????????";
+    ? `QQ 邮箱已配置授权码，小票券和心情都会通知。${config.updatedAt ? `上次更新：${formatDateTime(config.updatedAt)}` : ""}`
+    : "QQ 邮箱需要在邮箱设置里开启 SMTP，并使用授权码。";
 }
 
 async function loadAdminCoupons() {
@@ -2815,7 +2815,7 @@ async function loadAdminCoupons() {
     renderAdminCoupons();
     await loadCoupons();
   } catch {
-    $("#adminCouponList").innerHTML = `<p class="admin-empty">?????????????</p>`;
+    $("#adminCouponList").innerHTML = `<p class="admin-empty">管理数据暂时没有加载成功。</p>`;
   }
 }
 
@@ -2845,7 +2845,7 @@ async function loadAdminEvents() {
       .slice(0, 40);
     renderAdminEvents();
   } catch {
-    $("#adminEventList").innerHTML = `<p class="admin-empty">???????????</p>`;
+    $("#adminEventList").innerHTML = `<p class="admin-empty">还没有加载到使用记录。</p>`;
   }
 }
 
@@ -2861,50 +2861,50 @@ function renderAdminCoupons() {
           <div class="coupon-title-row">
             <h3>${escapeHtml(coupon.title)}</h3>
             <div class="coupon-title-badges">
-              ${coupon.pinned ? `<span class="coupon-pin-badge">??</span>` : ""}
-              <span class="coupon-status ${active ? "is-live" : "is-muted"}">${escapeHtml(coupon.status?.label || "???")}</span>
+              ${coupon.pinned ? `<span class="coupon-pin-badge">置顶</span>` : ""}
+              <span class="coupon-status ${active ? "is-live" : "is-muted"}">${escapeHtml(coupon.status?.label || "可使用")}</span>
             </div>
           </div>
           <p>${escapeHtml(coupon.text)}</p>
           <div class="coupon-stats">
-            <span>?? ${coupon.totalQuantity}</span>
-            <span>?? ${coupon.availableQuantity}</span>
-            <span>?? ${coupon.claimedQuantity}</span>
-            <span>?? ${coupon.usedQuantity}</span>
-            <span>?? ${sortOrder}</span>
+            <span>总数 ${coupon.totalQuantity}</span>
+            <span>可领 ${coupon.availableQuantity}</span>
+            <span>已领 ${coupon.claimedQuantity}</span>
+            <span>已用 ${coupon.usedQuantity}</span>
+            <span>排序 ${sortOrder}</span>
           </div>
           <div class="coupon-dates">
-            <span>???${coupon.effectiveDate || "??"}</span>
-            <span>???${coupon.expiryDate || "??"}</span>
+            <span>生效：${coupon.effectiveDate || "立即"}</span>
+            <span>到期：${coupon.expiryDate || "长期"}</span>
           </div>
-          ${coupon.useHistory?.length ? `<p class="coupon-used-time">?????${formatDateTime(coupon.useHistory[0].usedAt)}</p>` : ""}
+          ${coupon.useHistory?.length ? `<p class="coupon-used-time">最近使用：${formatDateTime(coupon.useHistory[0].usedAt)}</p>` : ""}
         </div>
         <div class="admin-coupon-actions">
           <button class="secondary-button" type="button" data-admin-coupon="${coupon.id}" data-admin-coupon-action="edit">
-            <i data-lucide="pencil"></i><span>??</span>
+            <i data-lucide="pencil"></i><span>编辑</span>
           </button>
           <button class="ghost-button" type="button" data-admin-coupon="${coupon.id}" data-admin-coupon-action="${coupon.pinned ? "unpin" : "pin"}">
-            <i data-lucide="${coupon.pinned ? "pin-off" : "pin"}"></i><span>${coupon.pinned ? "????" : "??"}</span>
+            <i data-lucide="${coupon.pinned ? "pin-off" : "pin"}"></i><span>${coupon.pinned ? "取消置顶" : "置顶"}</span>
           </button>
           <button class="ghost-button" type="button" data-admin-coupon="${coupon.id}" data-admin-coupon-action="up" ${canMoveUp ? "" : "disabled"}>
-            <i data-lucide="arrow-up"></i><span>??</span>
+            <i data-lucide="arrow-up"></i><span>上移</span>
           </button>
           <button class="ghost-button" type="button" data-admin-coupon="${coupon.id}" data-admin-coupon-action="down" ${canMoveDown ? "" : "disabled"}>
-            <i data-lucide="arrow-down"></i><span>??</span>
+            <i data-lucide="arrow-down"></i><span>下移</span>
           </button>
           <button class="ghost-button" type="button" data-admin-coupon="${coupon.id}" data-admin-coupon-action="return" ${coupon.claimedQuantity > 0 ? "" : "disabled"}>
-            <i data-lucide="undo-2"></i><span>?? 1</span>
+            <i data-lucide="undo-2"></i><span>退回 1</span>
           </button>
           <button class="ghost-button" type="button" data-admin-coupon="${coupon.id}" data-admin-coupon-action="use" ${coupon.claimedQuantity > 0 && active ? "" : "disabled"}>
-            <i data-lucide="stamp"></i><span>?? 1</span>
+            <i data-lucide="stamp"></i><span>使用 1</span>
           </button>
           <button class="ghost-button danger" type="button" data-admin-coupon="${coupon.id}" data-admin-coupon-action="delete">
-            <i data-lucide="trash-2"></i><span>??</span>
+            <i data-lucide="trash-2"></i><span>删除</span>
           </button>
         </div>
       </article>
     `;
-  }).join("") : `<p class="admin-empty">???????</p>`;
+  }).join("") : `<p class="admin-empty">还没有小票券。</p>`;
   refreshIcons();
 }
 
@@ -2913,22 +2913,22 @@ function renderAdminEvents() {
     if (event.type === "mood") {
       return `
         <article class="admin-event-card">
-          <strong>???${escapeHtml(event.label || "??")}</strong>
-          <span>${formatDateTime(event.createdAt)} ? ??????</span>
+          <strong>心情：${escapeHtml(event.label || "未知")}</strong>
+          <span>${formatDateTime(event.createdAt)} · 她点击了心情</span>
           <p>${escapeHtml(event.response || "")}</p>
-          <em>???${emailStatusText(event.emailStatus)}${event.emailError ? ` ? ${escapeHtml(event.emailError)}` : ""}</em>
+          <em>邮件：${emailStatusText(event.emailStatus)}${event.emailError ? ` · ${escapeHtml(event.emailError)}` : ""}</em>
         </article>
       `;
     }
     return `
       <article class="admin-event-card">
         <strong>${escapeHtml(event.couponTitle)}</strong>
-        <span>${formatDateTime(event.usedAt)} ? ${escapeHtml(event.actor || "?")}</span>
+        <span>${formatDateTime(event.usedAt)} · ${escapeHtml(event.actor || "她")}</span>
         <p>${escapeHtml(event.note || "")}</p>
-        <em>???${emailStatusText(event.emailStatus)}${event.emailError ? ` ? ${escapeHtml(event.emailError)}` : ""}</em>
+        <em>邮件：${emailStatusText(event.emailStatus)}${event.emailError ? ` · ${escapeHtml(event.emailError)}` : ""}</em>
       </article>
     `;
-  }).join("") : `<p class="admin-empty">?????????????????????????????????????</p>`;
+  }).join("") : `<p class="admin-empty">还没有使用或心情记录。她使用小票券、点击心情后，这里会出现时间和邮件状态。</p>`;
 }
 
 function renderAdminGuestbook() {
@@ -2937,23 +2937,23 @@ function renderAdminGuestbook() {
   list.innerHTML = state.guestbook.length ? state.guestbook.map((entry) => `
     <article class="admin-content-card">
       <div>
-        <strong>${escapeHtml(entry.name)} ? ${entry.createdAt ? formatDateTime(entry.createdAt) : "????"}</strong>
+        <strong>${escapeHtml(entry.name)} · ${entry.createdAt ? formatDateTime(entry.createdAt) : "时间未知"}</strong>
         <p>${escapeHtml(entry.message)}</p>
-        ${entry.reply ? `<span>????${escapeHtml(entry.reply)}</span>` : `<span>?????</span>`}
+        ${entry.reply ? `<span>已回复：${escapeHtml(entry.reply)}</span>` : `<span>还没有回复</span>`}
       </div>
       <div class="admin-content-actions">
         <button class="secondary-button" type="button" data-guestbook-action="reply" data-guestbook-id="${entry.id}">
-          <i data-lucide="reply"></i><span>??</span>
+          <i data-lucide="reply"></i><span>回复</span>
         </button>
         <button class="ghost-button" type="button" data-guestbook-action="hide" data-guestbook-id="${entry.id}">
-          <i data-lucide="${entry.visible ? "eye-off" : "eye"}"></i><span>${entry.visible ? "??" : "??"}</span>
+          <i data-lucide="${entry.visible ? "eye-off" : "eye"}"></i><span>${entry.visible ? "隐藏" : "显示"}</span>
         </button>
         <button class="ghost-button danger" type="button" data-guestbook-action="delete" data-guestbook-id="${entry.id}">
-          <i data-lucide="trash-2"></i><span>??</span>
+          <i data-lucide="trash-2"></i><span>删除</span>
         </button>
       </div>
     </article>
-  `).join("") : `<p class="admin-empty">????????</p>`;
+  `).join("") : `<p class="admin-empty">还没有收到留言。</p>`;
   refreshIcons();
 }
 
@@ -2965,7 +2965,7 @@ async function handleAdminGuestbookAction(event) {
   if (!entry) return;
   const action = button.dataset.guestbookAction;
   if (action === "reply") {
-    const reply = window.prompt("???????", entry.reply || "");
+    const reply = window.prompt("回复她的留言：", entry.reply || "");
     if (reply === null) return;
     await updateGuestbookEntry(entry, { reply, visible: entry.visible });
     return;
@@ -2974,13 +2974,13 @@ async function handleAdminGuestbookAction(event) {
     await updateGuestbookEntry(entry, { reply: entry.reply, visible: !entry.visible });
     return;
   }
-  if (action === "delete" && window.confirm("???????")) {
+  if (action === "delete" && window.confirm("删除这条留言？")) {
     await deleteGuestbookEntry(entry.id);
   }
 }
 
 async function updateGuestbookEntry(entry, payload) {
-  $("#guestbookAdminMessage").textContent = "???????...";
+  $("#guestbookAdminMessage").textContent = "正在保存留言本...";
   try {
     const response = await fetch(`/api/admin/guestbook/${encodeURIComponent(entry.id)}`, {
       method: "PUT",
@@ -2988,8 +2988,8 @@ async function updateGuestbookEntry(entry, payload) {
       body: JSON.stringify(payload)
     });
     const data = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(data.error || "????");
-    $("#guestbookAdminMessage").textContent = "???????";
+    if (!response.ok) throw new Error(data.error || "保存失败");
+    $("#guestbookAdminMessage").textContent = "留言本已更新。";
     await loadGuestbook(true);
   } catch (error) {
     $("#guestbookAdminMessage").textContent = error.message;
@@ -2997,12 +2997,12 @@ async function updateGuestbookEntry(entry, payload) {
 }
 
 async function deleteGuestbookEntry(id) {
-  $("#guestbookAdminMessage").textContent = "????...";
+  $("#guestbookAdminMessage").textContent = "正在删除...";
   try {
     const response = await fetch(`/api/admin/guestbook/${encodeURIComponent(id)}`, { method: "DELETE" });
     const data = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(data.error || "????");
-    $("#guestbookAdminMessage").textContent = "????";
+    if (!response.ok) throw new Error(data.error || "删除失败");
+    $("#guestbookAdminMessage").textContent = "已删除。";
     await loadGuestbook(true);
   } catch (error) {
     $("#guestbookAdminMessage").textContent = error.message;
@@ -3010,10 +3010,10 @@ async function deleteGuestbookEntry(id) {
 }
 
 async function exportBackup() {
-  $("#backupMessage").textContent = "??????...";
+  $("#backupMessage").textContent = "正在导出数据...";
   try {
     const response = await fetch("/api/admin/backup");
-    if (!response.ok) throw new Error("????");
+    if (!response.ok) throw new Error("导出失败");
     const blob = await response.blob();
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -3021,9 +3021,9 @@ async function exportBackup() {
     link.download = `love-universe-backup-${dayKey()}.json`;
     link.click();
     URL.revokeObjectURL(url);
-    $("#backupMessage").textContent = "????????";
+    $("#backupMessage").textContent = "数据备份已导出。";
   } catch (error) {
-    $("#backupMessage").textContent = error.message || "????";
+    $("#backupMessage").textContent = error.message || "导出失败";
   }
 }
 
@@ -3031,11 +3031,11 @@ async function importBackup(event) {
   event.preventDefault();
   const file = event.currentTarget.backupFile.files[0];
   if (!file) {
-    $("#backupMessage").textContent = "??????? JSON ???";
+    $("#backupMessage").textContent = "先选择一个备份 JSON 文件。";
     return;
   }
-  if (!window.confirm("????????????????????????????????")) return;
-  $("#backupMessage").textContent = "??????...";
+  if (!window.confirm("导入会覆盖服务器上的内容数据、相册元数据、留言本和记录，继续吗？")) return;
+  $("#backupMessage").textContent = "正在读取备份...";
   try {
     const text = await file.text();
     const backup = JSON.parse(text);
@@ -3045,11 +3045,11 @@ async function importBackup(event) {
       body: JSON.stringify(backup)
     });
     const data = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(data.error || "????");
-    $("#backupMessage").textContent = `????${(data.restored || []).join("?") || "????????"}`;
+    if (!response.ok) throw new Error(data.error || "导入失败");
+    $("#backupMessage").textContent = `已导入：${(data.restored || []).join("、") || "没有可导入的数据"}`;
     await Promise.all([loadAdminContent(), loadAdminCoupons(), loadAdminEvents(), loadGuestbook(true), loadServerPhotos()]);
   } catch (error) {
-    $("#backupMessage").textContent = error.message || "???????????? JSON ???";
+    $("#backupMessage").textContent = error.message || "导入失败，请确认是正确的 JSON 备份。";
   }
 }
 
@@ -3065,7 +3065,7 @@ async function saveAdminCoupon(event) {
     pinned: form.pinned.checked
   };
   const id = form.couponId.value.trim();
-  $("#adminCouponMessage").textContent = "????...";
+  $("#adminCouponMessage").textContent = "正在保存...";
   try {
     const response = await fetch(id ? `/api/admin/coupons/${encodeURIComponent(id)}` : "/api/admin/coupons", {
       method: id ? "PUT" : "POST",
@@ -3073,8 +3073,8 @@ async function saveAdminCoupon(event) {
       body: JSON.stringify(payload)
     });
     const data = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(data.error || "????");
-    $("#adminCouponMessage").textContent = "??????????????????";
+    if (!response.ok) throw new Error(data.error || "保存失败");
+    $("#adminCouponMessage").textContent = "已保存，她那边刷新后会看到最新状态。";
     resetAdminCouponForm(false);
     await loadAdminCoupons();
   } catch (error) {
@@ -3089,7 +3089,7 @@ async function runAdminCouponAction(action, id) {
     fillAdminCouponForm(coupon);
     return;
   }
-  if (action === "delete" && !window.confirm(`???${coupon.title}??`)) return;
+  if (action === "delete" && !window.confirm(`删除「${coupon.title}」？`)) return;
 
   const routes = {
     delete: { method: "DELETE", url: `/api/admin/coupons/${encodeURIComponent(id)}` },
@@ -3098,7 +3098,7 @@ async function runAdminCouponAction(action, id) {
     up: { method: "POST", url: `/api/admin/coupons/${encodeURIComponent(id)}/move`, body: { direction: "up" } },
     down: { method: "POST", url: `/api/admin/coupons/${encodeURIComponent(id)}/move`, body: { direction: "down" } },
     return: { method: "POST", url: `/api/admin/coupons/${encodeURIComponent(id)}/return`, body: { quantity: 1 } },
-    use: { method: "POST", url: `/api/admin/coupons/${encodeURIComponent(id)}/use`, body: { note: "??????????" } }
+    use: { method: "POST", url: `/api/admin/coupons/${encodeURIComponent(id)}/use`, body: { note: "管理员手动登记使用。" } }
   };
   const route = routes[action];
   if (!route) return;
@@ -3110,7 +3110,7 @@ async function runAdminCouponAction(action, id) {
       body: route.body ? JSON.stringify(route.body) : undefined
     });
     const data = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(data.error || "????");
+    if (!response.ok) throw new Error(data.error || "操作失败");
     await Promise.all([loadAdminCoupons(), loadAdminEvents()]);
   } catch (error) {
     $("#adminCouponMessage").textContent = error.message;
@@ -3127,7 +3127,7 @@ function fillAdminCouponForm(coupon) {
   form.effectiveDate.value = coupon.effectiveDate || "";
   form.expiryDate.value = coupon.expiryDate || "";
   form.pinned.checked = Boolean(coupon.pinned);
-  $("#adminFormTitle").textContent = "?????";
+  $("#adminFormTitle").textContent = "编辑小票券";
   $("#adminCouponMessage").textContent = "";
   form.scrollIntoView({ behavior: "smooth", block: "start" });
 }
@@ -3139,14 +3139,14 @@ function resetAdminCouponForm(clearMessage = true) {
   form.couponId.value = "";
   form.totalQuantity.value = 1;
   form.pinned.checked = false;
-  $("#adminFormTitle").textContent = "?????";
+  $("#adminFormTitle").textContent = "新增小票券";
   if (clearMessage) $("#adminCouponMessage").textContent = "";
 }
 
 function emailStatusText(status) {
-  if (status === "sent") return "???";
-  if (status === "failed") return "????";
-  return "??? SMTP????????";
+  if (status === "sent") return "已发送";
+  if (status === "failed") return "发送失败";
+  return "未配置 SMTP，已记录在服务器";
 }
 
 function bindMap() {
@@ -3159,7 +3159,7 @@ function bindMap() {
     state.places.unshift({
       id: `place-${Date.now()}`,
       name,
-      note: note || "?????????",
+      note: note || "这里会有新的故事。",
       x: 16 + (seed % 68),
       y: 22 + ((seed >> 3) % 58)
     });
@@ -3206,7 +3206,7 @@ async function loadGuestbook(admin = false) {
     renderMessages();
     renderAdminGuestbook();
   } catch {
-    renderGuestbook("??????????????????????");
+    renderGuestbook("留言本接口还没部署到服务器，请更新云端代码。");
   }
 }
 
@@ -3214,14 +3214,14 @@ async function saveGuestbookEntry(event) {
   event.preventDefault();
   const form = event.currentTarget;
   const payload = {
-    name: form.guestName.value.trim() || (state.settings.partnerName || "?"),
+    name: form.guestName.value.trim() || (state.settings.partnerName || "她"),
     message: form.guestMessage.value.trim()
   };
   if (!payload.message) {
-    $("#guestbookMessage").textContent = "?????????";
+    $("#guestbookMessage").textContent = "先写一点想说的话。";
     return;
   }
-  $("#guestbookMessage").textContent = "???????...";
+  $("#guestbookMessage").textContent = "正在送到留言本...";
   try {
     const response = await fetch("/api/guestbook", {
       method: "POST",
@@ -3229,13 +3229,13 @@ async function saveGuestbookEntry(event) {
       body: JSON.stringify(payload)
     });
     const data = await response.json().catch(() => ({}));
-    if (response.status === 404) throw new Error("?????????????????????");
-    if (!response.ok) throw new Error(data.error || "????");
+    if (response.status === 404) throw new Error("服务器还没部署留言本接口，请更新云端代码。");
+    if (!response.ok) throw new Error(data.error || "留言失败");
     form.reset();
-    $("#guestbookMessage").textContent = "????????????????";
+    $("#guestbookMessage").textContent = "已经写进留言本，我会在后台看到。";
     await loadGuestbook();
   } catch (error) {
-    $("#guestbookMessage").textContent = error.message || "?????????????";
+    $("#guestbookMessage").textContent = error.message || "暂时没有写进去，再试一次。";
   }
 }
 
@@ -3250,12 +3250,12 @@ function renderGuestbook(message = "") {
     <article class="guestbook-card">
       <div>
         <strong>${escapeHtml(entry.name)}</strong>
-        <span>${entry.createdAt ? formatDateTime(entry.createdAt) : "??"}</span>
+        <span>${entry.createdAt ? formatDateTime(entry.createdAt) : "刚刚"}</span>
       </div>
       <p>${escapeHtml(entry.message)}</p>
-      ${entry.reply ? `<blockquote><b>?????</b>${escapeHtml(entry.reply)}</blockquote>` : ""}
+      ${entry.reply ? `<blockquote><b>我的回复：</b>${escapeHtml(entry.reply)}</blockquote>` : ""}
     </article>
-  `).join("") : `<p class="folded-note">???????????????????????</p>`;
+  `).join("") : `<p class="folded-note">这里还空着，她写下第一句后，我就能在后台回复。</p>`;
   refreshIcons();
 }
 
@@ -3287,8 +3287,8 @@ function renderMessages() {
       <div>
         <h3>${escapeHtml(entry.name)}</h3>
         <p>${escapeHtml(entry.message)}</p>
-        <time>${entry.createdAt ? formatDateTime(entry.createdAt) : "????"}</time>
-        ${entry.reply ? `<blockquote>?????${escapeHtml(entry.reply)}</blockquote>` : ""}
+        <time>${entry.createdAt ? formatDateTime(entry.createdAt) : "刚刚写下"}</time>
+        ${entry.reply ? `<blockquote>我的回复：${escapeHtml(entry.reply)}</blockquote>` : ""}
       </div>
     </article>
   `);
@@ -3304,7 +3304,7 @@ function renderLetters() {
       <button class="letter-card ${locked ? "locked" : ""}" type="button" data-letter="${letter.id}">
         <i data-lucide="${locked ? "lock" : "mail-open"}"></i>
         <h3>${escapeHtml(letter.title)}</h3>
-        <p>${locked ? `?? ${diff} ?` : "??????"}</p>
+        <p>${locked ? `还有 ${diff} 天` : "现在可以打开"}</p>
       </button>
     `;
   }).join("");
@@ -3316,7 +3316,7 @@ function openLetter(letter) {
   $("#letterDate").textContent = formatDate(letter.openAt);
   $("#letterTitle").textContent = letter.title;
   $("#letterBody").textContent = diff !== null && diff > 0
-    ? `????????${diff} ?????`
+    ? `这封信还在路上，${diff} 天后再拆。`
     : personalize(letter.body);
   $("#letterDialog").showModal();
   refreshIcons();
@@ -3392,7 +3392,7 @@ async function saveDailyTools(event) {
     tripNotes: normalizeTextList(form.tripNotes.value, DEFAULTS.dailyTools.tripNotes)
   };
   try {
-    await saveAdminContent("#dailyToolsAdminMessage", "????????");
+    await saveAdminContent("#dailyToolsAdminMessage", "今日功能已保存。");
     fillDailyToolsForm();
   } catch (error) {
     $("#dailyToolsAdminMessage").textContent = error.message;
@@ -3409,7 +3409,7 @@ function bindMusic() {
     refreshIcons();
   });
   $(".brand-mark").addEventListener("click", async (event) => {
-    if (!window.matchMedia("(max-width: 820px)").matches) return;
+    if (!window.matchMedia("(max-width: 820px), (pointer: coarse)").matches) return;
     event.preventDefault();
     if (musicState.playing) stopMusic();
     else await startMusic();
@@ -3434,11 +3434,11 @@ async function startMusic(options = {}) {
     }
     musicState.playing = true;
     button.classList.add("solid");
-    button.setAttribute("aria-label", "????");
+    button.setAttribute("aria-label", "暂停音乐");
     button.innerHTML = `<i data-lucide="pause"></i>`;
   } catch {
     if (options.auto) return;
-    button.setAttribute("aria-label", "????????");
+    button.setAttribute("aria-label", "音乐没有播放成功");
   }
 }
 
@@ -3449,7 +3449,7 @@ function stopMusic() {
   musicState.playing = false;
   const button = $("#musicButton");
   button.classList.remove("solid");
-  button.setAttribute("aria-label", "????");
+  button.setAttribute("aria-label", "播放音乐");
   button.innerHTML = `<i data-lucide="music"></i>`;
 }
 
@@ -3497,7 +3497,7 @@ function bindEasterEgg() {
 }
 
 function showEaster() {
-  $("#easterText").textContent = `????? ${state.settings.partnerName} ????????????????????????????`;
+  $("#easterText").textContent = `这一颗心为 ${state.settings.partnerName} 亮起来了。以后每个普通日子，都可以被我们偷偷变成纪念日。`;
   $("#easterDialog").showModal();
   refreshIcons();
 }
