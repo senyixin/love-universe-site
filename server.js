@@ -23,6 +23,7 @@ const MOOD_EVENTS_FILE = path.join(DATA_DIR, "mood-events.json");
 const GUESTBOOK_FILE = path.join(DATA_DIR, "guestbook.json");
 const PERIOD_STATE_FILE = path.join(DATA_DIR, "period-state.json");
 const APP_NOTICES_FILE = path.join(DATA_DIR, "app-notices.json");
+const PUSH_TOKENS_FILE = path.join(DATA_DIR, "push-tokens.json");
 const MAIL_CONFIG_FILE = path.join(DATA_DIR, "mail-config.json");
 const SITE_CONTENT_FILE = path.join(DATA_DIR, "site-content.json");
 const ADMIN_CONFIG_FILE = path.join(DATA_DIR, "admin-config.json");
@@ -30,6 +31,7 @@ const ADMIN_COOKIE = "love_admin_session";
 const DEFAULT_ADMIN_KEY = process.env.ADMIN_KEY || "only-you-1314520";
 const SESSION_TTL_MS = 8 * 60 * 60 * 1000;
 const adminSessions = new Map();
+let fcmAccessTokenCache = null;
 const DEFAULT_CITY = {
   name: "新沂市",
   admin1: "江苏省",
@@ -171,6 +173,7 @@ ensureJsonFile(MOOD_EVENTS_FILE, []);
 ensureJsonFile(GUESTBOOK_FILE, []);
 ensureJsonFile(PERIOD_STATE_FILE, {});
 ensureJsonFile(APP_NOTICES_FILE, []);
+ensureJsonFile(PUSH_TOKENS_FILE, []);
 ensureJsonFile(MAIL_CONFIG_FILE, {});
 ensureJsonFile(SITE_CONTENT_FILE, DEFAULT_SITE_CONTENT);
 ensureJsonFile(ADMIN_CONFIG_FILE, createAdminConfig(DEFAULT_ADMIN_KEY));
@@ -335,6 +338,37 @@ app.get("/api/app-notices/latest", async (_req, res, next) => {
   try {
     const notices = await readJson(APP_NOTICES_FILE, []);
     res.json({ notice: Array.isArray(notices) ? notices[0] || null : null });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post("/api/push/register", async (req, res, next) => {
+  try {
+    const token = cleanText(req.body?.token, "");
+    if (!token || token.length < 20) {
+      res.status(400).json({ error: "推送 token 不正确。" });
+      return;
+    }
+    const tokens = await readPushTokens();
+    const now = new Date().toISOString();
+    const current = tokens.find((item) => item.token === token);
+    if (current) {
+      current.lastSeenAt = now;
+      current.platform = cleanText(req.body?.platform, current.platform || "android");
+      current.appVersion = cleanText(req.body?.appVersion, current.appVersion || "");
+    } else {
+      tokens.unshift({
+        id: crypto.randomUUID(),
+        token,
+        platform: cleanText(req.body?.platform, "android"),
+        appVersion: cleanText(req.body?.appVersion, ""),
+        createdAt: now,
+        lastSeenAt: now
+      });
+    }
+    await writePushTokens(tokens);
+    res.json({ ok: true });
   } catch (error) {
     next(error);
   }
@@ -701,7 +735,13 @@ app.post("/api/admin/app-notices", requireAdmin, async (req, res, next) => {
     const nextNotices = Array.isArray(notices) ? notices : [];
     nextNotices.unshift(notice);
     await writeJson(APP_NOTICES_FILE, nextNotices.slice(0, 50));
-    res.status(201).json({ ok: true, notice });
+    const push = await sendPushNotice(notice).catch((error) => ({
+      enabled: false,
+      sent: 0,
+      failed: 0,
+      reason: error.message || "push_failed"
+    }));
+    res.status(201).json({ ok: true, notice, push });
   } catch (error) {
     next(error);
   }
@@ -1057,6 +1097,148 @@ function toHtmlEntities(value) {
   });
 }
 
+async function sendPushNotice(notice) {
+  const credentials = readFcmCredentials();
+  if (!credentials) {
+    return { enabled: false, sent: 0, failed: 0, reason: "not_configured" };
+  }
+  const tokens = await readPushTokens();
+  if (!tokens.length) {
+    return { enabled: true, sent: 0, failed: 0, reason: "no_registered_device" };
+  }
+
+  const accessToken = await getFcmAccessToken(credentials);
+  let sent = 0;
+  let failed = 0;
+  const invalidTokens = new Set();
+  for (const item of tokens) {
+    const result = await sendFcmMessage(credentials.projectId, accessToken, item.token, notice);
+    if (result.ok) {
+      sent += 1;
+    } else {
+      failed += 1;
+      if (["UNREGISTERED", "INVALID_ARGUMENT", "SENDER_ID_MISMATCH"].includes(result.errorCode)) {
+        invalidTokens.add(item.token);
+      }
+    }
+  }
+  if (invalidTokens.size) {
+    await writePushTokens(tokens.filter((item) => !invalidTokens.has(item.token)));
+  }
+  return { enabled: true, sent, failed, reason: failed ? "partial_failed" : "sent" };
+}
+
+function readFcmCredentials() {
+  const rawJson = cleanText(process.env.FIREBASE_SERVICE_ACCOUNT_JSON || process.env.FCM_SERVICE_ACCOUNT_JSON, "");
+  if (rawJson) {
+    try {
+      return normalizeFcmCredentials(JSON.parse(rawJson));
+    } catch {
+      return null;
+    }
+  }
+
+  const filePath = cleanText(process.env.FIREBASE_SERVICE_ACCOUNT_FILE || process.env.FCM_SERVICE_ACCOUNT_FILE || process.env.GOOGLE_APPLICATION_CREDENTIALS, "");
+  if (filePath && fs.existsSync(filePath)) {
+    try {
+      return normalizeFcmCredentials(JSON.parse(fs.readFileSync(filePath, "utf8")));
+    } catch {
+      return null;
+    }
+  }
+
+  return normalizeFcmCredentials({
+    project_id: process.env.FCM_PROJECT_ID || process.env.FIREBASE_PROJECT_ID,
+    client_email: process.env.FCM_CLIENT_EMAIL || process.env.FIREBASE_CLIENT_EMAIL,
+    private_key: process.env.FCM_PRIVATE_KEY || process.env.FIREBASE_PRIVATE_KEY
+  });
+}
+
+function normalizeFcmCredentials(input = {}) {
+  const projectId = cleanText(input.project_id || input.projectId, "");
+  const clientEmail = cleanText(input.client_email || input.clientEmail, "");
+  const privateKey = cleanText(input.private_key || input.privateKey, "").replace(/\\n/g, "\n");
+  if (!projectId || !clientEmail || !privateKey.includes("BEGIN PRIVATE KEY")) return null;
+  return { projectId, clientEmail, privateKey };
+}
+
+async function getFcmAccessToken(credentials) {
+  if (fcmAccessTokenCache && fcmAccessTokenCache.expiresAt > Date.now() + 60 * 1000) {
+    return fcmAccessTokenCache.token;
+  }
+
+  const assertion = createFcmJwt(credentials);
+  const response = await fetch("https://oauth2.googleapis.com/token", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+      grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer",
+      assertion
+    })
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok || !data.access_token) {
+    throw new Error(data.error_description || data.error || "FCM 鉴权失败");
+  }
+  fcmAccessTokenCache = {
+    token: data.access_token,
+    expiresAt: Date.now() + Math.max(60, Number(data.expires_in || 3600) - 60) * 1000
+  };
+  return fcmAccessTokenCache.token;
+}
+
+function createFcmJwt(credentials) {
+  const now = Math.floor(Date.now() / 1000);
+  const header = base64UrlJson({ alg: "RS256", typ: "JWT" });
+  const payload = base64UrlJson({
+    iss: credentials.clientEmail,
+    scope: "https://www.googleapis.com/auth/firebase.messaging",
+    aud: "https://oauth2.googleapis.com/token",
+    iat: now,
+    exp: now + 3600
+  });
+  const input = `${header}.${payload}`;
+  const signature = crypto.createSign("RSA-SHA256").update(input).sign(credentials.privateKey, "base64url");
+  return `${input}.${signature}`;
+}
+
+function base64UrlJson(value) {
+  return Buffer.from(JSON.stringify(value)).toString("base64url");
+}
+
+async function sendFcmMessage(projectId, accessToken, token, notice) {
+  const response = await fetch(`https://fcm.googleapis.com/v1/projects/${encodeURIComponent(projectId)}/messages:send`, {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${accessToken}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      message: {
+        token,
+        data: {
+          noticeId: String(notice.id || ""),
+          title: String(notice.title || "给你的小宇宙"),
+          body: String(notice.message || "我给你发了一条小宇宙提醒，打开 App 看看吧。"),
+          createdAt: String(notice.createdAt || "")
+        },
+        android: {
+          priority: "HIGH"
+        }
+      }
+    })
+  });
+  const data = await response.json().catch(() => ({}));
+  if (response.ok) return { ok: true };
+  const details = Array.isArray(data.error?.details) ? data.error.details : [];
+  const fcmError = details.find((item) => item.errorCode)?.errorCode || "";
+  return {
+    ok: false,
+    errorCode: fcmError || data.error?.status || "",
+    error: data.error?.message || `FCM 推送失败：${response.status}`
+  };
+}
+
 function createCoupon(input, index = 0) {
   const now = new Date().toISOString();
   const coupon = {
@@ -1152,6 +1334,15 @@ async function readGuestbook() {
 
 async function writeGuestbook(entries) {
   return writeJson(GUESTBOOK_FILE, entries.map(normalizeGuestbookEntry).filter((entry) => entry.message).slice(0, 300));
+}
+
+async function readPushTokens() {
+  const tokens = await readJson(PUSH_TOKENS_FILE, []);
+  return tokens.map(normalizePushToken).filter(Boolean);
+}
+
+async function writePushTokens(tokens) {
+  return writeJson(PUSH_TOKENS_FILE, tokens.map(normalizePushToken).filter(Boolean).slice(0, 50));
 }
 
 async function readCoupons() {
@@ -1473,6 +1664,7 @@ async function buildBackup() {
     couponEvents: await readJson(COUPON_EVENTS_FILE, []),
     moodEvents: await readJson(MOOD_EVENTS_FILE, []),
     appNotices: await readJson(APP_NOTICES_FILE, []),
+    pushTokens: await readPushTokens(),
     periodState: normalizePeriodState(await readJson(PERIOD_STATE_FILE, {})),
     mailConfig: publicMailConfig(await readMailConfig()),
     note: "导出不包含后台密码和 QQ 邮箱授权码。"
@@ -1514,6 +1706,10 @@ async function restoreBackup(payload) {
   if (Array.isArray(source.appNotices)) {
     await writeJson(APP_NOTICES_FILE, source.appNotices.slice(0, 50));
     result.push("App 提醒记录");
+  }
+  if (Array.isArray(source.pushTokens)) {
+    await writePushTokens(source.pushTokens);
+    result.push("App 推送设备");
   }
   if (source.periodState && typeof source.periodState === "object") {
     await writeJson(PERIOD_STATE_FILE, normalizePeriodState(source.periodState));
@@ -1726,6 +1922,19 @@ function normalizeGuestbookEntry(item = {}) {
     createdAt: cleanText(item.createdAt, new Date().toISOString()),
     repliedAt: cleanText(item.repliedAt, ""),
     visible: item.visible !== false
+  };
+}
+
+function normalizePushToken(item = {}) {
+  const token = cleanText(item.token, "");
+  if (!token || token.length < 20) return null;
+  return {
+    id: cleanText(item.id, crypto.randomUUID()),
+    token,
+    platform: cleanText(item.platform, "android"),
+    appVersion: cleanText(item.appVersion, ""),
+    createdAt: cleanText(item.createdAt, new Date().toISOString()),
+    lastSeenAt: cleanText(item.lastSeenAt, item.createdAt || new Date().toISOString())
   };
 }
 
