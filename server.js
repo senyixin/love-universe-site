@@ -783,18 +783,26 @@ app.put("/api/admin/mail-config", requireAdmin, async (req, res, next) => {
   }
 });
 
-app.use("/assets", express.static(path.join(ROOT, "assets"), {
-  maxAge: "1d",
-  immutable: false
-}));
-
-app.get(["/", "/index.html"], (_req, res) => {
-  res.sendFile(path.join(ROOT, "index.html"));
+app.get("/api/health", (_req, res) => {
+  res.json({
+    ok: true,
+    version: "2026-05-28-cloud-hotfix",
+    routes: {
+      guestbook: true,
+      moodEvents: true
+    }
+  });
 });
 
-app.get(["/app.js", "/styles.css"], (req, res) => {
-  res.sendFile(path.join(ROOT, req.path.slice(1)));
+app.use((req, res, next) => {
+  if (/^\/(?:server\.js|package(?:-lock)?\.json|data|node_modules|\.env|\.git)(?:\/|$)/.test(req.path)) {
+    res.status(404).send("Not found");
+    return;
+  }
+  next();
 });
+
+app.use(express.static(ROOT));
 
 app.use((error, _req, res, _next) => {
   const message = error instanceof multer.MulterError
