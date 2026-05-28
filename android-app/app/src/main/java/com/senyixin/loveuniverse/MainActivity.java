@@ -47,6 +47,8 @@ public class MainActivity extends Activity {
         configureWebView();
         requestNotificationPermissionIfNeeded();
         PushTokenRegistrar.register(this);
+        ReminderScheduler.setServerUrl(this, getServerUrl());
+        ReminderScheduler.checkServerNoticeAsync(this, null);
         loadDefaultServer();
     }
 
