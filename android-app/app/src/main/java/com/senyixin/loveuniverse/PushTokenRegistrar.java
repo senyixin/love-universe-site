@@ -26,12 +26,17 @@ public final class PushTokenRegistrar {
     }
 
     public static void registerToken(Context context, String token) {
-        if (token == null || token.trim().isEmpty()) return;
-        Context appContext = context.getApplicationContext();
-        new Thread(() -> postToken(appContext, token.trim())).start();
+        registerToken(context, token, "fcm");
     }
 
-    private static void postToken(Context context, String token) {
+    public static void registerToken(Context context, String token, String provider) {
+        if (token == null || token.trim().isEmpty()) return;
+        Context appContext = context.getApplicationContext();
+        String pushProvider = normalizeProvider(provider);
+        new Thread(() -> postToken(appContext, token.trim(), pushProvider)).start();
+    }
+
+    private static void postToken(Context context, String token, String provider) {
         String serverUrl = normalizeServerUrl(BuildConfig.DEFAULT_SERVER_URL);
         if (serverUrl.isEmpty()) return;
         HttpURLConnection connection = null;
@@ -45,6 +50,7 @@ public final class PushTokenRegistrar {
             connection.setDoOutput(true);
             String body = "{"
                     + "\"token\":\"" + jsonEscape(token) + "\","
+                    + "\"provider\":\"" + jsonEscape(provider) + "\","
                     + "\"platform\":\"android\","
                     + "\"appVersion\":\"" + jsonEscape(BuildConfig.VERSION_NAME) + "\""
                     + "}";
@@ -67,6 +73,12 @@ public final class PushTokenRegistrar {
         }
         if (!text.startsWith("http://") && !text.startsWith("https://")) return "";
         return text;
+    }
+
+    private static String normalizeProvider(String provider) {
+        String text = provider == null ? "" : provider.trim().toLowerCase();
+        if ("getui".equals(text)) return "getui";
+        return "fcm";
     }
 
     private static String jsonEscape(String value) {
