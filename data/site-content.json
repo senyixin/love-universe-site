@@ -1,41 +1,42 @@
 {
   "settings": {
-    "partnerName": "Shannon",
-    "yourName": "我",
+    "partnerName": "小诺言",
+    "yourName": "小鑫",
     "heroLine": "今天也想认真地，把世界温柔地递给你。",
     "passcodes": [
-      "0520",
-      "520",
-      "我爱你",
-      "shannon",
-      "Shannon"
+      "mny"
     ],
-    "startDate": "2024-05-20",
-    "birthday": "2026-08-20",
-    "nextMeet": "2026-06-01",
+    "startDate": "2025-05-03",
+    "birthday": "2007-11-14",
+    "nextMeet": "2026-05-27",
     "cityName": "新沂市",
-    "cityLatitude": 34.3686,
+    "cityLatitude": 34.3687,
     "cityLongitude": 118.3545,
-    "songUrl": ""
+    "cityAdcode": "320381",
+    "songUrl": "http://music.163.com/song/media/outer/url?id=3319716822.mp3",
+    "guestNames": [
+      "她",
+      "我"
+    ]
   },
   "timeline": [
     {
-      "id": "timeline-1",
-      "date": "2024-05-20",
+      "id": "timeline-1779795629874",
+      "date": "2026-05-03",
       "title": "把今天设成起点",
-      "text": "从这一天开始，日子有了可以被倒数和珍藏的理由。"
+      "text": "从这一天开始，日子有了可以被倒数和珍藏的理由"
+    },
+    {
+      "id": "timeline-1779795566053",
+      "date": "2025-05-04",
+      "title": "一封没有寄丢的信",
+      "text": "很多话说出口会害羞，写下来就会一直发光。为你写的1000字小作文"
     },
     {
       "id": "timeline-2",
-      "date": "2024-08-14",
+      "date": "2026-03-26",
       "title": "第一次认真计划旅行",
       "text": "地图上每一个被圈起来的地方，都像在提前等我们。"
-    },
-    {
-      "id": "timeline-3",
-      "date": "2025-02-14",
-      "title": "一封没有寄丢的信",
-      "text": "很多话说出口会害羞，写下来就会一直发光。"
     },
     {
       "id": "timeline-4",
@@ -211,7 +212,286 @@
       "text": "这一小时只做她想做的事：散步、发呆、逛店、吃甜品，都不催。"
     }
   ],
+  "ideaTools": [
+    {
+      "id": "food-roulette",
+      "title": "随机点餐盲盒",
+      "text": "不知道吃什么的时候抽一下，先让选择困难休息一会儿。",
+      "buttonLabel": "抽今天吃什么",
+      "items": [
+        "川菜",
+        "湘菜",
+        "粤菜",
+        "东北菜",
+        "火锅",
+        "烧烤",
+        "麻辣烫",
+        "米线",
+        "拉面",
+        "日料",
+        "韩餐",
+        "泰餐",
+        "披萨",
+        "汉堡",
+        "轻食沙拉",
+        "小龙虾",
+        "烤肉",
+        "砂锅",
+        "煲仔饭",
+        "黄焖鸡",
+        "冒菜",
+        "酸菜鱼",
+        "螺蛳粉",
+        "饺子馄饨",
+        "粥粉面",
+        "甜品下午茶"
+      ]
+    }
+  ],
+  "datePlans": [
+    {
+      "id": "9f28087b-a07e-4cdb-b9cc-98860a969815",
+      "title": "周末半日约会",
+      "date": "2026-06-03",
+      "time": "15:00",
+      "place": "先去喝奶茶，再散步",
+      "budget": "200 元内",
+      "checklist": [
+        "带充电宝",
+        "提前看天气",
+        "拍一张合照"
+      ],
+      "note": "轻松一点，不赶时间。"
+    },
+    {
+      "id": "d1e6c1e6-17e8-4db2-9dd3-bd31b4ba50cb",
+      "title": "下次见面小计划",
+      "date": "2026-06-09",
+      "time": "傍晚",
+      "place": "她想去的地方",
+      "budget": "随心",
+      "checklist": [
+        "订好车",
+        "准备小惊喜",
+        "晚饭别太辣"
+      ],
+      "note": "把主动权交给她。"
+    }
+  ],
+  "foodOptions": [
+    {
+      "id": "b53777df-2025-4cb2-9f82-f1f79006cd9e",
+      "name": "番茄牛腩饭",
+      "tags": [
+        "热乎",
+        "不辣",
+        "米饭"
+      ],
+      "spicy": false,
+      "warm": true,
+      "budget": "mid",
+      "distance": "near"
+    },
+    {
+      "id": "9e414068-25aa-4aa0-9c3a-29d7d04e8691",
+      "name": "寿喜锅",
+      "tags": [
+        "热乎",
+        "甜口",
+        "适合慢慢吃"
+      ],
+      "spicy": false,
+      "warm": true,
+      "budget": "high",
+      "distance": "normal"
+    },
+    {
+      "id": "24e59fad-4832-4c5d-9e47-5c43ce5bf21a",
+      "name": "酸菜鱼",
+      "tags": [
+        "下饭",
+        "微辣",
+        "热乎"
+      ],
+      "spicy": true,
+      "warm": true,
+      "budget": "mid",
+      "distance": "normal"
+    },
+    {
+      "id": "04e9bd0a-6efc-4b6b-9755-a1dfa7bcb10b",
+      "name": "烤肉拌饭",
+      "tags": [
+        "快一点",
+        "肉肉",
+        "饱"
+      ],
+      "spicy": false,
+      "warm": true,
+      "budget": "low",
+      "distance": "near"
+    },
+    {
+      "id": "b9b50e3a-4156-45d9-9048-28b4471330aa",
+      "name": "日式拉面",
+      "tags": [
+        "汤面",
+        "热乎",
+        "不太辣"
+      ],
+      "spicy": false,
+      "warm": true,
+      "budget": "mid",
+      "distance": "near"
+    },
+    {
+      "id": "db70f7d9-56e8-4261-b4a8-8b1065c11429",
+      "name": "轻食沙拉",
+      "tags": [
+        "清爽",
+        "不辣",
+        "负担小"
+      ],
+      "spicy": false,
+      "warm": false,
+      "budget": "mid",
+      "distance": "near"
+    },
+    {
+      "id": "b03be318-556e-4d85-b725-3bd7934d519d",
+      "name": "麻辣烫",
+      "tags": [
+        "热乎",
+        "可选辣度",
+        "随便加"
+      ],
+      "spicy": true,
+      "warm": true,
+      "budget": "low",
+      "distance": "near"
+    },
+    {
+      "id": "f586f8c2-0048-4534-bfd6-e0b83cc5eb1f",
+      "name": "椰子鸡",
+      "tags": [
+        "清淡",
+        "热乎",
+        "适合聊天"
+      ],
+      "spicy": false,
+      "warm": true,
+      "budget": "high",
+      "distance": "far"
+    }
+  ],
+  "giftList": [
+    {
+      "id": "4268877a-161f-4680-90d9-6aaf3e76f274",
+      "title": "花和手写卡片",
+      "category": "仪式感",
+      "detail": "不用很大束，颜色温柔一点。",
+      "priority": "高",
+      "note": "适合见面当天。"
+    },
+    {
+      "id": "6fb64cad-d6f3-46c0-9017-cbd553bdb423",
+      "title": "她常喝的奶茶备注",
+      "category": "口味",
+      "detail": "少冰、三分糖，珍珠或芋圆。",
+      "priority": "中",
+      "note": "后台可以继续补充她的喜好。"
+    },
+    {
+      "id": "148e9bad-9d1b-4918-b758-4938b6901e91",
+      "title": "尺码和忌口备忘",
+      "category": "备忘",
+      "detail": "衣服、鞋码、戒指、过敏和不吃的东西都可以写这里。",
+      "priority": "高",
+      "note": "买礼物前先看一眼。"
+    }
+  ],
+  "dailyTools": {
+    "meetTitle": "下次见面",
+    "meetDate": "2026-06-04",
+    "meetTime": "18:00",
+    "meetChecklist": [
+      "买票/确认车次",
+      "订酒店/确认地址",
+      "带好小礼物",
+      "提前写下想吃什么"
+    ],
+    "careCards": [
+      "今天记得喝水，杯子先放到手边。",
+      "早点睡，别把今天的累带到明天。",
+      "别空腹太久，先吃一点也算照顾自己。",
+      "出门前看一眼要不要带伞。",
+      "抱抱提醒：今天也可以软一点。",
+      "夸夸她一句：你认真生活的样子真的很好看。"
+    ],
+    "dailyTasks": [
+      "今天拍一张自拍给我。",
+      "今天早点睡，睡前给我一句晚安。",
+      "今天想吃什么告诉我。",
+      "今天喝够两杯水再来领夸奖。"
+    ],
+    "periodStartDay": 5,
+    "periodEndDay": 10,
+    "periodAvoid": [
+      "少冰少辣",
+      "别空腹喝咖啡",
+      "别硬撑太久"
+    ],
+    "periodWarm": [
+      "热水放手边",
+      "暖贴/外套准备好",
+      "累了就把任务降级"
+    ],
+    "periodMood": "情绪照顾模式：不催、不讲大道理，先抱抱再慢慢说。",
+    "feedingFoods": [
+      "番茄牛腩饭",
+      "砂锅米线",
+      "椰子鸡",
+      "寿喜锅",
+      "热汤面",
+      "烤肉拌饭"
+    ],
+    "feedingDrinks": [
+      "少冰奶茶",
+      "热可可",
+      "椰乳拿铁",
+      "蜂蜜柚子茶",
+      "温豆浆"
+    ],
+    "feedingSnacks": [
+      "蛋挞",
+      "小蛋糕",
+      "水果杯",
+      "烤肠",
+      "酸奶碗"
+    ],
+    "feedingAvoid": [
+      "太冰",
+      "太辣",
+      "空腹甜饮"
+    ],
+    "tripPlace": "下次见面的地方",
+    "tripDateTime": "2026-06-04T18:00",
+    "tripTransport": "车次/路线待填写",
+    "tripHotel": "酒店/落脚点待填写",
+    "tripNotes": [
+      "身份证和充电器别忘",
+      "提前确认出发时间",
+      "路上注意安全，到站告诉我"
+    ]
+  },
   "places": [
+    {
+      "id": "place-1779795695483",
+      "name": "邳州市",
+      "note": "我们第一次旅游的地方",
+      "x": 68,
+      "y": 38
+    },
     {
       "id": "place-1",
       "name": "第一次见面的地方",

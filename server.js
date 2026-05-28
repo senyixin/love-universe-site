@@ -21,6 +21,7 @@ const COUPONS_FILE = path.join(DATA_DIR, "coupons.json");
 const COUPON_EVENTS_FILE = path.join(DATA_DIR, "coupon-events.json");
 const MOOD_EVENTS_FILE = path.join(DATA_DIR, "mood-events.json");
 const GUESTBOOK_FILE = path.join(DATA_DIR, "guestbook.json");
+const PERIOD_STATE_FILE = path.join(DATA_DIR, "period-state.json");
 const MAIL_CONFIG_FILE = path.join(DATA_DIR, "mail-config.json");
 const SITE_CONTENT_FILE = path.join(DATA_DIR, "site-content.json");
 const ADMIN_CONFIG_FILE = path.join(DATA_DIR, "admin-config.json");
@@ -60,8 +61,8 @@ const DEFAULT_SITE_CONTENT = {
     meetChecklist: ["买票/确认车次", "订酒店/确认地址", "带好小礼物", "提前写下想吃什么"],
     careCards: ["今天记得喝水，杯子先放到手边。", "早点睡，别把今天的累带到明天。", "别空腹太久，先吃一点也算照顾自己。", "出门前看一眼要不要带伞。", "抱抱提醒：今天也可以软一点。", "夸夸她一句：你认真生活的样子真的很好看。"],
     dailyTasks: ["今天拍一张自拍给我。", "今天早点睡，睡前给我一句晚安。", "今天想吃什么告诉我。", "今天喝够两杯水再来领夸奖。"],
-    periodDate: "",
-    periodCycleDays: 28,
+    periodStartDay: 5,
+    periodEndDay: 10,
     periodAvoid: ["少冰少辣", "别空腹喝咖啡", "别硬撑太久"],
     periodWarm: ["热水放手边", "暖贴/外套准备好", "累了就把任务降级"],
     periodMood: "情绪照顾模式：不催、不讲大道理，先抱抱再慢慢说。",
@@ -70,7 +71,7 @@ const DEFAULT_SITE_CONTENT = {
     feedingSnacks: ["蛋挞", "小蛋糕", "水果杯", "烤肠", "酸奶碗"],
     feedingAvoid: ["太冰", "太辣", "空腹甜饮"],
     tripPlace: "下次见面的地方",
-    tripTime: "待定",
+    tripDateTime: `${dateAfterDays(7)}T18:00`,
     tripTransport: "车次/路线待填写",
     tripHotel: "酒店/落脚点待填写",
     tripNotes: ["身份证和充电器别忘", "提前确认出发时间", "路上注意安全，到站告诉我"]
@@ -161,6 +162,7 @@ ensureJsonFile(COUPONS_FILE, DEFAULT_COUPONS.map(createCoupon));
 ensureJsonFile(COUPON_EVENTS_FILE, []);
 ensureJsonFile(MOOD_EVENTS_FILE, []);
 ensureJsonFile(GUESTBOOK_FILE, []);
+ensureJsonFile(PERIOD_STATE_FILE, {});
 ensureJsonFile(MAIL_CONFIG_FILE, {});
 ensureJsonFile(SITE_CONTENT_FILE, DEFAULT_SITE_CONTENT);
 ensureJsonFile(ADMIN_CONFIG_FILE, createAdminConfig(DEFAULT_ADMIN_KEY));
@@ -277,6 +279,45 @@ app.post("/api/guestbook", async (req, res, next) => {
       ]
     });
     res.status(201).json({ entry });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get("/api/period-state", async (_req, res, next) => {
+  try {
+    const state = normalizePeriodState(await readJson(PERIOD_STATE_FILE, {}));
+    res.json({ state });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post("/api/period-state", async (req, res, next) => {
+  try {
+    const current = normalizePeriodState(await readJson(PERIOD_STATE_FILE, {}));
+    const status = String(req.body?.status || "").trim();
+    if (!["arrived", "left"].includes(status)) {
+      res.status(400).json({ error: "状态不正确。" });
+      return;
+    }
+
+    const now = new Date().toISOString();
+    const nextState = {
+      ...current,
+      currentStatus: status,
+      updatedAt: now
+    };
+    if (status === "arrived") {
+      nextState.actualStartAt = now;
+      nextState.actualEndAt = "";
+    }
+    if (status === "left") {
+      nextState.actualEndAt = now;
+    }
+
+    await writeJson(PERIOD_STATE_FILE, nextState);
+    res.json({ ok: true, state: normalizePeriodState(nextState) });
   } catch (error) {
     next(error);
   }
@@ -1396,6 +1437,7 @@ async function buildBackup() {
     guestbook: await readGuestbook(),
     couponEvents: await readJson(COUPON_EVENTS_FILE, []),
     moodEvents: await readJson(MOOD_EVENTS_FILE, []),
+    periodState: normalizePeriodState(await readJson(PERIOD_STATE_FILE, {})),
     mailConfig: publicMailConfig(await readMailConfig()),
     note: "导出不包含后台密码和 QQ 邮箱授权码。"
   };
@@ -1432,6 +1474,10 @@ async function restoreBackup(payload) {
   if (Array.isArray(source.moodEvents)) {
     await writeJson(MOOD_EVENTS_FILE, source.moodEvents.slice(0, 300));
     result.push("互动记录");
+  }
+  if (source.periodState && typeof source.periodState === "object") {
+    await writeJson(PERIOD_STATE_FILE, normalizePeriodState(source.periodState));
+    result.push("身体照顾状态");
   }
 
   return { ok: true, restored: result };
@@ -1509,8 +1555,8 @@ function normalizeDailyTools(value = {}) {
     meetChecklist: normalizeTextList(value.meetChecklist, fallback.meetChecklist),
     careCards: normalizeTextList(value.careCards, fallback.careCards),
     dailyTasks: normalizeTextList(value.dailyTasks, fallback.dailyTasks),
-    periodDate: normalizeDate(value.periodDate) || "",
-    periodCycleDays: Math.max(1, Math.min(90, Number(value.periodCycleDays) || fallback.periodCycleDays)),
+    periodStartDay: normalizeDayOfMonth(value.periodStartDay, fallback.periodStartDay),
+    periodEndDay: normalizeDayOfMonth(value.periodEndDay, fallback.periodEndDay),
     periodAvoid: normalizeTextList(value.periodAvoid || value.bodyCare, fallback.periodAvoid),
     periodWarm: normalizeTextList(value.periodWarm, fallback.periodWarm),
     periodMood: cleanText(value.periodMood, fallback.periodMood),
@@ -1519,7 +1565,7 @@ function normalizeDailyTools(value = {}) {
     feedingSnacks: normalizeTextList(value.feedingSnacks, fallback.feedingSnacks),
     feedingAvoid: normalizeTextList(value.feedingAvoid, fallback.feedingAvoid),
     tripPlace: cleanText(value.tripPlace, fallback.tripPlace),
-    tripTime: cleanText(value.tripTime, fallback.tripTime),
+    tripDateTime: normalizeDateTime(value.tripDateTime || value.tripTime) || fallback.tripDateTime,
     tripTransport: cleanText(value.tripTransport, fallback.tripTransport),
     tripHotel: cleanText(value.tripHotel, fallback.tripHotel),
     tripNotes: normalizeTextList(value.tripNotes || value.tripMemo, fallback.tripNotes)
@@ -1623,6 +1669,15 @@ function normalizeGuestbookEntry(item = {}) {
     createdAt: cleanText(item.createdAt, new Date().toISOString()),
     repliedAt: cleanText(item.repliedAt, ""),
     visible: item.visible !== false
+  };
+}
+
+function normalizePeriodState(item = {}) {
+  return {
+    currentStatus: ["arrived", "left"].includes(item.currentStatus) ? item.currentStatus : "",
+    actualStartAt: cleanText(item.actualStartAt, ""),
+    actualEndAt: cleanText(item.actualEndAt, ""),
+    updatedAt: cleanText(item.updatedAt, "")
   };
 }
 
@@ -1807,6 +1862,19 @@ function normalizeDate(value) {
 function normalizeTime(value) {
   const text = String(value || "").trim();
   return /^([01]\d|2[0-3]):[0-5]\d$/.test(text) ? text : "";
+}
+
+function normalizeDateTime(value) {
+  const text = String(value || "").trim();
+  if (/^\d{4}-\d{2}-\d{2}T([01]\d|2[0-3]):[0-5]\d$/.test(text)) return text;
+  if (/^\d{4}-\d{2}-\d{2} ([01]\d|2[0-3]):[0-5]\d$/.test(text)) return text.replace(" ", "T");
+  return "";
+}
+
+function normalizeDayOfMonth(value, fallback = 1) {
+  const number = Math.floor(Number(value));
+  if (!Number.isFinite(number)) return fallback;
+  return Math.max(1, Math.min(31, number));
 }
 
 function todayKey() {

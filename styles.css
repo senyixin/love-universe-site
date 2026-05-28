@@ -251,6 +251,48 @@ img {
   color: rgba(255, 255, 255, 0.72);
 }
 
+.entry-trip-card {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 16px;
+  padding: 14px;
+  color: #16352f;
+  background: rgba(249, 250, 238, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 8px;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.18);
+}
+
+.entry-trip-card[hidden] {
+  display: none;
+}
+
+.entry-trip-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--teal-dark);
+  font-weight: 900;
+}
+
+.entry-trip-card strong {
+  font-size: 1.45rem;
+  line-height: 1.15;
+}
+
+.entry-trip-list {
+  display: grid;
+  gap: 6px;
+}
+
+.entry-trip-list span {
+  padding: 7px 9px;
+  background: #e9f4ee;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
 .entry-panel.is-wrong {
   animation: shake 360ms ease;
 }
@@ -942,6 +984,33 @@ img {
 .daily-action-button:disabled {
   cursor: default;
   opacity: 0.72;
+}
+
+.daily-action-button.secondary {
+  color: var(--teal-dark);
+  background: #e9f4ee;
+}
+
+.daily-actions {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.countdown-line,
+.period-status-line {
+  display: block;
+  padding: 7px 9px;
+  color: var(--teal-dark);
+  background: #e9f4ee;
+  border-radius: 8px;
+  font-size: 0.92rem;
+  font-weight: 800;
+}
+
+.period-status-line.error {
+  color: #a53848;
+  background: #ffe8ec;
 }
 
 .plans-section {
@@ -2152,5 +2221,20 @@ dialog::backdrop {
 
   .memory-map {
     min-height: 360px;
+  }
+}
+
+@media (max-width: 820px), (pointer: coarse) {
+  body {
+    padding-bottom: 0;
+  }
+
+  .topbar .nav-links,
+  .nav-links {
+    display: none !important;
+  }
+
+  .topbar {
+    grid-template-columns: auto 1fr;
   }
 }

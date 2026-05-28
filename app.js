@@ -140,8 +140,8 @@ const DEFAULTS = {
     meetChecklist: ["买票/确认车次", "订酒店/确认地址", "带好小礼物", "提前写下想吃什么"],
     careCards: ["今天记得喝水，杯子先放到手边。", "早点睡，别把今天的累带到明天。", "别空腹太久，先吃一点也算照顾自己。", "出门前看一眼要不要带伞。", "抱抱提醒：今天也可以软一点。", "夸夸她一句：你认真生活的样子真的很好看。"],
     dailyTasks: ["今天拍一张自拍给我。", "今天早点睡，睡前给我一句晚安。", "今天想吃什么告诉我。", "今天喝够两杯水再来领夸奖。"],
-    periodDate: "",
-    periodCycleDays: 28,
+    periodStartDay: 5,
+    periodEndDay: 10,
     periodAvoid: ["少冰少辣", "别空腹喝咖啡", "别硬撑太久"],
     periodWarm: ["热水放手边", "暖贴/外套准备好", "累了就把任务降级"],
     periodMood: "情绪照顾模式：不催、不讲大道理，先抱抱再慢慢说。",
@@ -150,7 +150,7 @@ const DEFAULTS = {
     feedingSnacks: ["蛋挞", "小蛋糕", "水果杯", "烤肠", "酸奶碗"],
     feedingAvoid: ["太冰", "太辣", "空腹甜饮"],
     tripPlace: "下次见面的地方",
-    tripTime: "待定",
+    tripDateTime: `${daysFromNow(7)}T18:00`,
     tripTransport: "车次/路线待填写",
     tripHotel: "酒店/落脚点待填写",
     tripNotes: ["身份证和充电器别忘", "提前确认出发时间", "路上注意安全，到站告诉我"]
@@ -276,6 +276,7 @@ let albumExpanded = false;
 let albumLoaded = false;
 let selectedDateIdea = null;
 let selectedFoodOption = null;
+let realtimeTimer = null;
 const ideaToolResults = {};
 const expandedPanels = {
   idea: false,
@@ -309,6 +310,7 @@ function loadState() {
     coupons: [],
     adminCoupons: [],
     adminEvents: [],
+    periodState: {},
     mailConfig: null,
     securityConfig: null,
     timeline: DEFAULTS.timeline.map((item) => ({ ...item })),
@@ -396,8 +398,8 @@ function normalizeDailyTools(value = {}) {
     meetChecklist: normalizeTextList(value.meetChecklist, fallback.meetChecklist),
     careCards: normalizeTextList(value.careCards, fallback.careCards),
     dailyTasks: normalizeTextList(value.dailyTasks, fallback.dailyTasks),
-    periodDate: normalizeDateInput(value.periodDate) || "",
-    periodCycleDays: Math.max(1, Math.min(90, Number(value.periodCycleDays) || fallback.periodCycleDays)),
+    periodStartDay: normalizeDayOfMonth(value.periodStartDay, fallback.periodStartDay),
+    periodEndDay: normalizeDayOfMonth(value.periodEndDay, fallback.periodEndDay),
     periodAvoid: normalizeTextList(value.periodAvoid || value.bodyCare, fallback.periodAvoid),
     periodWarm: normalizeTextList(value.periodWarm, fallback.periodWarm),
     periodMood: String(value.periodMood || fallback.periodMood),
@@ -406,7 +408,7 @@ function normalizeDailyTools(value = {}) {
     feedingSnacks: normalizeTextList(value.feedingSnacks, fallback.feedingSnacks),
     feedingAvoid: normalizeTextList(value.feedingAvoid, fallback.feedingAvoid),
     tripPlace: String(value.tripPlace || fallback.tripPlace),
-    tripTime: String(value.tripTime || fallback.tripTime),
+    tripDateTime: normalizeDateTimeInput(value.tripDateTime || value.tripTime) || fallback.tripDateTime,
     tripTransport: String(value.tripTransport || fallback.tripTransport),
     tripHotel: String(value.tripHotel || fallback.tripHotel),
     tripNotes: normalizeTextList(value.tripNotes || value.tripMemo, fallback.tripNotes)
@@ -555,6 +557,19 @@ function normalizeTimeInput(value) {
   return /^([01]\d|2[0-3]):[0-5]\d$/.test(text) ? text : "";
 }
 
+function normalizeDateTimeInput(value) {
+  const text = String(value || "").trim();
+  if (/^\d{4}-\d{2}-\d{2}T([01]\d|2[0-3]):[0-5]\d$/.test(text)) return text;
+  if (/^\d{4}-\d{2}-\d{2} ([01]\d|2[0-3]):[0-5]\d$/.test(text)) return text.replace(" ", "T");
+  return "";
+}
+
+function normalizeDayOfMonth(value, fallback = 1) {
+  const number = Math.floor(Number(value));
+  if (!Number.isFinite(number)) return fallback;
+  return Math.max(1, Math.min(31, number));
+}
+
 function clampPercent(value, fallback) {
   const number = Number(value);
   if (!Number.isFinite(number)) return fallback;
@@ -648,6 +663,100 @@ function formatDateTime(value) {
   });
 }
 
+function formatDateTimeMinute(value) {
+  const normalized = normalizeDateTimeInput(value);
+  if (!normalized) return "待填写";
+  const d = new Date(`${normalized}:00`);
+  if (Number.isNaN(d.getTime())) return "待填写";
+  return d.toLocaleString("zh-CN", {
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false
+  });
+}
+
+function formatCountdownDetailed(diff) {
+  if (!Number.isFinite(diff)) return "等待后台填写时间";
+  if (diff <= 0) return "就是现在";
+  const days = Math.floor(diff / 86400000);
+  const hours = Math.floor((diff % 86400000) / 3600000);
+  const minutes = Math.floor((diff % 3600000) / 60000);
+  const seconds = Math.floor((diff % 60000) / 1000);
+  if (days > 0) return `${days}天 ${hours}小时 ${minutes}分`;
+  return `${hours}小时 ${minutes}分 ${seconds}秒`;
+}
+
+function dateForMonthDay(year, monthIndex, day, endOfDay = false) {
+  const lastDay = new Date(year, monthIndex + 1, 0).getDate();
+  const safeDay = Math.max(1, Math.min(lastDay, normalizeDayOfMonth(day, 1)));
+  return new Date(year, monthIndex, safeDay, endOfDay ? 23 : 0, endOfDay ? 59 : 0, endOfDay ? 59 : 0);
+}
+
+function periodWindowForMonth(year, monthIndex, startDay, endDay) {
+  const start = dateForMonthDay(year, monthIndex, startDay);
+  const endMonth = monthIndex + (endDay < startDay ? 1 : 0);
+  const end = dateForMonthDay(year, endMonth, endDay, true);
+  return { start, end };
+}
+
+function getPeriodWindow(tools, now = new Date()) {
+  const startDay = normalizeDayOfMonth(tools.periodStartDay, DEFAULTS.dailyTools.periodStartDay);
+  const endDay = normalizeDayOfMonth(tools.periodEndDay, DEFAULTS.dailyTools.periodEndDay);
+  const year = now.getFullYear();
+  const month = now.getMonth();
+  const previous = periodWindowForMonth(year, month - 1, startDay, endDay);
+  const current = periodWindowForMonth(year, month, startDay, endDay);
+  const next = periodWindowForMonth(year, month + 1, startDay, endDay);
+  const active = [previous, current].find((window) => now >= window.start && now <= window.end);
+  if (active) return { active: true, current: active, next: current.end > now ? next : periodWindowForMonth(year, month + 1, startDay, endDay) };
+  return { active: false, current: current.start > now ? current : next, next };
+}
+
+function getPeriodCareView(tools, periodState = {}) {
+  const now = new Date();
+  const windowInfo = getPeriodWindow(tools, now);
+  const status = periodState.currentStatus || "";
+  const arrivedAt = periodState.actualStartAt ? formatDateTime(periodState.actualStartAt) : "";
+  const leftAt = periodState.actualEndAt ? formatDateTime(periodState.actualEndAt) : "";
+  const targetWindow = windowInfo.current;
+  const isCaring = status === "arrived" && !periodState.actualEndAt;
+  const isActive = isCaring || windowInfo.active;
+  const target = isActive ? targetWindow.end : targetWindow.start;
+  const title = isActive ? "正在照顾期" : "距离预计开始";
+  const countdown = formatCountdownDetailed(target - now);
+  const range = `${formatDate(dayKey(targetWindow.start))} - ${formatDate(dayKey(targetWindow.end))}`;
+  const stateText = status === "arrived"
+    ? `已记录：已经来了${arrivedAt ? ` · ${arrivedAt}` : ""}`
+    : status === "left"
+      ? `已记录：已经走了${leftAt ? ` · ${leftAt}` : ""}`
+      : "她可以在前台更新已经来了/已经走了。";
+  return { title, countdown, range, stateText, isActive };
+}
+
+function getTripDateTime(tools) {
+  const normalized = normalizeDateTimeInput(tools.tripDateTime);
+  if (normalized) return normalized;
+  const date = normalizeDateInput(tools.meetDate);
+  const time = normalizeTimeInput(tools.meetTime) || "18:00";
+  return date ? `${date}T${time}` : "";
+}
+
+function isSameLocalDate(left, right) {
+  return left.getFullYear() === right.getFullYear()
+    && left.getMonth() === right.getMonth()
+    && left.getDate() === right.getDate();
+}
+
+function startRealtimeTicker() {
+  if (realtimeTimer) window.clearInterval(realtimeTimer);
+  realtimeTimer = window.setInterval(() => {
+    renderEntryTripCard();
+    if (!$("#app").hidden) renderDailyTools();
+  }, 1000);
+}
+
 async function init() {
   bindEntry();
   bindNavigation();
@@ -665,7 +774,9 @@ async function init() {
   bindEasterEgg();
   bindAdmin();
   await loadContent();
+  await loadPeriodState();
   renderAll();
+  startRealtimeTicker();
   loadCoupons();
   loadGuestbook();
 
@@ -689,6 +800,48 @@ async function loadContent(admin = false) {
     return true;
   } catch {
     return false;
+  }
+}
+
+async function loadPeriodState() {
+  try {
+    const response = await fetch("/api/period-state");
+    if (!response.ok) throw new Error("period-state");
+    const data = await response.json();
+    state.periodState = normalizePeriodState(data.state || {});
+    return true;
+  } catch {
+    state.periodState = {};
+    return false;
+  }
+}
+
+function normalizePeriodState(value = {}) {
+  const status = ["arrived", "left"].includes(value.currentStatus) ? value.currentStatus : "";
+  return {
+    currentStatus: status,
+    actualStartAt: value.actualStartAt || "",
+    actualEndAt: value.actualEndAt || "",
+    updatedAt: value.updatedAt || ""
+  };
+}
+
+async function updatePeriodState(status) {
+  try {
+    const response = await fetch("/api/period-state", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status })
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || data.ok === false) throw new Error(data.error || "更新失败");
+    state.periodState = normalizePeriodState(data.state || {});
+    renderDailyTools();
+  } catch (error) {
+    $("#periodCareCard").insertAdjacentHTML(
+      "beforeend",
+      `<p class="period-status-line error">${escapeHtml(error.message || "暂时没有更新成功，再试一次。")}</p>`
+    );
   }
 }
 
@@ -793,6 +946,7 @@ function showEntry() {
   $("#adminApp").hidden = true;
   $("#entry").style.display = "grid";
   $("#entry").classList.remove("is-unlocked");
+  renderEntryTripCard();
 }
 
 function bindNavigation() {
@@ -804,7 +958,39 @@ function bindNavigation() {
   });
 }
 
+function renderEntryTripCard() {
+  const card = $("#entryTripCard");
+  if (!card) return;
+  const tools = state.dailyTools || DEFAULTS.dailyTools;
+  const tripDateTime = getTripDateTime(tools);
+  const target = tripDateTime ? new Date(`${tripDateTime}:00`) : null;
+  const now = new Date();
+  if (!target || Number.isNaN(target.getTime()) || !isSameLocalDate(target, now)) {
+    card.hidden = true;
+    card.innerHTML = "";
+    return;
+  }
+
+  card.hidden = false;
+  card.innerHTML = `
+    <div class="entry-trip-head">
+      <i data-lucide="route"></i>
+      <span>见面路线/出行备忘</span>
+    </div>
+    <strong>${formatCountdownDetailed(target - now)}</strong>
+    <div class="entry-trip-list">
+      <span>时间：${escapeHtml(formatDateTimeMinute(tripDateTime))}</span>
+      <span>地点：${escapeHtml(tools.tripPlace || "待填写")}</span>
+      <span>车次/路线：${escapeHtml(tools.tripTransport || "待填写")}</span>
+      <span>酒店/落脚点：${escapeHtml(tools.tripHotel || "待填写")}</span>
+      ${normalizeTextList(tools.tripNotes, []).map((note) => `<span>${escapeHtml(note)}</span>`).join("")}
+    </div>
+  `;
+  refreshIcons();
+}
+
 function renderAll() {
+  renderEntryTripCard();
   renderPersonalText();
   renderCounters();
   renderDailyQuote();
@@ -835,9 +1021,8 @@ function renderDailyTools() {
   const drink = pick(tools.feedingDrinks, "drink");
   const snack = pick(tools.feedingSnacks, "snack");
   const countdown = timeUntilText(tools.meetDate, tools.meetTime);
-  const periodMeta = tools.periodDate
-    ? `预计 ${formatDate(tools.periodDate)} · 周期 ${tools.periodCycleDays} 天`
-    : "后台可以填写预计日期和照顾备注。";
+  const periodView = getPeriodCareView(tools, state.periodState);
+  const tripDateTime = getTripDateTime(tools);
 
   $("#careCard").innerHTML = dailyCardHtml("heart", "今日关心卡", care, "每天自动随机一条，替代天气提醒。");
   $("#meetCountdownCard").innerHTML = dailyCardHtml(
@@ -857,8 +1042,16 @@ function renderDailyTools() {
   $("#periodCareCard").innerHTML = dailyCardHtml(
     "thermometer-sun",
     "姨妈/身体照顾提醒",
-    `${dailyListHtml(tools.periodAvoid, "忌口")}${dailyListHtml(tools.periodWarm, "照顾")}${escapeHtml(tools.periodMood)}`,
-    periodMeta,
+    `<span class="countdown-line">${escapeHtml(periodView.title)}：${escapeHtml(periodView.countdown)}</span>
+      <span class="period-status-line">${escapeHtml(periodView.stateText)}</span>
+      ${dailyListHtml(tools.periodAvoid, "忌口")}
+      ${dailyListHtml(tools.periodWarm, "照顾")}
+      <span>${escapeHtml(tools.periodMood)}</span>
+      <span class="daily-actions">
+        <button class="daily-action-button" type="button" data-period-status="arrived">已经来了</button>
+        <button class="daily-action-button secondary" type="button" data-period-status="left">已经走了</button>
+      </span>`,
+    `每月 ${tools.periodStartDay} 日 - ${tools.periodEndDay} 日 · 预计 ${periodView.range}`,
     true
   );
   $("#feedingCard").innerHTML = dailyCardHtml(
@@ -873,7 +1066,7 @@ function renderDailyTools() {
     "见面路线/出行备忘",
     dailyListHtml([
       `地点：${tools.tripPlace}`,
-      `时间：${tools.tripTime}`,
+      `时间：${formatDateTimeMinute(tripDateTime)}`,
       `车次/路线：${tools.tripTransport}`,
       `酒店/落脚点：${tools.tripHotel}`,
       ...tools.tripNotes
@@ -886,6 +1079,13 @@ function renderDailyTools() {
 
 function bindDailyTools() {
   document.addEventListener("click", async (event) => {
+    const periodButton = event.target.closest("[data-period-status]");
+    if (periodButton) {
+      periodButton.disabled = true;
+      await updatePeriodState(periodButton.dataset.periodStatus);
+      return;
+    }
+
     const button = event.target.closest("[data-daily-signal]");
     if (!button) return;
     const text = button.dataset.dailyText || "";
@@ -3350,8 +3550,8 @@ function fillDailyToolsForm() {
   form.meetChecklist.value = normalizeTextList(tools.meetChecklist, DEFAULTS.dailyTools.meetChecklist).join("\n");
   form.careCards.value = normalizeTextList(tools.careCards, DEFAULTS.dailyTools.careCards).join("\n");
   form.dailyTasks.value = normalizeTextList(tools.dailyTasks, DEFAULTS.dailyTools.dailyTasks).join("\n");
-  form.periodDate.value = tools.periodDate || "";
-  form.periodCycleDays.value = tools.periodCycleDays || DEFAULTS.dailyTools.periodCycleDays;
+  form.periodStartDay.value = tools.periodStartDay || DEFAULTS.dailyTools.periodStartDay;
+  form.periodEndDay.value = tools.periodEndDay || DEFAULTS.dailyTools.periodEndDay;
   form.periodAvoid.value = normalizeTextList(tools.periodAvoid, DEFAULTS.dailyTools.periodAvoid).join("\n");
   form.periodWarm.value = normalizeTextList(tools.periodWarm, DEFAULTS.dailyTools.periodWarm).join("\n");
   form.periodMood.value = tools.periodMood || "";
@@ -3360,7 +3560,7 @@ function fillDailyToolsForm() {
   form.feedingSnacks.value = normalizeTextList(tools.feedingSnacks, DEFAULTS.dailyTools.feedingSnacks).join("\n");
   form.feedingAvoid.value = normalizeTextList(tools.feedingAvoid, DEFAULTS.dailyTools.feedingAvoid).join("\n");
   form.tripPlace.value = tools.tripPlace || "";
-  form.tripTime.value = tools.tripTime || "";
+  form.tripDateTime.value = getTripDateTime(tools);
   form.tripTransport.value = tools.tripTransport || "";
   form.tripHotel.value = tools.tripHotel || "";
   form.tripNotes.value = normalizeTextList(tools.tripNotes, DEFAULTS.dailyTools.tripNotes).join("\n");
@@ -3376,8 +3576,8 @@ async function saveDailyTools(event) {
     meetChecklist: normalizeTextList(form.meetChecklist.value, DEFAULTS.dailyTools.meetChecklist),
     careCards: normalizeTextList(form.careCards.value, DEFAULTS.dailyTools.careCards),
     dailyTasks: normalizeTextList(form.dailyTasks.value, DEFAULTS.dailyTools.dailyTasks),
-    periodDate: form.periodDate.value || "",
-    periodCycleDays: Number(form.periodCycleDays.value) || DEFAULTS.dailyTools.periodCycleDays,
+    periodStartDay: normalizeDayOfMonth(form.periodStartDay.value, DEFAULTS.dailyTools.periodStartDay),
+    periodEndDay: normalizeDayOfMonth(form.periodEndDay.value, DEFAULTS.dailyTools.periodEndDay),
     periodAvoid: normalizeTextList(form.periodAvoid.value, DEFAULTS.dailyTools.periodAvoid),
     periodWarm: normalizeTextList(form.periodWarm.value, DEFAULTS.dailyTools.periodWarm),
     periodMood: form.periodMood.value.trim() || DEFAULTS.dailyTools.periodMood,
@@ -3386,7 +3586,7 @@ async function saveDailyTools(event) {
     feedingSnacks: normalizeTextList(form.feedingSnacks.value, DEFAULTS.dailyTools.feedingSnacks),
     feedingAvoid: normalizeTextList(form.feedingAvoid.value, DEFAULTS.dailyTools.feedingAvoid),
     tripPlace: form.tripPlace.value.trim() || DEFAULTS.dailyTools.tripPlace,
-    tripTime: form.tripTime.value.trim() || DEFAULTS.dailyTools.tripTime,
+    tripDateTime: normalizeDateTimeInput(form.tripDateTime.value) || DEFAULTS.dailyTools.tripDateTime,
     tripTransport: form.tripTransport.value.trim() || DEFAULTS.dailyTools.tripTransport,
     tripHotel: form.tripHotel.value.trim() || DEFAULTS.dailyTools.tripHotel,
     tripNotes: normalizeTextList(form.tripNotes.value, DEFAULTS.dailyTools.tripNotes)
