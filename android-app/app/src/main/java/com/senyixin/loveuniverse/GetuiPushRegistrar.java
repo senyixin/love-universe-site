@@ -65,7 +65,7 @@ public final class GetuiPushRegistrar {
         if (!BuildConfig.DEBUG) return;
         try {
             PushManager.getInstance().checkManifest(context);
-        } catch (Exception error) {
+        } catch (Throwable error) {
             Log.e(TAG, "Getui manifest check failed", error);
         }
     }
