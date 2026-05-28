@@ -1521,6 +1521,23 @@ img {
   accent-color: var(--teal);
 }
 
+.checkbox-line {
+  display: flex !important;
+  grid-template-columns: none;
+  align-items: center;
+  gap: 10px !important;
+  min-height: 44px;
+  padding: 10px 12px;
+  background: #f7f1eb;
+  border-radius: 8px;
+}
+
+.checkbox-line input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--teal);
+}
+
 .admin-message,
 .admin-empty {
   min-height: 24px;

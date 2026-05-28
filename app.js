@@ -153,7 +153,12 @@ const DEFAULTS = {
     tripDateTime: `${daysFromNow(7)}T18:00`,
     tripTransport: "车次/路线待填写",
     tripHotel: "酒店/落脚点待填写",
-    tripNotes: ["身份证和充电器别忘", "提前确认出发时间", "路上注意安全，到站告诉我"]
+    tripNotes: ["身份证和充电器别忘", "提前确认出发时间", "路上注意安全，到站告诉我"],
+    notificationEnabled: true,
+    careReminderTime: "21:00",
+    taskReminderTime: "10:00",
+    periodReminderTime: "09:00",
+    tripReminderHours: [24, 3]
   },
   dialogLines: [
     { from: "me", text: "{她}，欢迎来到这个只偏心你的网站。" },
@@ -277,6 +282,7 @@ let albumLoaded = false;
 let selectedDateIdea = null;
 let selectedFoodOption = null;
 let realtimeTimer = null;
+let lastNotificationConfig = "";
 const ideaToolResults = {};
 const expandedPanels = {
   idea: false,
@@ -411,7 +417,12 @@ function normalizeDailyTools(value = {}) {
     tripDateTime: normalizeDateTimeInput(value.tripDateTime || value.tripTime) || fallback.tripDateTime,
     tripTransport: String(value.tripTransport || fallback.tripTransport),
     tripHotel: String(value.tripHotel || fallback.tripHotel),
-    tripNotes: normalizeTextList(value.tripNotes || value.tripMemo, fallback.tripNotes)
+    tripNotes: normalizeTextList(value.tripNotes || value.tripMemo, fallback.tripNotes),
+    notificationEnabled: value.notificationEnabled !== false,
+    careReminderTime: normalizeTimeInput(value.careReminderTime) || fallback.careReminderTime,
+    taskReminderTime: normalizeTimeInput(value.taskReminderTime) || fallback.taskReminderTime,
+    periodReminderTime: normalizeTimeInput(value.periodReminderTime) || fallback.periodReminderTime,
+    tripReminderHours: normalizeHourList(value.tripReminderHours, fallback.tripReminderHours)
   };
 }
 
@@ -419,6 +430,16 @@ function normalizeTextList(value, fallback) {
   const source = Array.isArray(value) ? value : String(value || "").split(/[\n，,]/);
   const list = source.map((item) => String(item || "").trim()).filter(Boolean);
   return list.length ? list : [...fallback];
+}
+
+function normalizeHourList(value, fallback) {
+  const source = Array.isArray(value) ? value : String(value || "").split(/[\n，,]/);
+  const list = source
+    .map((item) => String(item || "").trim())
+    .filter(Boolean)
+    .map((item) => Math.floor(Number(item)))
+    .filter((item) => Number.isFinite(item) && item >= 0 && item <= 168);
+  return list.length ? [...new Set(list)].slice(0, 6) : [...fallback];
 }
 
 function normalizeTimeline(items) {
@@ -1009,7 +1030,36 @@ function renderAll() {
   renderGuestbook();
   renderLetters();
   fillSettingsForm();
+  syncAppNotifications();
   refreshIcons();
+}
+
+function syncAppNotifications() {
+  const bridge = window.LoveAppNotifications;
+  if (!bridge || typeof bridge.configure !== "function") return;
+  const tools = state.dailyTools || DEFAULTS.dailyTools;
+  const config = {
+    enabled: tools.notificationEnabled !== false,
+    partnerName: state.settings.partnerName || "",
+    careCards: normalizeTextList(tools.careCards, DEFAULTS.dailyTools.careCards),
+    dailyTasks: normalizeTextList(tools.dailyTasks, DEFAULTS.dailyTools.dailyTasks),
+    careReminderTime: tools.careReminderTime || DEFAULTS.dailyTools.careReminderTime,
+    taskReminderTime: tools.taskReminderTime || DEFAULTS.dailyTools.taskReminderTime,
+    periodStartDay: tools.periodStartDay || DEFAULTS.dailyTools.periodStartDay,
+    periodEndDay: tools.periodEndDay || DEFAULTS.dailyTools.periodEndDay,
+    periodReminderTime: tools.periodReminderTime || DEFAULTS.dailyTools.periodReminderTime,
+    tripDateTime: getTripDateTime(tools),
+    tripPlace: tools.tripPlace || "",
+    tripReminderHours: normalizeHourList(tools.tripReminderHours, DEFAULTS.dailyTools.tripReminderHours)
+  };
+  const json = JSON.stringify(config);
+  if (json === lastNotificationConfig) return;
+  lastNotificationConfig = json;
+  try {
+    bridge.configure(json);
+  } catch {
+    lastNotificationConfig = "";
+  }
 }
 
 function renderDailyTools() {
@@ -3564,6 +3614,11 @@ function fillDailyToolsForm() {
   form.tripTransport.value = tools.tripTransport || "";
   form.tripHotel.value = tools.tripHotel || "";
   form.tripNotes.value = normalizeTextList(tools.tripNotes, DEFAULTS.dailyTools.tripNotes).join("\n");
+  form.notificationEnabled.checked = tools.notificationEnabled !== false;
+  form.careReminderTime.value = tools.careReminderTime || DEFAULTS.dailyTools.careReminderTime;
+  form.taskReminderTime.value = tools.taskReminderTime || DEFAULTS.dailyTools.taskReminderTime;
+  form.periodReminderTime.value = tools.periodReminderTime || DEFAULTS.dailyTools.periodReminderTime;
+  form.tripReminderHours.value = normalizeHourList(tools.tripReminderHours, DEFAULTS.dailyTools.tripReminderHours).join(", ");
 }
 
 async function saveDailyTools(event) {
@@ -3589,7 +3644,12 @@ async function saveDailyTools(event) {
     tripDateTime: normalizeDateTimeInput(form.tripDateTime.value) || DEFAULTS.dailyTools.tripDateTime,
     tripTransport: form.tripTransport.value.trim() || DEFAULTS.dailyTools.tripTransport,
     tripHotel: form.tripHotel.value.trim() || DEFAULTS.dailyTools.tripHotel,
-    tripNotes: normalizeTextList(form.tripNotes.value, DEFAULTS.dailyTools.tripNotes)
+    tripNotes: normalizeTextList(form.tripNotes.value, DEFAULTS.dailyTools.tripNotes),
+    notificationEnabled: form.notificationEnabled.checked,
+    careReminderTime: normalizeTimeInput(form.careReminderTime.value) || DEFAULTS.dailyTools.careReminderTime,
+    taskReminderTime: normalizeTimeInput(form.taskReminderTime.value) || DEFAULTS.dailyTools.taskReminderTime,
+    periodReminderTime: normalizeTimeInput(form.periodReminderTime.value) || DEFAULTS.dailyTools.periodReminderTime,
+    tripReminderHours: normalizeHourList(form.tripReminderHours.value, DEFAULTS.dailyTools.tripReminderHours)
   };
   try {
     await saveAdminContent("#dailyToolsAdminMessage", "今日功能已保存。");

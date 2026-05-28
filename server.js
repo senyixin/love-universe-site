@@ -74,7 +74,12 @@ const DEFAULT_SITE_CONTENT = {
     tripDateTime: `${dateAfterDays(7)}T18:00`,
     tripTransport: "车次/路线待填写",
     tripHotel: "酒店/落脚点待填写",
-    tripNotes: ["身份证和充电器别忘", "提前确认出发时间", "路上注意安全，到站告诉我"]
+    tripNotes: ["身份证和充电器别忘", "提前确认出发时间", "路上注意安全，到站告诉我"],
+    notificationEnabled: true,
+    careReminderTime: "21:00",
+    taskReminderTime: "10:00",
+    periodReminderTime: "09:00",
+    tripReminderHours: [24, 3]
   },
   timeline: [
     { date: "2024-05-20", title: "把今天设成起点", text: "从这一天开始，日子有了可以被倒数和珍藏的理由。" },
@@ -1568,7 +1573,12 @@ function normalizeDailyTools(value = {}) {
     tripDateTime: normalizeDateTime(value.tripDateTime || value.tripTime) || fallback.tripDateTime,
     tripTransport: cleanText(value.tripTransport, fallback.tripTransport),
     tripHotel: cleanText(value.tripHotel, fallback.tripHotel),
-    tripNotes: normalizeTextList(value.tripNotes || value.tripMemo, fallback.tripNotes)
+    tripNotes: normalizeTextList(value.tripNotes || value.tripMemo, fallback.tripNotes),
+    notificationEnabled: value.notificationEnabled !== false,
+    careReminderTime: normalizeTime(value.careReminderTime) || fallback.careReminderTime,
+    taskReminderTime: normalizeTime(value.taskReminderTime) || fallback.taskReminderTime,
+    periodReminderTime: normalizeTime(value.periodReminderTime) || fallback.periodReminderTime,
+    tripReminderHours: normalizeHourList(value.tripReminderHours, fallback.tripReminderHours)
   };
 }
 
@@ -1576,6 +1586,16 @@ function normalizeTextList(value, fallback) {
   const source = Array.isArray(value) ? value : String(value || "").split(/[\n，,]/);
   const list = source.map((item) => String(item || "").trim()).filter(Boolean);
   return list.length ? list.slice(0, 80) : fallback;
+}
+
+function normalizeHourList(value, fallback) {
+  const source = Array.isArray(value) ? value : String(value || "").split(/[\n，,]/);
+  const list = source
+    .map((item) => String(item || "").trim())
+    .filter(Boolean)
+    .map((item) => Math.floor(Number(item)))
+    .filter((item) => Number.isFinite(item) && item >= 0 && item <= 168);
+  return list.length ? [...new Set(list)].slice(0, 6) : fallback;
 }
 
 function normalizeArray(input, fallback, mapper) {

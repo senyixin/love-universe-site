@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.Gravity;
@@ -29,6 +30,7 @@ import android.widget.TextView;
 public class MainActivity extends Activity {
     private static final int FILE_CHOOSER_REQUEST = 520;
     private static final int LOCATION_REQUEST = 521;
+    private static final int NOTIFICATION_REQUEST = 522;
 
     private WebView webView;
     private LinearLayout statusPanel;
@@ -40,8 +42,10 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ReminderScheduler.createNotificationChannel(this);
         buildLayout();
         configureWebView();
+        requestNotificationPermissionIfNeeded();
         loadDefaultServer();
     }
 
@@ -103,6 +107,7 @@ public class MainActivity extends Activity {
         settings.setAllowFileAccess(true);
         settings.setAllowContentAccess(true);
         settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+        webView.addJavascriptInterface(new NotificationBridge(this), "LoveAppNotifications");
 
         webView.setWebViewClient(new WebViewClient() {
             @Override
@@ -198,6 +203,12 @@ public class MainActivity extends Activity {
         } catch (ActivityNotFoundException ignored) {
             startActivity(new Intent(Settings.ACTION_SETTINGS));
         }
+    }
+
+    private void requestNotificationPermissionIfNeeded() {
+        if (Build.VERSION.SDK_INT < 33) return;
+        if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) return;
+        requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, NOTIFICATION_REQUEST);
     }
 
     @Override

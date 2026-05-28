@@ -8,7 +8,7 @@
     ],
     "startDate": "2025-05-03",
     "birthday": "2007-11-14",
-    "nextMeet": "2026-05-27",
+    "nextMeet": "2026-05-28",
     "cityName": "新沂市",
     "cityLatitude": 34.3687,
     "cityLongitude": 118.3545,
@@ -250,7 +250,7 @@
   ],
   "datePlans": [
     {
-      "id": "9f28087b-a07e-4cdb-b9cc-98860a969815",
+      "id": "7b3162a9-8254-473c-82f8-1908e63c8a5b",
       "title": "周末半日约会",
       "date": "2026-06-03",
       "time": "15:00",
@@ -264,7 +264,7 @@
       "note": "轻松一点，不赶时间。"
     },
     {
-      "id": "d1e6c1e6-17e8-4db2-9dd3-bd31b4ba50cb",
+      "id": "298439d5-b86e-4919-896d-ebad334d4974",
       "title": "下次见面小计划",
       "date": "2026-06-09",
       "time": "傍晚",
@@ -280,7 +280,7 @@
   ],
   "foodOptions": [
     {
-      "id": "b53777df-2025-4cb2-9f82-f1f79006cd9e",
+      "id": "296971a2-a125-4b3a-91d9-79aaa801a22e",
       "name": "番茄牛腩饭",
       "tags": [
         "热乎",
@@ -293,7 +293,7 @@
       "distance": "near"
     },
     {
-      "id": "9e414068-25aa-4aa0-9c3a-29d7d04e8691",
+      "id": "592074d1-7a31-45e0-b2d7-5c581b8e9278",
       "name": "寿喜锅",
       "tags": [
         "热乎",
@@ -306,7 +306,7 @@
       "distance": "normal"
     },
     {
-      "id": "24e59fad-4832-4c5d-9e47-5c43ce5bf21a",
+      "id": "ff56269d-9ec4-4585-b792-253f227d6ccf",
       "name": "酸菜鱼",
       "tags": [
         "下饭",
@@ -319,7 +319,7 @@
       "distance": "normal"
     },
     {
-      "id": "04e9bd0a-6efc-4b6b-9755-a1dfa7bcb10b",
+      "id": "7e38e750-bdeb-43a4-a970-647741271b07",
       "name": "烤肉拌饭",
       "tags": [
         "快一点",
@@ -332,7 +332,7 @@
       "distance": "near"
     },
     {
-      "id": "b9b50e3a-4156-45d9-9048-28b4471330aa",
+      "id": "a718f459-96c4-4e54-a188-18bfe8c892c4",
       "name": "日式拉面",
       "tags": [
         "汤面",
@@ -345,7 +345,7 @@
       "distance": "near"
     },
     {
-      "id": "db70f7d9-56e8-4261-b4a8-8b1065c11429",
+      "id": "233c01c3-70d5-48d2-b952-e2db5e16e4d1",
       "name": "轻食沙拉",
       "tags": [
         "清爽",
@@ -358,7 +358,7 @@
       "distance": "near"
     },
     {
-      "id": "b03be318-556e-4d85-b725-3bd7934d519d",
+      "id": "ca6d2416-ee96-4f8a-8cd9-6f1516c32070",
       "name": "麻辣烫",
       "tags": [
         "热乎",
@@ -371,7 +371,7 @@
       "distance": "near"
     },
     {
-      "id": "f586f8c2-0048-4534-bfd6-e0b83cc5eb1f",
+      "id": "c82cb703-6c58-45e5-a0ae-f2f646c66b57",
       "name": "椰子鸡",
       "tags": [
         "清淡",
@@ -386,7 +386,7 @@
   ],
   "giftList": [
     {
-      "id": "4268877a-161f-4680-90d9-6aaf3e76f274",
+      "id": "172b692c-14c2-41a6-8fbd-ec9b4966491c",
       "title": "花和手写卡片",
       "category": "仪式感",
       "detail": "不用很大束，颜色温柔一点。",
@@ -394,7 +394,7 @@
       "note": "适合见面当天。"
     },
     {
-      "id": "6fb64cad-d6f3-46c0-9017-cbd553bdb423",
+      "id": "09f1811c-d560-40a7-b764-d7a0e0777427",
       "title": "她常喝的奶茶备注",
       "category": "口味",
       "detail": "少冰、三分糖，珍珠或芋圆。",
@@ -402,7 +402,7 @@
       "note": "后台可以继续补充她的喜好。"
     },
     {
-      "id": "148e9bad-9d1b-4918-b758-4938b6901e91",
+      "id": "f9f0274b-a7dd-43d7-88ee-8ad55a6214b6",
       "title": "尺码和忌口备忘",
       "category": "备忘",
       "detail": "衣服、鞋码、戒指、过敏和不吃的东西都可以写这里。",
@@ -482,6 +482,14 @@
       "身份证和充电器别忘",
       "提前确认出发时间",
       "路上注意安全，到站告诉我"
+    ],
+    "notificationEnabled": true,
+    "careReminderTime": "21:00",
+    "taskReminderTime": "10:00",
+    "periodReminderTime": "09:00",
+    "tripReminderHours": [
+      24,
+      3
     ]
   },
   "places": [
