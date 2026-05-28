@@ -286,6 +286,7 @@ let realtimeTimer = null;
 let lastNotificationConfig = "";
 let appNoticeTimer = null;
 let lastAppNoticeId = localStorage.getItem("love-universe-last-app-notice") || "";
+let pushStatus = null;
 const ideaToolResults = {};
 const expandedPanels = {
   idea: false,
@@ -985,7 +986,7 @@ async function showAdmin(animated) {
       $("#entry").style.display = "none";
     }, 280);
   }
-  await Promise.all([loadAdminCoupons(), loadAdminEvents(), loadMailConfig(), loadAdminContent(), loadSecurityConfig(), loadServerPhotos(), loadGuestbook(true)]);
+  await Promise.all([loadAdminCoupons(), loadAdminEvents(), loadMailConfig(), loadAdminContent(), loadSecurityConfig(), loadServerPhotos(), loadGuestbook(true), loadPushStatus()]);
 }
 
 function showEntry() {
@@ -2217,6 +2218,7 @@ function bindAdmin() {
   $("#refreshAdminEventsButton").addEventListener("click", loadAdminEvents);
   $("#refreshGuestbookButton").addEventListener("click", () => loadGuestbook(true));
   $("#refreshMailConfigButton").addEventListener("click", loadMailConfig);
+  $("#refreshPushStatusButton").addEventListener("click", loadPushStatus);
   $("#sendAppNoticeButton").addEventListener("click", sendAppNotice);
   $("#mailConfigForm").addEventListener("submit", saveMailConfig);
   $("#securityForm").addEventListener("submit", saveSecurityConfig);
@@ -2271,6 +2273,64 @@ function bindAdmin() {
   });
 }
 
+async function loadPushStatus() {
+  const target = $("#pushStatusGrid");
+  if (!target) return;
+  target.innerHTML = `<p class="admin-empty">正在读取推送状态...</p>`;
+  try {
+    const response = await fetch("/api/admin/push/status");
+    if (response.status === 401) {
+      showEntry();
+      return;
+    }
+    if (!response.ok) throw new Error("push-status");
+    pushStatus = await response.json();
+    renderPushStatus();
+  } catch {
+    target.innerHTML = `<p class="admin-empty">推送状态暂时读取失败。</p>`;
+  }
+}
+
+function renderPushStatus() {
+  const target = $("#pushStatusGrid");
+  if (!target) return;
+  const latest = pushStatus?.latestNotice || null;
+  const push = latest?.push || null;
+  const latestText = latest
+    ? `${formatDateTime(latest.createdAt)}：${pushStatusText(push)}`
+    : "还没有主动推送记录";
+  const deviceText = pushStatus?.deviceCount
+    ? `${pushStatus.deviceCount} 台 · ${pushStatus.devices?.[0]?.lastSeenAt ? `最近 ${formatDateTime(pushStatus.devices[0].lastSeenAt)}` : "已登记"}`
+    : "0 台";
+  target.innerHTML = `
+    <div class="push-status-item">
+      <span>Firebase 服务端</span>
+      <strong>${pushStatus?.configured ? "已配置，可以发秒级推送" : "未配置，只能用打开 App/轮询兜底"}</strong>
+    </div>
+    <div class="push-status-item">
+      <span>App 设备登记</span>
+      <strong>${escapeHtml(deviceText)}</strong>
+    </div>
+    <div class="push-status-item">
+      <span>最近一次推送</span>
+      <strong>${escapeHtml(latestText)}</strong>
+    </div>
+    <div class="push-status-item">
+      <span>设备 token</span>
+      <strong>${escapeHtml(pushStatus?.devices?.[0]?.tokenPreview || "暂无，新版 App 打开后会自动登记")}</strong>
+    </div>
+  `;
+}
+
+function pushStatusText(push) {
+  if (!push) return "已记录，未返回推送结果";
+  if (push.enabled && push.sent > 0) return `已秒推 ${push.sent} 台设备`;
+  if (push.enabled && push.reason === "no_registered_device") return "Firebase 已配置，但没有 App 设备登记";
+  if (!push.enabled && push.reason === "not_configured") return "Firebase 未配置";
+  if (!push.enabled) return push.reason || "未启用推送";
+  return `发送 ${push.sent || 0}，失败 ${push.failed || 0}`;
+}
+
 async function sendAppNotice() {
   const input = $("#appNoticeText");
   const messageBox = $("#appNoticeMessage");
@@ -2295,6 +2355,7 @@ async function sendAppNotice() {
     } else {
       messageBox.textContent = "已写入服务器。Firebase 未配置时，会用 App 打开提醒和后台轮询兜底。";
     }
+    await loadPushStatus();
   } catch (error) {
     messageBox.textContent = error.message || "发送失败，请检查服务器。";
   } finally {
@@ -3394,7 +3455,7 @@ async function importBackup(event) {
     const data = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(data.error || "导入失败");
     $("#backupMessage").textContent = `已导入：${(data.restored || []).join("、") || "没有可导入的数据"}`;
-    await Promise.all([loadAdminContent(), loadAdminCoupons(), loadAdminEvents(), loadGuestbook(true), loadServerPhotos()]);
+    await Promise.all([loadAdminContent(), loadAdminCoupons(), loadAdminEvents(), loadGuestbook(true), loadServerPhotos(), loadPushStatus()]);
   } catch (error) {
     $("#backupMessage").textContent = error.message || "导入失败，请确认是正确的 JSON 备份。";
   }
