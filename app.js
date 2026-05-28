@@ -2296,6 +2296,8 @@ function renderPushStatus() {
   if (!target) return;
   const latest = pushStatus?.latestNotice || null;
   const push = latest?.push || null;
+  const getui = pushStatus?.providers?.getui || {};
+  const fcm = pushStatus?.providers?.fcm || {};
   const latestText = latest
     ? `${formatDateTime(latest.createdAt)}：${pushStatusText(push)}`
     : "还没有主动推送记录";
@@ -2304,12 +2306,12 @@ function renderPushStatus() {
     : "0 台";
   target.innerHTML = `
     <div class="push-status-item">
-      <span>Firebase 服务端</span>
-      <strong>${pushStatus?.configured ? "已配置，可以发秒级推送" : "未配置，只能用打开 App/轮询兜底"}</strong>
+      <span>个推服务端</span>
+      <strong>${getui.configured ? `已配置，可以走个推通知${getui.appIdPreview ? ` · ${escapeHtml(getui.appIdPreview)}` : ""}` : "未配置，只能用打开 App/轮询兜底"}</strong>
     </div>
     <div class="push-status-item">
       <span>App 设备登记</span>
-      <strong>${escapeHtml(deviceText)}</strong>
+      <strong>${escapeHtml(deviceText)}${getui.deviceCount ? ` · 个推 ${getui.deviceCount} 台` : ""}</strong>
     </div>
     <div class="push-status-item">
       <span>最近一次推送</span>
@@ -2317,7 +2319,7 @@ function renderPushStatus() {
     </div>
     <div class="push-status-item">
       <span>设备 token</span>
-      <strong>${escapeHtml(pushStatus?.devices?.[0]?.tokenPreview || "暂无，新版 App 打开后会自动登记")}</strong>
+      <strong>${escapeHtml(pushStatus?.devices?.[0] ? `${pushStatus.devices[0].provider || "push"} · ${pushStatus.devices[0].tokenPreview}` : "暂无，新版 App 打开后会自动登记")}</strong>
     </div>
   `;
 }
@@ -2325,8 +2327,8 @@ function renderPushStatus() {
 function pushStatusText(push) {
   if (!push) return "已记录，未返回推送结果";
   if (push.enabled && push.sent > 0) return `已秒推 ${push.sent} 台设备`;
-  if (push.enabled && push.reason === "no_registered_device") return "Firebase 已配置，但没有 App 设备登记";
-  if (!push.enabled && push.reason === "not_configured") return "Firebase 未配置";
+  if (push.enabled && push.reason === "no_registered_device") return "推送服务已配置，但没有 App 设备登记";
+  if (!push.enabled && push.reason === "not_configured") return "推送服务未配置";
   if (!push.enabled) return push.reason || "未启用推送";
   return `发送 ${push.sent || 0}，失败 ${push.failed || 0}`;
 }
@@ -2353,7 +2355,7 @@ async function sendAppNotice() {
     } else if (push.enabled) {
       messageBox.textContent = "已写入服务器，但还没有登记到可推送设备；她打开新版 App 后会自动登记。";
     } else {
-      messageBox.textContent = "已写入服务器。Firebase 未配置时，会用 App 打开提醒和后台轮询兜底。";
+      messageBox.textContent = "已写入服务器。推送服务未配置时，会用 App 打开提醒和后台轮询兜底。";
     }
     await loadPushStatus();
   } catch (error) {
