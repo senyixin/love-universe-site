@@ -21,6 +21,11 @@ public class NotificationBridge {
     }
 
     @JavascriptInterface
+    public void showServerNotice(String id, String title, String message) {
+        ReminderScheduler.showServerNotice(appContext, id, title, message);
+    }
+
+    @JavascriptInterface
     public void showTest(String message) {
         String body = message == null || message.trim().isEmpty()
                 ? "通知功能已经打开啦。"
