@@ -723,6 +723,21 @@ app.get("/api/admin/mood-events", requireAdmin, async (_req, res, next) => {
   }
 });
 
+app.get("/api/admin/push/status", requireAdmin, async (_req, res, next) => {
+  try {
+    const notices = await readJson(APP_NOTICES_FILE, []);
+    const tokens = await readPushTokens();
+    res.json({
+      configured: Boolean(readFcmCredentials()),
+      deviceCount: tokens.length,
+      devices: tokens.slice(0, 10).map(publicPushToken),
+      latestNotice: Array.isArray(notices) ? notices[0] || null : null
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 app.post("/api/admin/app-notices", requireAdmin, async (req, res, next) => {
   try {
     const notice = {
@@ -741,6 +756,8 @@ app.post("/api/admin/app-notices", requireAdmin, async (req, res, next) => {
       failed: 0,
       reason: error.message || "push_failed"
     }));
+    notice.push = { ...push, pushedAt: new Date().toISOString() };
+    await writeJson(APP_NOTICES_FILE, nextNotices.slice(0, 50));
     res.status(201).json({ ok: true, notice, push });
   } catch (error) {
     next(error);
@@ -1935,6 +1952,17 @@ function normalizePushToken(item = {}) {
     appVersion: cleanText(item.appVersion, ""),
     createdAt: cleanText(item.createdAt, new Date().toISOString()),
     lastSeenAt: cleanText(item.lastSeenAt, item.createdAt || new Date().toISOString())
+  };
+}
+
+function publicPushToken(item = {}) {
+  return {
+    id: item.id,
+    platform: item.platform,
+    appVersion: item.appVersion,
+    createdAt: item.createdAt,
+    lastSeenAt: item.lastSeenAt,
+    tokenPreview: `${item.token.slice(0, 8)}...${item.token.slice(-6)}`
   };
 }
 
