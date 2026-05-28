@@ -9,4 +9,5 @@ data/mail-config.json
 data/coupon-events.json
 data/mood-events.json
 data/admin-config.json
+data/push-config.json
 dist/
