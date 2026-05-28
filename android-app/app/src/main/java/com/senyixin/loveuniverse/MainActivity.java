@@ -47,9 +47,16 @@ public class MainActivity extends Activity {
         configureWebView();
         requestNotificationPermissionIfNeeded();
         PushTokenRegistrar.register(this);
+        GetuiPushRegistrar.initialize(this);
         ReminderScheduler.setServerUrl(this, getServerUrl());
         ReminderScheduler.checkServerNoticeAsync(this, null);
         loadDefaultServer();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        GetuiPushRegistrar.syncClientId(this);
     }
 
     private void buildLayout() {
