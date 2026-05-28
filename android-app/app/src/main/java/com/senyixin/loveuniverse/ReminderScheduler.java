@@ -6,6 +6,7 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,6 +16,11 @@ import android.os.Build;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -29,11 +35,15 @@ public final class ReminderScheduler {
     private static final String CHANNEL_ID = "love_universe_reminders";
     private static final String PREFS = "love_universe_notifications";
     private static final String KEY_CONFIG = "config_json";
+    private static final String KEY_SERVER_URL = "server_url";
+    private static final String KEY_LAST_NOTICE_ID = "last_notice_id";
     private static final int CARE_REQUEST = 1001;
     private static final int TASK_REQUEST = 1002;
     private static final int PERIOD_START_REQUEST = 1101;
     private static final int PERIOD_END_REQUEST = 1102;
     private static final int TRIP_BASE_REQUEST = 1200;
+    private static final int NOTICE_POLL_REQUEST = 1301;
+    private static final long NOTICE_POLL_INTERVAL_MS = 15L * 60L * 1000L;
 
     private ReminderScheduler() {
     }
@@ -97,6 +107,33 @@ public final class ReminderScheduler {
         manager.notify(notificationId, builder.build());
     }
 
+    public static void showServerNotice(Context context, String id, String title, String message) {
+        String noticeId = id == null ? "" : id.trim();
+        if (noticeId.isEmpty()) return;
+        Context appContext = context.getApplicationContext();
+        SharedPreferences prefs = appContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        if (noticeId.equals(prefs.getString(KEY_LAST_NOTICE_ID, ""))) return;
+        prefs.edit().putString(KEY_LAST_NOTICE_ID, noticeId).apply();
+        int notificationId = 9600 + Math.abs(noticeId.hashCode() % 300);
+        showNotification(
+                appContext,
+                notificationId,
+                emptyTo(title, "给你的小宇宙"),
+                emptyTo(message, "我给你发了一条小宇宙提醒，打开 App 看看吧。")
+        );
+    }
+
+    public static void checkServerNoticeAsync(Context context, BroadcastReceiver.PendingResult pendingResult) {
+        Context appContext = context.getApplicationContext();
+        new Thread(() -> {
+            try {
+                checkServerNotice(appContext);
+            } finally {
+                if (pendingResult != null) pendingResult.finish();
+            }
+        }).start();
+    }
+
     private static void scheduleFromJson(Context context, String json) {
         cancelAll(context);
         JSONObject config;
@@ -106,6 +143,7 @@ public final class ReminderScheduler {
             return;
         }
         if (!config.optBoolean("enabled", true)) return;
+        scheduleNoticePolling(context, config.optString("serverUrl", ""));
 
         String partnerName = emptyTo(config.optString("partnerName"), "她");
         scheduleDaily(
@@ -193,6 +231,57 @@ public final class ReminderScheduler {
         }
     }
 
+    private static void scheduleNoticePolling(Context context, String serverUrl) {
+        String normalizedUrl = normalizeServerUrl(serverUrl);
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+                .edit()
+                .putString(KEY_SERVER_URL, normalizedUrl)
+                .apply();
+        if (normalizedUrl.isEmpty()) return;
+
+        PendingIntent intent = pendingReminder(context, NOTICE_POLL_REQUEST, "notice-poll", "", "", NOTICE_POLL_REQUEST);
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        if (alarmManager == null) return;
+        alarmManager.setInexactRepeating(
+                AlarmManager.RTC_WAKEUP,
+                System.currentTimeMillis() + 60L * 1000L,
+                NOTICE_POLL_INTERVAL_MS,
+                intent
+        );
+    }
+
+    private static void checkServerNotice(Context context) {
+        String serverUrl = normalizeServerUrl(context
+                .getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+                .getString(KEY_SERVER_URL, ""));
+        if (serverUrl.isEmpty()) return;
+
+        HttpURLConnection connection = null;
+        try {
+            URL url = new URL(serverUrl + "/api/app-notices/latest");
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setConnectTimeout(8000);
+            connection.setReadTimeout(8000);
+            connection.setUseCaches(false);
+            if (connection.getResponseCode() < 200 || connection.getResponseCode() >= 300) return;
+            String response = readBody(connection);
+            JSONObject payload = new JSONObject(response);
+            JSONObject notice = payload.optJSONObject("notice");
+            if (notice == null) return;
+            showServerNotice(
+                    context,
+                    notice.optString("id", ""),
+                    notice.optString("title", "给你的小宇宙"),
+                    notice.optString("message", "我给你发了一条小宇宙提醒，打开 App 看看吧。")
+            );
+        } catch (Exception ignored) {
+            // Keep this silent; the next alarm or page-level poll will try again.
+        } finally {
+            if (connection != null) connection.disconnect();
+        }
+    }
+
     private static void scheduleOneShot(Context context, int requestCode, String kind, String title, String body, long triggerAt) {
         PendingIntent intent = pendingReminder(context, requestCode, kind, title, body, requestCode);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
@@ -221,7 +310,7 @@ public final class ReminderScheduler {
     private static void cancelAll(Context context) {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         if (alarmManager == null) return;
-        int[] requestCodes = new int[]{CARE_REQUEST, TASK_REQUEST, PERIOD_START_REQUEST, PERIOD_END_REQUEST};
+        int[] requestCodes = new int[]{CARE_REQUEST, TASK_REQUEST, PERIOD_START_REQUEST, PERIOD_END_REQUEST, NOTICE_POLL_REQUEST};
         for (int requestCode : requestCodes) {
             alarmManager.cancel(pendingReminder(context, requestCode, "", "", "", requestCode));
         }
@@ -263,6 +352,29 @@ public final class ReminderScheduler {
             };
         }
         return new int[]{fallbackHour, fallbackMinute};
+    }
+
+    private static String readBody(HttpURLConnection connection) throws Exception {
+        StringBuilder builder = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(
+                connection.getInputStream(),
+                StandardCharsets.UTF_8
+        ))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                builder.append(line);
+            }
+        }
+        return builder.toString();
+    }
+
+    private static String normalizeServerUrl(String value) {
+        String text = value == null ? "" : value.trim();
+        while (text.endsWith("/")) {
+            text = text.substring(0, text.length() - 1);
+        }
+        if (!text.startsWith("http://") && !text.startsWith("https://")) return "";
+        return text;
     }
 
     private static String pickToday(JSONArray array, String fallback) {
