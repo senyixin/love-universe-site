@@ -284,6 +284,8 @@ let selectedDateIdea = null;
 let selectedFoodOption = null;
 let realtimeTimer = null;
 let lastNotificationConfig = "";
+let appNoticeTimer = null;
+let lastAppNoticeId = localStorage.getItem("love-universe-last-app-notice") || "";
 const ideaToolResults = {};
 const expandedPanels = {
   idea: false,
@@ -1067,9 +1069,11 @@ function renderAll() {
 function syncAppNotifications() {
   const bridge = window.LoveAppNotifications;
   if (!bridge || typeof bridge.configure !== "function") return;
+  startAppNoticePolling();
   const tools = state.dailyTools || DEFAULTS.dailyTools;
   const config = {
     enabled: tools.notificationEnabled !== false,
+    serverUrl: window.location.origin,
     partnerName: state.settings.partnerName || "",
     careCards: normalizeTextList(tools.careCards, DEFAULTS.dailyTools.careCards),
     dailyTasks: normalizeTextList(tools.dailyTasks, DEFAULTS.dailyTools.dailyTasks),
@@ -1090,6 +1094,34 @@ function syncAppNotifications() {
     bridge.configure(json);
   } catch {
     lastNotificationConfig = "";
+  }
+}
+
+function startAppNoticePolling() {
+  const bridge = window.LoveAppNotifications;
+  if (!bridge || typeof bridge.showServerNotice !== "function" || appNoticeTimer) return;
+  pollAppNotice();
+  appNoticeTimer = window.setInterval(pollAppNotice, 15000);
+}
+
+async function pollAppNotice() {
+  const bridge = window.LoveAppNotifications;
+  if (!bridge || typeof bridge.showServerNotice !== "function") return;
+  try {
+    const response = await fetch("/api/app-notices/latest", { cache: "no-store" });
+    if (!response.ok) return;
+    const data = await response.json().catch(() => ({}));
+    const notice = data.notice || null;
+    if (!notice?.id || notice.id === lastAppNoticeId) return;
+    lastAppNoticeId = notice.id;
+    localStorage.setItem("love-universe-last-app-notice", notice.id);
+    bridge.showServerNotice(
+      notice.id,
+      notice.title || "给你的小宇宙",
+      notice.message || "我给你发了一条小宇宙提醒，打开 App 看看吧。"
+    );
+  } catch {
+    // The native scheduler will keep polling even if this page-level request misses once.
   }
 }
 
@@ -2185,6 +2217,7 @@ function bindAdmin() {
   $("#refreshAdminEventsButton").addEventListener("click", loadAdminEvents);
   $("#refreshGuestbookButton").addEventListener("click", () => loadGuestbook(true));
   $("#refreshMailConfigButton").addEventListener("click", loadMailConfig);
+  $("#sendAppNoticeButton").addEventListener("click", sendAppNotice);
   $("#mailConfigForm").addEventListener("submit", saveMailConfig);
   $("#securityForm").addEventListener("submit", saveSecurityConfig);
   $("#siteSettingsForm").addEventListener("submit", saveSiteSettings);
@@ -2236,6 +2269,30 @@ function bindAdmin() {
     const removeButton = event.target.closest("[data-remove-photo]");
     if (removeButton) deleteServerPhoto(removeButton.dataset.removePhoto);
   });
+}
+
+async function sendAppNotice() {
+  const input = $("#appNoticeText");
+  const messageBox = $("#appNoticeMessage");
+  const button = $("#sendAppNoticeButton");
+  const message = input.value.trim() || "我给你发了一条小宇宙提醒，打开 App 看看吧。";
+  messageBox.textContent = "正在发送 App 提醒...";
+  button.disabled = true;
+  try {
+    const response = await fetch("/api/admin/app-notices", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message })
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || data.ok === false) throw new Error(data.error || "发送失败");
+    input.value = "";
+    messageBox.textContent = "已写入服务器。她打开 App 会立刻收到提醒，后台轮询也会继续检查。";
+  } catch (error) {
+    messageBox.textContent = error.message || "发送失败，请检查服务器。";
+  } finally {
+    button.disabled = false;
+  }
 }
 
 async function loadAdminContent() {
