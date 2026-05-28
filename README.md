@@ -74,6 +74,19 @@ https://你的域名
 gradle -p android-app :app:assembleDebug -PserverUrl=https://你的域名
 ```
 
+## App 主动推送
+
+新版 App 已接入个推。服务器根目录的 `.env` 里配置：
+
+```bash
+GETUI_APP_ID="你的个推App ID"
+GETUI_APP_KEY="你的个推App Key"
+GETUI_APP_SECRET="你的个推App Secret"
+GETUI_MASTER_SECRET="你的个推Master Secret"
+```
+
+App 打开后会自动登记个推 CID，后台「主动推送通知」会优先走个推；如果没有登记到设备，仍会保留打开 App 后提醒和后台轮询兜底。
+
 ## 隐藏管理台
 
 同一个登录框有两个入口：
