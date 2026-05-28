@@ -2287,7 +2287,14 @@ async function sendAppNotice() {
     const data = await response.json().catch(() => ({}));
     if (!response.ok || data.ok === false) throw new Error(data.error || "发送失败");
     input.value = "";
-    messageBox.textContent = "已写入服务器。她打开 App 会立刻收到提醒，后台轮询也会继续检查。";
+    const push = data.push || {};
+    if (push.enabled && push.sent > 0) {
+      messageBox.textContent = `已秒推到 App（${push.sent} 台设备）。`;
+    } else if (push.enabled) {
+      messageBox.textContent = "已写入服务器，但还没有登记到可推送设备；她打开新版 App 后会自动登记。";
+    } else {
+      messageBox.textContent = "已写入服务器。Firebase 未配置时，会用 App 打开提醒和后台轮询兜底。";
+    }
   } catch (error) {
     messageBox.textContent = error.message || "发送失败，请检查服务器。";
   } finally {
