@@ -15,6 +15,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
+        <meta-data
+            android:name="GETUI_APPID"
+            android:value="${GETUI_APPID}" />
+
         <activity
             android:name=".MainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
@@ -34,6 +38,14 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+        <service
+            android:name=".LoveGetuiIntentService"
+            android:exported="false" />
+        <service
+            android:name=".LoveGetuiPushService"
+            android:exported="false"
+            android:label="PushService"
+            android:process=":pushservice" />
         <receiver
             android:name=".BootReceiver"
             android:exported="false">
@@ -43,4 +55,10 @@
             </intent-filter>
         </receiver>
     </application>
+
+    <queries>
+        <intent>
+            <action android:name="com.getui.sdk.action" />
+        </intent>
+    </queries>
 </manifest>
