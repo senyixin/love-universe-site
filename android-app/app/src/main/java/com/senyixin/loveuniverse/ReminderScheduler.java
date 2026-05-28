@@ -43,7 +43,8 @@ public final class ReminderScheduler {
     private static final int PERIOD_END_REQUEST = 1102;
     private static final int TRIP_BASE_REQUEST = 1200;
     private static final int NOTICE_POLL_REQUEST = 1301;
-    private static final long NOTICE_POLL_INTERVAL_MS = 15L * 60L * 1000L;
+    private static final long NOTICE_POLL_INTERVAL_MS = 5L * 60L * 1000L;
+    private static final long NOTICE_FIRST_DELAY_MS = 30L * 1000L;
 
     private ReminderScheduler() {
     }
@@ -59,6 +60,17 @@ public final class ReminderScheduler {
         Context appContext = context.getApplicationContext();
         String json = appContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY_CONFIG, "{}");
         scheduleFromJson(appContext, json);
+    }
+
+    public static void setServerUrl(Context context, String serverUrl) {
+        Context appContext = context.getApplicationContext();
+        String normalizedUrl = normalizeServerUrl(serverUrl);
+        if (normalizedUrl.isEmpty()) return;
+        appContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+                .edit()
+                .putString(KEY_SERVER_URL, normalizedUrl)
+                .apply();
+        scheduleNoticePolling(appContext, normalizedUrl);
     }
 
     public static void createNotificationChannel(Context context) {
@@ -129,6 +141,7 @@ public final class ReminderScheduler {
             try {
                 checkServerNotice(appContext);
             } finally {
+                scheduleNextNoticePolling(appContext);
                 if (pendingResult != null) pendingResult.finish();
             }
         }).start();
@@ -143,7 +156,7 @@ public final class ReminderScheduler {
             return;
         }
         if (!config.optBoolean("enabled", true)) return;
-        scheduleNoticePolling(context, config.optString("serverUrl", ""));
+        scheduleNoticePolling(context, config.optString("serverUrl", savedServerUrl(context)));
 
         String partnerName = emptyTo(config.optString("partnerName"), "她");
         scheduleDaily(
@@ -233,21 +246,35 @@ public final class ReminderScheduler {
 
     private static void scheduleNoticePolling(Context context, String serverUrl) {
         String normalizedUrl = normalizeServerUrl(serverUrl);
+        if (normalizedUrl.isEmpty()) normalizedUrl = savedServerUrl(context);
+        if (normalizedUrl.isEmpty()) return;
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
                 .edit()
                 .putString(KEY_SERVER_URL, normalizedUrl)
                 .apply();
-        if (normalizedUrl.isEmpty()) return;
 
         PendingIntent intent = pendingReminder(context, NOTICE_POLL_REQUEST, "notice-poll", "", "", NOTICE_POLL_REQUEST);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         if (alarmManager == null) return;
-        alarmManager.setInexactRepeating(
-                AlarmManager.RTC_WAKEUP,
-                System.currentTimeMillis() + 60L * 1000L,
-                NOTICE_POLL_INTERVAL_MS,
-                intent
-        );
+        long triggerAt = System.currentTimeMillis() + NOTICE_FIRST_DELAY_MS;
+        if (Build.VERSION.SDK_INT >= 23) {
+            alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAt, intent);
+        } else {
+            alarmManager.set(AlarmManager.RTC_WAKEUP, triggerAt, intent);
+        }
+    }
+
+    private static void scheduleNextNoticePolling(Context context) {
+        if (savedServerUrl(context).isEmpty()) return;
+        PendingIntent intent = pendingReminder(context, NOTICE_POLL_REQUEST, "notice-poll", "", "", NOTICE_POLL_REQUEST);
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        if (alarmManager == null) return;
+        long triggerAt = System.currentTimeMillis() + NOTICE_POLL_INTERVAL_MS;
+        if (Build.VERSION.SDK_INT >= 23) {
+            alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAt, intent);
+        } else {
+            alarmManager.set(AlarmManager.RTC_WAKEUP, triggerAt, intent);
+        }
     }
 
     private static void checkServerNotice(Context context) {
@@ -375,6 +402,12 @@ public final class ReminderScheduler {
         }
         if (!text.startsWith("http://") && !text.startsWith("https://")) return "";
         return text;
+    }
+
+    private static String savedServerUrl(Context context) {
+        return normalizeServerUrl(context
+                .getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+                .getString(KEY_SERVER_URL, ""));
     }
 
     private static String pickToday(JSONArray array, String fallback) {
