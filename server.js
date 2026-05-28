@@ -29,9 +29,9 @@ const DEFAULT_ADMIN_KEY = process.env.ADMIN_KEY || "only-you-1314520";
 const SESSION_TTL_MS = 8 * 60 * 60 * 1000;
 const adminSessions = new Map();
 const DEFAULT_CITY = {
-  name: "???",
-  admin1: "???",
-  country: "??",
+  name: "新沂市",
+  admin1: "江苏省",
+  country: "中国",
   latitude: 34.3686,
   longitude: 118.3545,
   adcode: "320381"
@@ -40,118 +40,118 @@ const DEFAULT_CITY = {
 const DEFAULT_SITE_CONTENT = {
   settings: {
     partnerName: "Shannon",
-    yourName: "?",
-    heroLine: "??????????????????",
-    passcodes: ["0520", "520", "???", "shannon", "Shannon"],
+    yourName: "我",
+    heroLine: "今天也想认真地，把世界温柔地递给你。",
+    passcodes: ["0520", "520", "我爱你", "shannon", "Shannon"],
     startDate: "2024-05-20",
     birthday: "2026-08-20",
     nextMeet: "2026-06-01",
-    cityName: "???",
+    cityName: "新沂市",
     cityLatitude: 34.3686,
     cityLongitude: 118.3545,
     cityAdcode: "320381",
     songUrl: "",
-    guestNames: ["?", "?"]
+    guestNames: ["她", "我"]
   },
   dailyTools: {
-    meetTitle: "????",
+    meetTitle: "下次见面",
     meetDate: dateAfterDays(7),
     meetTime: "18:00",
-    meetChecklist: ["??/????", "???/????", "?????", "????????"],
-    careCards: ["???????????????", "???????????????", "?????????????????", "????????????", "??????????????", "????????????????????"],
-    dailyTasks: ["??????????", "???????????????", "??????????", "?????????????"],
+    meetChecklist: ["买票/确认车次", "订酒店/确认地址", "带好小礼物", "提前写下想吃什么"],
+    careCards: ["今天记得喝水，杯子先放到手边。", "早点睡，别把今天的累带到明天。", "别空腹太久，先吃一点也算照顾自己。", "出门前看一眼要不要带伞。", "抱抱提醒：今天也可以软一点。", "夸夸她一句：你认真生活的样子真的很好看。"],
+    dailyTasks: ["今天拍一张自拍给我。", "今天早点睡，睡前给我一句晚安。", "今天想吃什么告诉我。", "今天喝够两杯水再来领夸奖。"],
     periodDate: "",
     periodCycleDays: 28,
-    periodAvoid: ["????", "??????", "?????"],
-    periodWarm: ["?????", "??/?????", "????????"],
-    periodMood: "????????????????????????",
-    feedingFoods: ["?????", "????", "???", "???", "???", "????"],
-    feedingDrinks: ["????", "???", "????", "?????", "???"],
-    feedingSnacks: ["??", "???", "???", "??", "???"],
-    feedingAvoid: ["??", "??", "????"],
-    tripPlace: "???????",
-    tripTime: "??",
-    tripTransport: "??/?????",
-    tripHotel: "??/??????",
-    tripNotes: ["?????????", "????????", "????????????"]
+    periodAvoid: ["少冰少辣", "别空腹喝咖啡", "别硬撑太久"],
+    periodWarm: ["热水放手边", "暖贴/外套准备好", "累了就把任务降级"],
+    periodMood: "情绪照顾模式：不催、不讲大道理，先抱抱再慢慢说。",
+    feedingFoods: ["番茄牛腩饭", "砂锅米线", "椰子鸡", "寿喜锅", "热汤面", "烤肉拌饭"],
+    feedingDrinks: ["少冰奶茶", "热可可", "椰乳拿铁", "蜂蜜柚子茶", "温豆浆"],
+    feedingSnacks: ["蛋挞", "小蛋糕", "水果杯", "烤肠", "酸奶碗"],
+    feedingAvoid: ["太冰", "太辣", "空腹甜饮"],
+    tripPlace: "下次见面的地方",
+    tripTime: "待定",
+    tripTransport: "车次/路线待填写",
+    tripHotel: "酒店/落脚点待填写",
+    tripNotes: ["身份证和充电器别忘", "提前确认出发时间", "路上注意安全，到站告诉我"]
   },
   timeline: [
-    { date: "2024-05-20", title: "???????", text: "???????????????????????" },
-    { date: "2024-08-14", title: "?????????", text: "???????????????????????" },
-    { date: "2025-02-14", title: "????????", text: "????????????????????" },
-    { date: "2026-05-25", title: "??????", text: "????????????????" }
+    { date: "2024-05-20", title: "把今天设成起点", text: "从这一天开始，日子有了可以被倒数和珍藏的理由。" },
+    { date: "2024-08-14", title: "第一次认真计划旅行", text: "地图上每一个被圈起来的地方，都像在提前等我们。" },
+    { date: "2025-02-14", title: "一封没有寄丢的信", text: "很多话说出口会害羞，写下来就会一直发光。" },
+    { date: "2026-05-25", title: "这个网站诞生", text: "它不算大，但每一个角落都向着你。" }
   ],
   dateIdeas: [
-    { title: "?????", time: "2 ??", tags: ["??", "??", "??"], text: "??????????????????????????????????" },
-    { title: "??????", time: "90 ??", tags: ["??", "??", "??"], text: "????????????????????????????????" },
-    { title: "??????", time: "1 ?", tags: ["??", "??", "??"], text: "????????????????????????????????" },
-    { title: "???????", time: "??", tags: ["??", "??", "??"], text: "??????????????????????????????????" },
-    { title: "?????", time: "??", tags: ["??", "??", "??"], text: "??????????????????????????" },
-    { title: "????", time: "??", tags: ["??", "??", "??"], text: "?????????????????????????????????" },
-    { title: "?????", time: "2 ??", tags: ["??", "??", "??"], text: "?????????????????????????????????????" },
-    { title: "??????", time: "1 ?", tags: ["??", "??", "??"], text: "????????????????????????????????" },
-    { title: "??????", time: "??", tags: ["??", "??", "??"], text: "??????????????????????????????" },
-    { title: "?????", time: "??", tags: ["??", "??", "??"], text: "??????????????????????????????" },
-    { title: "????????", time: "??", tags: ["??", "??", "??"], text: "???????????????? 9 ???????????????" },
-    { title: "?????", time: "1 ?", tags: ["??", "??", "??"], text: "?????????????????????????????" },
-    { title: "???????", time: "??", tags: ["??", "??", "??"], text: "?????????????????????????????" },
-    { title: "??????", time: "1 ??", tags: ["??", "??", "??"], text: "???? 10 ?????????????????????????????" },
-    { title: "??????", time: "1 ??", tags: ["??", "??", "??"], text: "?????????????????????????????" }
+    { title: "雨天电影局", time: "2 小时", tags: ["电影", "热饮", "抱枕"], text: "选一部都没看过的电影，准备热饮和零食，谁先猜中剧情谁获得一个小奖励。" },
+    { title: "城市散步盲盒", time: "90 分钟", tags: ["散步", "拍照", "甜品"], text: "随便选一个地铁站下车，沿着最漂亮的街走，遇见第一家甜品店就进去。" },
+    { title: "一起做饭实验", time: "1 晚", tags: ["做饭", "音乐", "打分"], text: "每人选一道菜，给对方的作品打分。最低分负责洗碗，最高分负责被夸。" },
+    { title: "日出或夜景计划", time: "半天", tags: ["风景", "相机", "外套"], text: "挑一个视野好的地方，看日出或夜景。带外套，也带一点不用赶时间的心情。" },
+    { title: "奶茶路线图", time: "下午", tags: ["奶茶", "街区", "小票"], text: "挑三家没喝过的店，给每一杯取名字，最后选出今日冠军。" },
+    { title: "晚风骑行", time: "傍晚", tags: ["骑行", "落日", "耳机"], text: "找一条不赶路的路，骑到天色变软。中途停下来拍一张只有你们懂的照片。" },
+    { title: "旧照片复刻", time: "2 小时", tags: ["照片", "回忆", "造型"], text: "选一张以前的合照，在同样姿势或同样情绪里复刻一次，顺便看看你们变得多亲近。" },
+    { title: "超市随机晚餐", time: "1 晚", tags: ["超市", "料理", "随机"], text: "每人只许选三样食材，回家拼成一顿饭。不好吃也算一次值得笑的作品。" },
+    { title: "书店交换书签", time: "下午", tags: ["书店", "安静", "礼物"], text: "各自挑一本想让对方翻开的书，再给对方写一张藏在书里的小纸条。" },
+    { title: "夜市评分员", time: "晚上", tags: ["夜市", "小吃", "排名"], text: "从第一家摊位吃到最后，给每样小吃起一个很认真或很离谱的奖项。" },
+    { title: "彼此的一日摄影师", time: "半天", tags: ["拍照", "街区", "滤镜"], text: "今天只负责把对方拍好看。最后各选 9 张，拼成一张属于这天的小相册。" },
+    { title: "居家手作夜", time: "1 晚", tags: ["手作", "蜡烛", "歌单"], text: "做香薰、拼图、串珠或小摆件，作品不需要完美，但要写上日期。" },
+    { title: "随机公交终点站", time: "半天", tags: ["公交", "探索", "照片"], text: "选一辆顺眼的公交坐到一个陌生站点，在附近找一家小店坐下来。" },
+    { title: "情侣问答电台", time: "1 小时", tags: ["聊天", "录音", "问题"], text: "每人准备 10 个问题，像录电台一样认真回答。可以把好笑的片段留给以后听。" },
+    { title: "为她的一小时", time: "1 小时", tags: ["偏爱", "陪伴", "放松"], text: "这一小时只做她想做的事：散步、发呆、逛店、吃甜品，都不催。" }
   ],
   ideaTools: [
     {
       id: "food-roulette",
-      title: "??????",
-      text: "?????????????????????????",
-      buttonLabel: "??????",
+      title: "随机点餐盲盒",
+      text: "不知道吃什么的时候抽一下，先让选择困难休息一会儿。",
+      buttonLabel: "抽今天吃什么",
       items: [
-        "??", "??", "??", "???", "??", "??", "???", "??", "??", "??", "??", "??",
-        "??", "??", "????", "???", "??", "??", "???", "???", "??", "???",
-        "???", "????", "???", "?????"
+        "川菜", "湘菜", "粤菜", "东北菜", "火锅", "烧烤", "麻辣烫", "米线", "拉面", "日料", "韩餐", "泰餐",
+        "披萨", "汉堡", "轻食沙拉", "小龙虾", "烤肉", "砂锅", "煲仔饭", "黄焖鸡", "冒菜", "酸菜鱼",
+        "螺蛳粉", "饺子馄饨", "粥粉面", "甜品下午茶"
       ]
     }
   ],
   datePlans: [
-    { title: "??????", date: dateAfterDays(6), time: "15:00", place: "?????????", budget: "200 ??", checklist: ["????", "?????", "?????"], note: "??????????" },
-    { title: "???????", date: dateAfterDays(12), time: "??", place: "??????", budget: "??", checklist: ["???", "?????", "?????"], note: "????????" }
+    { title: "周末半日约会", date: dateAfterDays(6), time: "15:00", place: "先去喝奶茶，再散步", budget: "200 元内", checklist: ["带充电宝", "提前看天气", "拍一张合照"], note: "轻松一点，不赶时间。" },
+    { title: "下次见面小计划", date: dateAfterDays(12), time: "傍晚", place: "她想去的地方", budget: "随心", checklist: ["订好车", "准备小惊喜", "晚饭别太辣"], note: "把主动权交给她。" }
   ],
   foodOptions: [
-    { name: "?????", tags: ["??", "??", "??"], spicy: false, warm: true, budget: "mid", distance: "near" },
-    { name: "???", tags: ["??", "??", "?????"], spicy: false, warm: true, budget: "high", distance: "normal" },
-    { name: "???", tags: ["??", "??", "??"], spicy: true, warm: true, budget: "mid", distance: "normal" },
-    { name: "????", tags: ["???", "??", "?"], spicy: false, warm: true, budget: "low", distance: "near" },
-    { name: "????", tags: ["??", "??", "???"], spicy: false, warm: true, budget: "mid", distance: "near" },
-    { name: "????", tags: ["??", "??", "???"], spicy: false, warm: false, budget: "mid", distance: "near" },
-    { name: "???", tags: ["??", "????", "???"], spicy: true, warm: true, budget: "low", distance: "near" },
-    { name: "???", tags: ["??", "??", "????"], spicy: false, warm: true, budget: "high", distance: "far" }
+    { name: "番茄牛腩饭", tags: ["热乎", "不辣", "米饭"], spicy: false, warm: true, budget: "mid", distance: "near" },
+    { name: "寿喜锅", tags: ["热乎", "甜口", "适合慢慢吃"], spicy: false, warm: true, budget: "high", distance: "normal" },
+    { name: "酸菜鱼", tags: ["下饭", "微辣", "热乎"], spicy: true, warm: true, budget: "mid", distance: "normal" },
+    { name: "烤肉拌饭", tags: ["快一点", "肉肉", "饱"], spicy: false, warm: true, budget: "low", distance: "near" },
+    { name: "日式拉面", tags: ["汤面", "热乎", "不太辣"], spicy: false, warm: true, budget: "mid", distance: "near" },
+    { name: "轻食沙拉", tags: ["清爽", "不辣", "负担小"], spicy: false, warm: false, budget: "mid", distance: "near" },
+    { name: "麻辣烫", tags: ["热乎", "可选辣度", "随便加"], spicy: true, warm: true, budget: "low", distance: "near" },
+    { name: "椰子鸡", tags: ["清淡", "热乎", "适合聊天"], spicy: false, warm: true, budget: "high", distance: "far" }
   ],
   giftList: [
-    { title: "??????", category: "???", detail: "?????????????", priority: "?", note: "???????" },
-    { title: "????????", category: "??", detail: "?????????????", priority: "?", note: "?????????????" },
-    { title: "???????", category: "??", detail: "????????????????????????", priority: "?", note: "?????????" }
+    { title: "花和手写卡片", category: "仪式感", detail: "不用很大束，颜色温柔一点。", priority: "高", note: "适合见面当天。" },
+    { title: "她常喝的奶茶备注", category: "口味", detail: "少冰、三分糖，珍珠或芋圆。", priority: "中", note: "后台可以继续补充她的喜好。" },
+    { title: "尺码和忌口备忘", category: "备忘", detail: "衣服、鞋码、戒指、过敏和不吃的东西都可以写这里。", priority: "高", note: "买礼物前先看一眼。" }
   ],
   places: [
-    { id: "place-1", name: "????????", note: "?????????????", x: 25, y: 68 },
-    { id: "place-2", name: "??????", note: "??????????????????", x: 58, y: 42 },
-    { id: "place-3", name: "???", note: "???????????", x: 76, y: 28 }
+    { id: "place-1", name: "第一次见面的地方", note: "空气里都是紧张和装作镇定。", x: 25, y: 68 },
+    { id: "place-2", name: "最常去的街角", note: "路过很多次，每一次都更像自己的地方。", x: 58, y: 42 },
+    { id: "place-3", name: "下一站", note: "还没去，但已经很期待。", x: 76, y: 28 }
   ],
   messageWall: [
-    { id: "message-1", title: "????", text: "?????????????????" },
-    { id: "message-2", title: "??????", text: "??????????????????????????" }
+    { id: "message-1", title: "置顶留言", text: "这里可以放你想让她每次都看见的话。" },
+    { id: "message-2", title: "今天也偏心你", text: "如果今天不太顺，就先把难过寄存在这里，我会慢慢接住。" }
   ],
   letters: [
-    { id: "letter-1", title: "??????", openAt: dateAfterDays(0), body: "{?}?????????????????????????????????????" },
-    { id: "letter-2", title: "?????", openAt: dateAfterDays(3), body: "??????????????????????????????????????" },
-    { id: "letter-3", title: "?????", openAt: dateAfterDays(7), body: "??????????????????????????????" },
-    { id: "letter-4", title: "???????", openAt: dateAfterDays(14), body: "????????????????????????????????????" }
+    { id: "letter-1", title: "今天就能打开", openAt: dateAfterDays(0), body: "{她}，这个网站的第一封信想告诉你：你不用成为完美的一天，我也照样喜欢今天的你。" },
+    { id: "letter-2", title: "三天后的信", openAt: dateAfterDays(3), body: "如果你打开了这封信，说明我们又一起经过了三个普通日子。谢谢你让普通变得值得。" },
+    { id: "letter-3", title: "下次见面前", openAt: dateAfterDays(7), body: "见面前我总会有点期待过头。想牵手，想看你笑，想把路走慢一点。" },
+    { id: "letter-4", title: "留给某个不开心", openAt: dateAfterDays(14), body: "不开心来的时候，不要一个人硬扛。你可以把难过说得乱七八糟，我会慢慢听懂。" }
   ]
 };
 
 const DEFAULT_COUPONS = [
-  { title: "??????", text: "????????????????????", totalQuantity: 2 },
-  { title: "??????", text: "??????????????", totalQuantity: 3 },
-  { title: "?????", text: "???????????", totalQuantity: 1 },
-  { title: "?????", text: "????????????????", totalQuantity: 2 }
+  { title: "奶茶免排队券", text: "想喝哪杯都可以，我负责下单和夸你眼光好。", totalQuantity: 2 },
+  { title: "无条件抱抱券", text: "不讲道理也能用，优先级最高。", totalQuantity: 3 },
+  { title: "电影选择权", text: "今晚看什么，你说了算。", totalQuantity: 1 },
+  { title: "哄睡语音券", text: "睡不着的时候兑换，直到你困为止。", totalQuantity: 2 }
 ];
 
 fs.mkdirSync(DATA_DIR, { recursive: true });
@@ -188,7 +188,7 @@ const upload = multer({
       cb(null, true);
       return;
     }
-    cb(new Error("??? jpg?png?webp?gif ???"));
+    cb(new Error("只支持 jpg、png、webp、gif 图片。"));
   }
 });
 
@@ -259,7 +259,7 @@ app.post("/api/guestbook", async (req, res, next) => {
       visible: true
     });
     if (!entry.message) {
-      res.status(400).json({ error: "?????????" });
+      res.status(400).json({ error: "留言内容不能为空。" });
       return;
     }
     const entries = await readGuestbook();
@@ -267,13 +267,13 @@ app.post("/api/guestbook", async (req, res, next) => {
     await writeGuestbook(entries);
     await recordSignalEvent({
       moodKey: "guestbook",
-      label: "???",
-      response: `${entry.name}?${entry.message}`,
-      subject: "??????????",
+      label: "留言本",
+      response: `${entry.name}：${entry.message}`,
+      subject: "她在留言本写了新留言",
       lines: [
-        `???${entry.name}`,
-        `???${formatDateTime(entry.createdAt)}`,
-        `???${entry.message}`
+        `昵称：${entry.name}`,
+        `时间：${formatDateTime(entry.createdAt)}`,
+        `留言：${entry.message}`
       ]
     });
     res.status(201).json({ entry });
@@ -286,12 +286,12 @@ app.get("/api/geocode", async (req, res, next) => {
   try {
     const city = cleanText(req.query.city, "");
     if (!city) {
-      res.status(400).json({ error: "??????" });
+      res.status(400).json({ error: "请输入城市。" });
       return;
     }
     const amapKey = getAmapKey();
     if (!amapKey) {
-      res.json({ results: fallbackGeocode(city), fallback: true, error: "??????? Key?" });
+      res.json({ results: fallbackGeocode(city), fallback: true, error: "未配置高德天气 Key。" });
       return;
     }
 
@@ -314,7 +314,7 @@ app.get("/api/weather", async (req, res) => {
 
   try {
     const amapKey = getAmapKey();
-    if (!amapKey) throw new Error("??????? Key?");
+    if (!amapKey) throw new Error("未配置高德天气 Key。");
     const location = await resolveAmapWeatherLocation({
       amapKey,
       adcode: req.query.adcode || req.query.city,
@@ -333,7 +333,7 @@ app.get("/api/weather", async (req, res) => {
 app.post("/api/photos", upload.single("photo"), async (req, res, next) => {
   try {
     if (!req.file) {
-      res.status(400).json({ error: "????????" });
+      res.status(400).json({ error: "请上传一张照片。" });
       return;
     }
 
@@ -341,8 +341,8 @@ app.post("/api/photos", upload.single("photo"), async (req, res, next) => {
     const now = new Date().toISOString();
     const photo = {
       id: crypto.randomUUID(),
-      title: cleanText(req.body.title, "????"),
-      date: cleanText(req.body.date, "???????????????????"),
+      title: cleanText(req.body.title, "新的照片"),
+      date: cleanText(req.body.date, "这张照片背后，有一段只有你们懂的时间。"),
       src: `/uploads/photos/${req.file.filename}`,
       filename: req.file.filename,
       createdAt: now,
@@ -364,7 +364,7 @@ app.put("/api/photos/:id", upload.single("photo"), async (req, res, next) => {
     const photo = photos.find((item) => item.id === req.params.id);
     if (!photo) {
       if (req.file) await safeDelete(req.file.filename);
-      res.status(404).json({ error: "?????????" });
+      res.status(404).json({ error: "没有找到这张照片。" });
       return;
     }
 
@@ -394,7 +394,7 @@ app.delete("/api/photos/:id", async (req, res, next) => {
     const photos = await readPhotos();
     const index = photos.findIndex((item) => item.id === req.params.id);
     if (index === -1) {
-      res.status(404).json({ error: "?????????" });
+      res.status(404).json({ error: "没有找到这张照片。" });
       return;
     }
 
@@ -421,13 +421,13 @@ app.post("/api/coupons/:id/claim", async (req, res, next) => {
     const coupons = await readCoupons();
     const coupon = coupons.find((item) => item.id === req.params.id);
     if (!coupon) {
-      res.status(404).json({ error: "??????????" });
+      res.status(404).json({ error: "没有找到这张小票券。" });
       return;
     }
 
     const status = couponStatus(coupon);
     if (!status.usable || availableQuantity(coupon) <= 0) {
-      res.status(400).json({ error: status.reason || "??????????" });
+      res.status(400).json({ error: status.reason || "这张券暂时不能领取。" });
       return;
     }
 
@@ -443,8 +443,8 @@ app.post("/api/coupons/:id/claim", async (req, res, next) => {
 app.post("/api/coupons/:id/use", async (req, res, next) => {
   try {
     const result = await useCoupon(req.params.id, {
-      actor: "?",
-      note: cleanText(req.body?.note, "???????????")
+      actor: "她",
+      note: cleanText(req.body?.note, "她在页面使用了小票券。")
     });
     if (result.error) {
       res.status(result.status || 400).json({ error: result.error });
@@ -458,7 +458,7 @@ app.post("/api/coupons/:id/use", async (req, res, next) => {
 
 app.post("/api/mood-events", async (req, res, next) => {
   try {
-    const label = cleanText(req.body?.label, "????");
+    const label = cleanText(req.body?.label, "互动信号");
     const responseText = cleanText(req.body?.response, "");
     const event = await recordSignalEvent({
       moodKey: cleanText(req.body?.moodKey, "signal"),
@@ -467,8 +467,8 @@ app.post("/api/mood-events", async (req, res, next) => {
       subject: signalEmailSubject(label),
       lines: [
         signalEmailIntro(label),
-        `???${formatDateTime(new Date().toISOString())}`,
-        responseText ? `?????${responseText}` : ""
+        `时间：${formatDateTime(new Date().toISOString())}`,
+        responseText ? `互动内容：${responseText}` : ""
       ].filter(Boolean)
     });
     res.json({ ok: true, event: { ...event, emailError: undefined } });
@@ -504,7 +504,7 @@ app.put("/api/admin/coupons/:id", requireAdmin, async (req, res, next) => {
     const coupons = await readCoupons();
     const coupon = coupons.find((item) => item.id === req.params.id);
     if (!coupon) {
-      res.status(404).json({ error: "??????????" });
+      res.status(404).json({ error: "没有找到这张小票券。" });
       return;
     }
 
@@ -521,7 +521,7 @@ app.delete("/api/admin/coupons/:id", requireAdmin, async (req, res, next) => {
     const coupons = await readCoupons();
     const nextCoupons = coupons.filter((coupon) => coupon.id !== req.params.id);
     if (nextCoupons.length === coupons.length) {
-      res.status(404).json({ error: "??????????" });
+      res.status(404).json({ error: "没有找到这张小票券。" });
       return;
     }
     await writeCoupons(nextCoupons);
@@ -536,7 +536,7 @@ app.post("/api/admin/coupons/:id/return", requireAdmin, async (req, res, next) =
     const coupons = await readCoupons();
     const coupon = coupons.find((item) => item.id === req.params.id);
     if (!coupon) {
-      res.status(404).json({ error: "??????????" });
+      res.status(404).json({ error: "没有找到这张小票券。" });
       return;
     }
 
@@ -553,8 +553,8 @@ app.post("/api/admin/coupons/:id/return", requireAdmin, async (req, res, next) =
 app.post("/api/admin/coupons/:id/use", requireAdmin, async (req, res, next) => {
   try {
     const result = await useCoupon(req.params.id, {
-      actor: "???",
-      note: cleanText(req.body?.note, "??????????")
+      actor: "管理端",
+      note: cleanText(req.body?.note, "管理员手动登记使用。")
     });
     if (result.error) {
       res.status(result.status || 400).json({ error: result.error });
@@ -571,7 +571,7 @@ app.post("/api/admin/coupons/:id/pin", requireAdmin, async (req, res, next) => {
     const coupons = await readCoupons();
     const coupon = coupons.find((item) => item.id === req.params.id);
     if (!coupon) {
-      res.status(404).json({ error: "??????????" });
+      res.status(404).json({ error: "没有找到这张小票券。" });
       return;
     }
     coupon.pinned = Boolean(req.body?.pinned);
@@ -589,7 +589,7 @@ app.post("/api/admin/coupons/:id/move", requireAdmin, async (req, res, next) => 
     const coupons = sortCoupons(await readCoupons());
     const index = coupons.findIndex((item) => item.id === req.params.id);
     if (index === -1) {
-      res.status(404).json({ error: "??????????" });
+      res.status(404).json({ error: "没有找到这张小票券。" });
       return;
     }
     const direction = req.body?.direction === "down" ? 1 : -1;
@@ -664,7 +664,7 @@ app.put("/api/admin/guestbook/:id", requireAdmin, async (req, res, next) => {
     const entries = await readGuestbook();
     const entry = entries.find((item) => item.id === req.params.id);
     if (!entry) {
-      res.status(404).json({ error: "?????????" });
+      res.status(404).json({ error: "没有找到这条留言。" });
       return;
     }
     entry.reply = cleanText(req.body?.reply, "");
@@ -682,7 +682,7 @@ app.delete("/api/admin/guestbook/:id", requireAdmin, async (req, res, next) => {
     const entries = await readGuestbook();
     const nextEntries = entries.filter((entry) => entry.id !== req.params.id);
     if (nextEntries.length === entries.length) {
-      res.status(404).json({ error: "?????????" });
+      res.status(404).json({ error: "没有找到这条留言。" });
       return;
     }
     await writeGuestbook(nextEntries);
@@ -730,11 +730,11 @@ app.put("/api/admin/security", requireAdmin, async (req, res, next) => {
     const currentKey = String(req.body?.currentKey || "");
     const newKey = String(req.body?.newKey || "").trim();
     if (!(await verifyAdminKey(currentKey))) {
-      res.status(400).json({ error: "??????????" });
+      res.status(400).json({ error: "当前后台密码不正确。" });
       return;
     }
     if (newKey.length < 6) {
-      res.status(400).json({ error: "??????? 6 ??" });
+      res.status(400).json({ error: "新后台密码至少 6 位。" });
       return;
     }
 
@@ -783,12 +783,23 @@ app.put("/api/admin/mail-config", requireAdmin, async (req, res, next) => {
   }
 });
 
-app.use(express.static(ROOT));
+app.use("/assets", express.static(path.join(ROOT, "assets"), {
+  maxAge: "1d",
+  immutable: false
+}));
+
+app.get(["/", "/index.html"], (_req, res) => {
+  res.sendFile(path.join(ROOT, "index.html"));
+});
+
+app.get(["/app.js", "/styles.css"], (req, res) => {
+  res.sendFile(path.join(ROOT, req.path.slice(1)));
+});
 
 app.use((error, _req, res, _next) => {
   const message = error instanceof multer.MulterError
-    ? "?????????????"
-    : error.message || "????????";
+    ? "图片太大或上传格式不正确。"
+    : error.message || "服务器处理失败。";
   res.status(400).json({ error: message });
 });
 
@@ -797,7 +808,7 @@ function requireAdmin(req, res, next) {
   const expiresAt = token ? adminSessions.get(token) : 0;
   if (!token || !expiresAt || expiresAt < Date.now()) {
     if (token) adminSessions.delete(token);
-    res.status(401).json({ error: "???????" });
+    res.status(401).json({ error: "需要管理密钥。" });
     return;
   }
   adminSessions.set(token, Date.now() + SESSION_TTL_MS);
@@ -807,11 +818,11 @@ function requireAdmin(req, res, next) {
 async function useCoupon(id, options) {
   const coupons = await readCoupons();
   const coupon = coupons.find((item) => item.id === id);
-  if (!coupon) return { status: 404, error: "??????????" };
+  if (!coupon) return { status: 404, error: "没有找到这张小票券。" };
 
   const status = couponStatus(coupon);
   if (!status.usable) return { status: 400, error: status.reason };
-  if (coupon.claimedQuantity <= 0) return { status: 400, error: "????????????" };
+  if (coupon.claimedQuantity <= 0) return { status: 400, error: "她还没有可使用的这张券。" };
 
   const record = {
     id: crypto.randomUUID(),
@@ -848,7 +859,7 @@ async function recordSignalEvent({ moodKey, label, response, subject, lines }) {
   const record = {
     id: crypto.randomUUID(),
     moodKey: cleanText(moodKey, "signal"),
-    label: cleanText(label, "????"),
+    label: cleanText(label, "互动信号"),
     response: cleanText(response, ""),
     createdAt: new Date().toISOString()
   };
@@ -859,7 +870,7 @@ async function recordSignalEvent({ moodKey, label, response, subject, lines }) {
       subject: cleanText(subject, signalEmailSubject(record.label)),
       lines: Array.isArray(lines) && lines.length
         ? lines
-        : [signalEmailIntro(record.label), `???${formatDateTime(record.createdAt)}`, record.response].filter(Boolean)
+        : [signalEmailIntro(record.label), `时间：${formatDateTime(record.createdAt)}`, record.response].filter(Boolean)
     });
     event.emailStatus = sent ? "sent" : "not_configured";
   } catch (error) {
@@ -872,31 +883,31 @@ async function recordSignalEvent({ moodKey, label, response, subject, lines }) {
 }
 
 function signalEmailSubject(label) {
-  if (label === "????") return "????";
-  if (label === "???") return "???????";
-  if (label === "?????") return "????????";
-  if (label === "???") return "??????????";
-  return `????????${label}`;
+  if (label === "想你雷达") return "她想你了";
+  if (label === "要抱抱") return "她想要一个抱抱";
+  if (label === "今日状态灯") return "她更新了今日状态";
+  if (label === "留言本") return "她在留言本写了新留言";
+  return `她发来互动信号：${label}`;
 }
 
 function signalEmailIntro(label) {
-  if (label === "????") return "???????????";
-  if (label === "???") return "???????????";
-  if (label === "?????") return "???????????";
-  if (label === "???") return "?????????????";
-  return `?????${label}`;
+  if (label === "想你雷达") return "她在页面点了想你雷达。";
+  if (label === "要抱抱") return "她在页面点了抱抱按钮。";
+  if (label === "今日状态灯") return "她告诉你今天的状态了。";
+  if (label === "留言本") return "她在双向留言本写了新内容。";
+  return `互动信号：${label}`;
 }
 
 async function sendCouponUseEmail(record, coupon) {
   return sendNotificationEmail({
-    subject: `????????${coupon.title}`,
+    subject: `她使用了小票券：${coupon.title}`,
     lines: [
-      `????${coupon.title}`,
-      `????${record.actor}`,
-      `?????${formatDateTime(record.usedAt)}`,
-      `???${record.note || "?"}`,
-      `????????${availableQuantity(coupon)}`,
-      `?????????${coupon.claimedQuantity}`
+      `小票券：${coupon.title}`,
+      `使用人：${record.actor}`,
+      `使用时间：${formatDateTime(record.usedAt)}`,
+      `备注：${record.note || "无"}`,
+      `当前剩余可领取：${availableQuantity(coupon)}`,
+      `当前已领取未使用：${coupon.claimedQuantity}`
     ]
   });
 }
@@ -966,8 +977,8 @@ function createCoupon(input, index = 0) {
   const now = new Date().toISOString();
   const coupon = {
     id: input.id || crypto.randomUUID(),
-    title: cleanText(input.title, "?????"),
-    text: cleanText(input.text, "?????????????"),
+    title: cleanText(input.title, "新的小票券"),
+    text: cleanText(input.text, "这是一张只属于她的小票券。"),
     totalQuantity: Math.max(0, Math.floor(Number(input.totalQuantity ?? input.total ?? 1))),
     claimedQuantity: Math.max(0, Math.floor(Number(input.claimedQuantity || 0))),
     pinned: Boolean(input.pinned),
@@ -1030,12 +1041,12 @@ function toAdminCoupon(coupon) {
 function couponStatus(coupon) {
   const today = todayKey();
   if (coupon.effectiveDate && coupon.effectiveDate > today) {
-    return { usable: false, label: "???", reason: `??? ${coupon.effectiveDate} ???` };
+    return { usable: false, label: "未生效", reason: `这张券 ${coupon.effectiveDate} 生效。` };
   }
   if (coupon.expiryDate && coupon.expiryDate < today) {
-    return { usable: false, label: "???", reason: "????????" };
+    return { usable: false, label: "已过期", reason: "这张券已经到期。" };
   }
-  return { usable: true, label: "???", reason: "" };
+  return { usable: true, label: "可使用", reason: "" };
 }
 
 function availableQuantity(coupon) {
@@ -1094,7 +1105,7 @@ async function geocodeCityWithAmap(city, amapKey) {
     output: "JSON"
   });
   const data = await fetchJson(`https://restapi.amap.com/v3/geocode/geo?${params}`, 8000);
-  assertAmapOk(data, "????????");
+  assertAmapOk(data, "高德城市查询失败");
   return (Array.isArray(data.geocodes) ? data.geocodes : [])
     .map((item) => normalizeAmapGeocode(item))
     .filter(Boolean);
@@ -1108,7 +1119,7 @@ async function reverseGeocodeWithAmap(latitude, longitude, amapKey) {
     output: "JSON"
   });
   const data = await fetchJson(`https://restapi.amap.com/v3/geocode/regeo?${params}`, 8000);
-  assertAmapOk(data, "?????????");
+  assertAmapOk(data, "高德逆地理编码失败");
   const component = data.regeocode?.addressComponent || {};
   const adcode = normalizeAdcode(component.adcode);
   if (!adcode) return null;
@@ -1117,7 +1128,7 @@ async function reverseGeocodeWithAmap(latitude, longitude, amapKey) {
     placeName: formatPlaceName({
       name: cleanText(component.district || component.city || component.province, DEFAULT_CITY.name),
       admin1: joinClean([component.province, component.city]),
-      country: "??"
+      country: "中国"
     })
   };
 }
@@ -1151,10 +1162,10 @@ async function fetchAmapWeather(adcode, amapKey) {
     output: "JSON"
   });
   const data = await fetchJson(`https://restapi.amap.com/v3/weather/weatherInfo?${params}`, 10000);
-  assertAmapOk(data, "????????");
+  assertAmapOk(data, "高德天气查询失败");
   const forecast = Array.isArray(data.forecasts) ? data.forecasts[0] : null;
   if (!forecast || !Array.isArray(forecast.casts) || !forecast.casts.length) {
-    throw new Error("?????????");
+    throw new Error("高德天气数据为空。");
   }
   return transformAmapForecast(forecast);
 }
@@ -1199,7 +1210,7 @@ function normalizeAmapGeocode(item) {
   return {
     name: cleanText(item.district || item.city || item.formatted_address, DEFAULT_CITY.name),
     admin1: joinClean([item.province, item.city]),
-    country: "??",
+    country: "中国",
     latitude: location.latitude,
     longitude: location.longitude,
     adcode
@@ -1220,41 +1231,41 @@ function assertAmapOk(data, message) {
 function combineAmapWeather(cast) {
   const day = cleanText(cast.dayweather, "");
   const night = cleanText(cast.nightweather, "");
-  if (day && night && day !== night) return `${day}?${night}`;
-  return day || night || "????";
+  if (day && night && day !== night) return `${day}转${night}`;
+  return day || night || "天气变化";
 }
 
 function combineAmapWind(cast) {
   const day = cleanText(cast.daywind, "");
   const night = cleanText(cast.nightwind, "");
   const power = cleanText(cast.daypower || cast.nightpower, "");
-  const wind = day && night && day !== night ? `${day}?${night}?` : day ? `${day}?` : night ? `${night}?` : "";
-  return joinClean([wind, power ? `${power}?` : ""]);
+  const wind = day && night && day !== night ? `${day}转${night}风` : day ? `${day}风` : night ? `${night}风` : "";
+  return joinClean([wind, power ? `${power}级` : ""]);
 }
 
 function amapWeatherCode(text) {
   const value = String(text || "");
-  if (value.includes("?")) return 95;
-  if (value.includes("?") || value.includes("??")) return 71;
-  if (value.includes("??") || value.includes("??")) return 65;
-  if (value.includes("??")) return 63;
-  if (value.includes("?")) return 61;
-  if (value.includes("?") || value.includes("?") || value.includes("?") || value.includes("?")) return 45;
-  if (value.includes("?")) return 3;
-  if (value.includes("?")) return 2;
-  if (value.includes("?")) return 0;
+  if (value.includes("雷")) return 95;
+  if (value.includes("雪") || value.includes("冰雹")) return 71;
+  if (value.includes("暴雨") || value.includes("大雨")) return 65;
+  if (value.includes("中雨")) return 63;
+  if (value.includes("雨")) return 61;
+  if (value.includes("雾") || value.includes("霾") || value.includes("沙") || value.includes("尘")) return 45;
+  if (value.includes("阴")) return 3;
+  if (value.includes("云")) return 2;
+  if (value.includes("晴")) return 0;
   return 3;
 }
 
 function amapRainChance(text) {
   const value = String(text || "");
-  if (value.includes("?") || value.includes("??")) return 95;
-  if (value.includes("??")) return 85;
-  if (value.includes("??")) return 65;
-  if (value.includes("?")) return 55;
-  if (value.includes("?")) return 45;
-  if (value.includes("?")) return 25;
-  if (value.includes("?")) return 15;
+  if (value.includes("雷") || value.includes("暴雨")) return 95;
+  if (value.includes("大雨")) return 85;
+  if (value.includes("中雨")) return 65;
+  if (value.includes("雨")) return 55;
+  if (value.includes("雪")) return 45;
+  if (value.includes("阴")) return 25;
+  if (value.includes("云")) return 15;
   return 8;
 }
 
@@ -1278,7 +1289,7 @@ function joinClean(values) {
     .map((value) => String(value || "").trim())
     .filter(Boolean)
     .filter((value, index, list) => list.indexOf(value) === index)
-    .join(" ? ");
+    .join(" · ");
 }
 
 function buildFallbackWeather() {
@@ -1303,8 +1314,8 @@ function buildFallbackWeather() {
     const base = 24 + (index % 3);
     daily.time.push(key);
     daily.weather_code.push(codes[index]);
-    daily.weather_text.push(["??", "??", "?", "??", "??", "?", "??"][index]);
-    daily.wind.push("??");
+    daily.weather_text.push(["多云", "多云", "阴", "小雨", "多云", "晴", "阵雨"][index]);
+    daily.wind.push("微风");
     daily.temperature_2m_max.push(base + 4);
     daily.temperature_2m_min.push(base - 3);
     daily.precipitation_probability_max.push(rain[index]);
@@ -1317,11 +1328,11 @@ function buildFallbackWeather() {
 function fallbackGeocode(city) {
   const text = String(city || "").trim().toLowerCase();
   if (!text) return [];
-  if (text.includes("??") || text.includes("xinyi")) {
+  if (text.includes("新沂") || text.includes("xinyi")) {
     return [{
-      name: "???",
-      admin1: "???",
-      country: "??",
+      name: "新沂市",
+      admin1: "江苏省",
+      country: "中国",
       latitude: 34.3686,
       longitude: 118.3545,
       adcode: "320381"
@@ -1378,7 +1389,7 @@ async function buildBackup() {
     couponEvents: await readJson(COUPON_EVENTS_FILE, []),
     moodEvents: await readJson(MOOD_EVENTS_FILE, []),
     mailConfig: publicMailConfig(await readMailConfig()),
-    note: "?????????? QQ ??????"
+    note: "导出不包含后台密码和 QQ 邮箱授权码。"
   };
 }
 
@@ -1391,28 +1402,28 @@ async function restoreBackup(payload) {
   if (source.content) {
     const content = normalizeSiteContent(source.content);
     await writeJson(SITE_CONTENT_FILE, content);
-    result.push("????");
+    result.push("网站内容");
   }
   if (Array.isArray(source.coupons)) {
     const coupons = source.coupons.map((coupon, index) => createCoupon(coupon, index));
     await writeCoupons(coupons);
-    result.push("???");
+    result.push("小票券");
   }
   if (Array.isArray(source.photos)) {
     await writePhotos(source.photos.map(normalizePhotoBackup).filter(Boolean));
-    result.push("?????");
+    result.push("相册元数据");
   }
   if (Array.isArray(source.guestbook)) {
     await writeGuestbook(source.guestbook);
-    result.push("?????");
+    result.push("双向留言本");
   }
   if (Array.isArray(source.couponEvents)) {
     await writeJson(COUPON_EVENTS_FILE, source.couponEvents.slice(0, 300));
-    result.push("?????");
+    result.push("小票券记录");
   }
   if (Array.isArray(source.moodEvents)) {
     await writeJson(MOOD_EVENTS_FILE, source.moodEvents.slice(0, 300));
-    result.push("????");
+    result.push("互动记录");
   }
 
   return { ok: true, restored: result };
@@ -1424,7 +1435,7 @@ function normalizePhotoBackup(photo = {}) {
   if (!src) return null;
   return {
     id: cleanText(photo.id, crypto.randomUUID()),
-    title: cleanText(photo.title, "??"),
+    title: cleanText(photo.title, "照片"),
     date: cleanText(photo.date, ""),
     src,
     filename,
@@ -1508,7 +1519,7 @@ function normalizeDailyTools(value = {}) {
 }
 
 function normalizeTextList(value, fallback) {
-  const source = Array.isArray(value) ? value : String(value || "").split(/[\n?,]/);
+  const source = Array.isArray(value) ? value : String(value || "").split(/[\n，,]/);
   const list = source.map((item) => String(item || "").trim()).filter(Boolean);
   return list.length ? list.slice(0, 80) : fallback;
 }
@@ -1522,33 +1533,33 @@ function normalizeTimelineItem(item = {}) {
   return {
     id: cleanText(item.id, crypto.randomUUID()),
     date: normalizeDate(item.date) || todayKey(),
-    title: cleanText(item.title, "????"),
-    text: cleanText(item.text, "????????")
+    title: cleanText(item.title, "新的回忆"),
+    text: cleanText(item.text, "把这一刻写下来。")
   };
 }
 
 function normalizeDateIdea(item = {}) {
   const tags = Array.isArray(item.tags)
     ? item.tags.map((tag) => String(tag || "").trim()).filter(Boolean)
-    : String(item.tags || "").split(/[?,]/).map((tag) => tag.trim()).filter(Boolean);
+    : String(item.tags || "").split(/[，,]/).map((tag) => tag.trim()).filter(Boolean);
   return {
     id: cleanText(item.id, crypto.randomUUID()),
-    title: cleanText(item.title, "??????"),
-    time: cleanText(item.time, "??"),
+    title: cleanText(item.title, "新的约会灵感"),
+    time: cleanText(item.time, "随时"),
     tags: tags.slice(0, 6),
-    text: cleanText(item.text, "????????????")
+    text: cleanText(item.text, "写下这次约会要怎么发生。")
   };
 }
 
 function normalizeIdeaTool(item = {}) {
   const items = Array.isArray(item.items)
     ? item.items.map((value) => String(value || "").trim()).filter(Boolean)
-    : String(item.items || "").split(/[\n?,]/).map((value) => value.trim()).filter(Boolean);
+    : String(item.items || "").split(/[\n，,]/).map((value) => value.trim()).filter(Boolean);
   return {
     id: cleanText(item.id, crypto.randomUUID()),
-    title: cleanText(item.title, "??????"),
-    text: cleanText(item.text, "???????????????"),
-    buttonLabel: cleanText(item.buttonLabel, "?????"),
+    title: cleanText(item.title, "新的功能盒子"),
+    text: cleanText(item.text, "写下这个功能要怎么陪她做决定。"),
+    buttonLabel: cleanText(item.buttonLabel, "随机抽一个"),
     items: items.slice(0, 200)
   };
 }
@@ -1556,26 +1567,26 @@ function normalizeIdeaTool(item = {}) {
 function normalizeDatePlan(item = {}) {
   const checklist = Array.isArray(item.checklist)
     ? item.checklist.map((value) => String(value || "").trim()).filter(Boolean)
-    : String(item.checklist || "").split(/[\n?,]/).map((value) => value.trim()).filter(Boolean);
+    : String(item.checklist || "").split(/[\n，,]/).map((value) => value.trim()).filter(Boolean);
   return {
     id: cleanText(item.id, crypto.randomUUID()),
-    title: cleanText(item.title, "??????"),
+    title: cleanText(item.title, "新的约会计划"),
     date: normalizeDate(item.date) || todayKey(),
-    time: cleanText(item.time, "??"),
-    place: cleanText(item.place, "????"),
-    budget: cleanText(item.budget, "??"),
+    time: cleanText(item.time, "待定"),
+    place: cleanText(item.place, "地点待定"),
+    budget: cleanText(item.budget, "随心"),
     checklist: checklist.slice(0, 20),
-    note: cleanText(item.note, "?????????")
+    note: cleanText(item.note, "把这次约会安排好。")
   };
 }
 
 function normalizeFoodOption(item = {}) {
   const tags = Array.isArray(item.tags)
     ? item.tags.map((value) => String(value || "").trim()).filter(Boolean)
-    : String(item.tags || "").split(/[?,]/).map((value) => value.trim()).filter(Boolean);
+    : String(item.tags || "").split(/[，,]/).map((value) => value.trim()).filter(Boolean);
   return {
     id: cleanText(item.id, crypto.randomUUID()),
-    name: cleanText(item.name, "????"),
+    name: cleanText(item.name, "新的菜品"),
     tags: tags.slice(0, 8),
     spicy: Boolean(item.spicy),
     warm: item.warm !== false,
@@ -1587,10 +1598,10 @@ function normalizeFoodOption(item = {}) {
 function normalizeGiftItem(item = {}) {
   return {
     id: cleanText(item.id, crypto.randomUUID()),
-    title: cleanText(item.title, "??????"),
-    category: cleanText(item.category, "??"),
-    detail: cleanText(item.detail, "?????????"),
-    priority: cleanText(item.priority, "?"),
+    title: cleanText(item.title, "新的礼物备忘"),
+    category: cleanText(item.category, "备忘"),
+    detail: cleanText(item.detail, "写下她喜欢的细节。"),
+    priority: cleanText(item.priority, "中"),
     note: cleanText(item.note, "")
   };
 }
@@ -1598,7 +1609,7 @@ function normalizeGiftItem(item = {}) {
 function normalizeGuestbookEntry(item = {}) {
   return {
     id: cleanText(item.id, crypto.randomUUID()),
-    name: cleanText(item.name, "?"),
+    name: cleanText(item.name, "她"),
     message: cleanText(item.message, ""),
     reply: cleanText(item.reply, ""),
     createdAt: cleanText(item.createdAt, new Date().toISOString()),
@@ -1610,8 +1621,8 @@ function normalizeGuestbookEntry(item = {}) {
 function normalizePlace(item = {}) {
   return {
     id: cleanText(item.id, crypto.randomUUID()),
-    name: cleanText(item.name, "????"),
-    note: cleanText(item.note, "?????????"),
+    name: cleanText(item.name, "新的地点"),
+    note: cleanText(item.note, "这里会有新的故事。"),
     x: normalizeCoordinate(item.x, 50, 4, 96),
     y: normalizeCoordinate(item.y, 50, 4, 96)
   };
@@ -1620,8 +1631,8 @@ function normalizePlace(item = {}) {
 function normalizeMessage(item = {}) {
   return {
     id: cleanText(item.id, crypto.randomUUID()),
-    title: cleanText(item.title, "????"),
-    text: cleanText(item.text, "??????????")
+    title: cleanText(item.title, "新的留言"),
+    text: cleanText(item.text, "把想说的话写在这里。")
   };
 }
 
@@ -1629,10 +1640,10 @@ function normalizeLetter(item = {}) {
   const unlockAfterDays = Math.max(0, Math.floor(Number(item.unlockAfterDays || 0)));
   return {
     id: cleanText(item.id, crypto.randomUUID()),
-    title: cleanText(item.title, "?????"),
+    title: cleanText(item.title, "新的未来信"),
     openAt: normalizeDate(item.openAt) || dateAfterDays(unlockAfterDays),
     unlockAfterDays,
-    body: cleanText(item.body, "?????????")
+    body: cleanText(item.body, "这封信还没有正文。")
   };
 }
 
@@ -1706,7 +1717,7 @@ async function fetchJson(url, timeoutMs) {
         "User-Agent": "love-universe-site/1.0"
       }
     });
-    if (!response.ok) throw new Error(`???????${response.status}`);
+    if (!response.ok) throw new Error(`接口请求失败：${response.status}`);
     return response.json();
   } finally {
     clearTimeout(timer);
@@ -1729,7 +1740,7 @@ function fetchJsonWithHttps(url, timeoutMs) {
       });
       response.on("end", () => {
         if (response.statusCode < 200 || response.statusCode >= 300) {
-          reject(new Error(`???????${response.statusCode}`));
+          reject(new Error(`接口请求失败：${response.statusCode}`));
           return;
         }
         try {
@@ -1740,7 +1751,7 @@ function fetchJsonWithHttps(url, timeoutMs) {
       });
     });
     req.on("timeout", () => {
-      req.destroy(new Error("??????"));
+      req.destroy(new Error("接口请求超时"));
     });
     req.on("error", reject);
   });
