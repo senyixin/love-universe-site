@@ -46,6 +46,7 @@ public class MainActivity extends Activity {
         buildLayout();
         configureWebView();
         requestNotificationPermissionIfNeeded();
+        PushTokenRegistrar.register(this);
         loadDefaultServer();
     }
 
