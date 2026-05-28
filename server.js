@@ -24,6 +24,7 @@ const GUESTBOOK_FILE = path.join(DATA_DIR, "guestbook.json");
 const PERIOD_STATE_FILE = path.join(DATA_DIR, "period-state.json");
 const APP_NOTICES_FILE = path.join(DATA_DIR, "app-notices.json");
 const PUSH_TOKENS_FILE = path.join(DATA_DIR, "push-tokens.json");
+const PUSH_CONFIG_FILE = path.join(DATA_DIR, "push-config.json");
 const MAIL_CONFIG_FILE = path.join(DATA_DIR, "mail-config.json");
 const SITE_CONTENT_FILE = path.join(DATA_DIR, "site-content.json");
 const ADMIN_CONFIG_FILE = path.join(DATA_DIR, "admin-config.json");
@@ -32,6 +33,7 @@ const DEFAULT_ADMIN_KEY = process.env.ADMIN_KEY || "only-you-1314520";
 const SESSION_TTL_MS = 8 * 60 * 60 * 1000;
 const adminSessions = new Map();
 let fcmAccessTokenCache = null;
+let getuiAccessTokenCache = null;
 const DEFAULT_CITY = {
   name: "新沂市",
   admin1: "江苏省",
@@ -174,6 +176,7 @@ ensureJsonFile(GUESTBOOK_FILE, []);
 ensureJsonFile(PERIOD_STATE_FILE, {});
 ensureJsonFile(APP_NOTICES_FILE, []);
 ensureJsonFile(PUSH_TOKENS_FILE, []);
+ensureJsonFile(PUSH_CONFIG_FILE, {});
 ensureJsonFile(MAIL_CONFIG_FILE, {});
 ensureJsonFile(SITE_CONTENT_FILE, DEFAULT_SITE_CONTENT);
 ensureJsonFile(ADMIN_CONFIG_FILE, createAdminConfig(DEFAULT_ADMIN_KEY));
@@ -346,21 +349,24 @@ app.get("/api/app-notices/latest", async (_req, res, next) => {
 app.post("/api/push/register", async (req, res, next) => {
   try {
     const token = cleanText(req.body?.token, "");
+    const provider = normalizePushProvider(req.body?.provider);
     if (!token || token.length < 20) {
       res.status(400).json({ error: "推送 token 不正确。" });
       return;
     }
     const tokens = await readPushTokens();
     const now = new Date().toISOString();
-    const current = tokens.find((item) => item.token === token);
+    const current = tokens.find((item) => item.token === token && item.provider === provider);
     if (current) {
       current.lastSeenAt = now;
+      current.provider = provider;
       current.platform = cleanText(req.body?.platform, current.platform || "android");
       current.appVersion = cleanText(req.body?.appVersion, current.appVersion || "");
     } else {
       tokens.unshift({
         id: crypto.randomUUID(),
         token,
+        provider,
         platform: cleanText(req.body?.platform, "android"),
         appVersion: cleanText(req.body?.appVersion, ""),
         createdAt: now,
@@ -727,12 +733,52 @@ app.get("/api/admin/push/status", requireAdmin, async (_req, res, next) => {
   try {
     const notices = await readJson(APP_NOTICES_FILE, []);
     const tokens = await readPushTokens();
+    const getuiConfig = await readGetuiConfig();
+    const getuiTokens = tokens.filter((item) => item.provider === "getui");
+    const fcmTokens = tokens.filter((item) => item.provider === "fcm");
     res.json({
-      configured: Boolean(readFcmCredentials()),
+      configured: Boolean(getuiConfig || readFcmCredentials()),
+      providers: {
+        getui: {
+          configured: Boolean(getuiConfig),
+          deviceCount: getuiTokens.length,
+          appIdPreview: getuiConfig ? previewSecret(getuiConfig.appId, 6, 4) : ""
+        },
+        fcm: {
+          configured: Boolean(readFcmCredentials()),
+          deviceCount: fcmTokens.length
+        }
+      },
       deviceCount: tokens.length,
       devices: tokens.slice(0, 10).map(publicPushToken),
       latestNotice: Array.isArray(notices) ? notices[0] || null : null
     });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get("/api/admin/push/config", requireAdmin, async (_req, res, next) => {
+  try {
+    res.json({ config: publicPushConfig(await readRawPushConfig()) });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post("/api/admin/push/config", requireAdmin, async (req, res, next) => {
+  try {
+    const existing = await readRawPushConfig() || {};
+    const nextConfig = normalizePushConfig({
+      appId: cleanText(req.body?.appId, existing.appId || ""),
+      appKey: cleanText(req.body?.appKey, existing.appKey || ""),
+      appSecret: cleanText(req.body?.appSecret, existing.appSecret || ""),
+      masterSecret: cleanText(req.body?.masterSecret, existing.masterSecret || ""),
+      enabled: req.body?.enabled !== false
+    });
+    await writeJson(PUSH_CONFIG_FILE, nextConfig);
+    getuiAccessTokenCache = null;
+    res.json({ ok: true, config: publicPushConfig(nextConfig) });
   } catch (error) {
     next(error);
   }
@@ -1115,34 +1161,188 @@ function toHtmlEntities(value) {
 }
 
 async function sendPushNotice(notice) {
-  const credentials = readFcmCredentials();
-  if (!credentials) {
+  const tokens = await readPushTokens();
+  const getuiConfig = await readGetuiConfig();
+  const fcmCredentials = readFcmCredentials();
+  if (!getuiConfig && !fcmCredentials) {
     return { enabled: false, sent: 0, failed: 0, reason: "not_configured" };
   }
-  const tokens = await readPushTokens();
   if (!tokens.length) {
     return { enabled: true, sent: 0, failed: 0, reason: "no_registered_device" };
   }
 
-  const accessToken = await getFcmAccessToken(credentials);
   let sent = 0;
   let failed = 0;
   const invalidTokens = new Set();
-  for (const item of tokens) {
-    const result = await sendFcmMessage(credentials.projectId, accessToken, item.token, notice);
-    if (result.ok) {
-      sent += 1;
-    } else {
-      failed += 1;
-      if (["UNREGISTERED", "INVALID_ARGUMENT", "SENDER_ID_MISMATCH"].includes(result.errorCode)) {
-        invalidTokens.add(item.token);
+  const providers = {};
+
+  const getuiTokens = tokens.filter((item) => item.provider === "getui");
+  if (getuiConfig && getuiTokens.length) {
+    const token = await getGetuiAccessToken(getuiConfig);
+    providers.getui = { sent: 0, failed: 0 };
+    for (const item of getuiTokens) {
+      const result = await sendGetuiMessage(getuiConfig, token, item.token, notice);
+      if (result.ok) {
+        sent += 1;
+        providers.getui.sent += 1;
+      } else {
+        failed += 1;
+        providers.getui.failed += 1;
+        if (["20001", "20002", "30001", "30002", "30003"].includes(String(result.errorCode || ""))) {
+          invalidTokens.add(`${item.provider}:${item.token}`);
+        }
       }
     }
   }
-  if (invalidTokens.size) {
-    await writePushTokens(tokens.filter((item) => !invalidTokens.has(item.token)));
+
+  const fcmTokens = tokens.filter((item) => item.provider === "fcm");
+  if (fcmCredentials && fcmTokens.length) {
+    const accessToken = await getFcmAccessToken(fcmCredentials);
+    providers.fcm = { sent: 0, failed: 0 };
+    for (const item of fcmTokens) {
+      const result = await sendFcmMessage(fcmCredentials.projectId, accessToken, item.token, notice);
+      if (result.ok) {
+        sent += 1;
+        providers.fcm.sent += 1;
+      } else {
+        failed += 1;
+        providers.fcm.failed += 1;
+        if (["UNREGISTERED", "INVALID_ARGUMENT", "SENDER_ID_MISMATCH"].includes(result.errorCode)) {
+          invalidTokens.add(`${item.provider}:${item.token}`);
+        }
+      }
+    }
   }
-  return { enabled: true, sent, failed, reason: failed ? "partial_failed" : "sent" };
+
+  if (invalidTokens.size) {
+    await writePushTokens(tokens.filter((item) => !invalidTokens.has(`${item.provider}:${item.token}`)));
+  }
+  const targetCount = (getuiConfig ? getuiTokens.length : 0) + (fcmCredentials ? fcmTokens.length : 0);
+  return {
+    enabled: true,
+    sent,
+    failed,
+    providers,
+    reason: targetCount ? (failed ? "partial_failed" : "sent") : "no_registered_device"
+  };
+}
+
+async function readRawPushConfig() {
+  return normalizePushConfig(await readJson(PUSH_CONFIG_FILE, {}));
+}
+
+async function readGetuiConfig() {
+  const saved = await readRawPushConfig() || {};
+  return normalizePushConfig({
+    appId: process.env.GETUI_APP_ID || saved.appId,
+    appKey: process.env.GETUI_APP_KEY || saved.appKey,
+    appSecret: process.env.GETUI_APP_SECRET || saved.appSecret,
+    masterSecret: process.env.GETUI_MASTER_SECRET || saved.masterSecret,
+    enabled: saved.enabled !== false
+  });
+}
+
+function normalizePushConfig(input = {}) {
+  const enabled = input.enabled !== false;
+  const appId = cleanText(input.appId || input.app_id || input.GETUI_APP_ID, "");
+  const appKey = cleanText(input.appKey || input.app_key || input.GETUI_APP_KEY, "");
+  const appSecret = cleanText(input.appSecret || input.app_secret || input.GETUI_APP_SECRET, "");
+  const masterSecret = cleanText(input.masterSecret || input.master_secret || input.GETUI_MASTER_SECRET, "");
+  if (!enabled || !appId || !appKey || !masterSecret) return null;
+  return { enabled, appId, appKey, appSecret, masterSecret };
+}
+
+function publicPushConfig(input = {}) {
+  const config = normalizePushConfig(input);
+  return {
+    enabled: Boolean(config),
+    appIdPreview: config ? previewSecret(config.appId, 6, 4) : "",
+    appKeyPreview: config ? previewSecret(config.appKey, 6, 4) : "",
+    appSecretPreview: config?.appSecret ? previewSecret(config.appSecret, 6, 4) : "",
+    masterSecretPreview: config ? previewSecret(config.masterSecret, 4, 4) : ""
+  };
+}
+
+async function getGetuiAccessToken(config) {
+  if (getuiAccessTokenCache
+      && getuiAccessTokenCache.appId === config.appId
+      && getuiAccessTokenCache.expiresAt > Date.now() + 60 * 1000) {
+    return getuiAccessTokenCache.token;
+  }
+
+  const timestamp = String(Date.now());
+  const sign = crypto.createHash("sha256")
+    .update(`${config.appKey}${timestamp}${config.masterSecret}`)
+    .digest("hex");
+  const response = await fetch(`https://restapi.getui.com/v2/${encodeURIComponent(config.appId)}/auth`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json;charset=utf-8" },
+    body: JSON.stringify({
+      sign,
+      timestamp,
+      appkey: config.appKey
+    })
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok || data.code !== 0 || !data.data?.token) {
+    throw new Error(data.msg || data.message || `Getui auth failed: ${response.status}`);
+  }
+  getuiAccessTokenCache = {
+    appId: config.appId,
+    token: data.data.token,
+    expiresAt: Math.max(Date.now() + 60 * 1000, Number(data.data.expire_time || 0))
+  };
+  return getuiAccessTokenCache.token;
+}
+
+async function sendGetuiMessage(config, authToken, cid, notice, retry = true) {
+  const title = String(notice.title || "给你的小宇宙").slice(0, 50);
+  const body = String(notice.message || "我给你发了一条小宇宙提醒，打开 App 看看吧。").slice(0, 256);
+  const response = await fetch(`https://restapi.getui.com/v2/${encodeURIComponent(config.appId)}/push/single/cid`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json;charset=utf-8",
+      token: authToken
+    },
+    body: JSON.stringify({
+      request_id: uniqueRequestId(),
+      settings: {
+        ttl: 24 * 60 * 60 * 1000
+      },
+      audience: {
+        cid: [cid]
+      },
+      push_message: {
+        notification: {
+          title,
+          body,
+          click_type: "startapp"
+        }
+      }
+    })
+  });
+  const data = await response.json().catch(() => ({}));
+  if (response.ok && data.code === 0) return { ok: true };
+  if (retry && String(data.code || "") === "10001") {
+    getuiAccessTokenCache = null;
+    return sendGetuiMessage(config, await getGetuiAccessToken(config), cid, notice, false);
+  }
+  return {
+    ok: false,
+    errorCode: data.code,
+    error: data.msg || data.message || `Getui push failed: ${response.status}`
+  };
+}
+
+function uniqueRequestId() {
+  return crypto.randomUUID().replace(/-/g, "").slice(0, 32);
+}
+
+function previewSecret(value, head = 4, tail = 4) {
+  const text = cleanText(value, "");
+  if (!text) return "";
+  if (text.length <= head + tail) return "*".repeat(text.length);
+  return `${text.slice(0, head)}...${text.slice(-tail)}`;
 }
 
 function readFcmCredentials() {
@@ -1948,6 +2148,7 @@ function normalizePushToken(item = {}) {
   return {
     id: cleanText(item.id, crypto.randomUUID()),
     token,
+    provider: normalizePushProvider(item.provider),
     platform: cleanText(item.platform, "android"),
     appVersion: cleanText(item.appVersion, ""),
     createdAt: cleanText(item.createdAt, new Date().toISOString()),
@@ -1958,12 +2159,18 @@ function normalizePushToken(item = {}) {
 function publicPushToken(item = {}) {
   return {
     id: item.id,
+    provider: item.provider || "fcm",
     platform: item.platform,
     appVersion: item.appVersion,
     createdAt: item.createdAt,
     lastSeenAt: item.lastSeenAt,
     tokenPreview: `${item.token.slice(0, 8)}...${item.token.slice(-6)}`
   };
+}
+
+function normalizePushProvider(provider) {
+  const text = cleanText(provider, "").toLowerCase();
+  return text === "getui" ? "getui" : "fcm";
 }
 
 function normalizePeriodState(item = {}) {
