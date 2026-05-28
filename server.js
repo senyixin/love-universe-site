@@ -72,6 +72,7 @@ const DEFAULT_SITE_CONTENT = {
     feedingAvoid: ["太冰", "太辣", "空腹甜饮"],
     tripPlace: "下次见面的地方",
     tripDateTime: `${dateAfterDays(7)}T18:00`,
+    tripEndDateTime: `${dateAfterDays(7)}T23:00`,
     tripTransport: "车次/路线待填写",
     tripHotel: "酒店/落脚点待填写",
     tripNotes: ["身份证和充电器别忘", "提前确认出发时间", "路上注意安全，到站告诉我"],
@@ -1553,6 +1554,7 @@ function normalizeSiteSettings(settings = {}) {
 
 function normalizeDailyTools(value = {}) {
   const fallback = DEFAULT_SITE_CONTENT.dailyTools;
+  const tripDateTime = normalizeDateTime(value.tripDateTime || value.tripTime) || fallback.tripDateTime;
   return {
     meetTitle: cleanText(value.meetTitle, fallback.meetTitle),
     meetDate: normalizeDate(value.meetDate) || fallback.meetDate,
@@ -1570,7 +1572,8 @@ function normalizeDailyTools(value = {}) {
     feedingSnacks: normalizeTextList(value.feedingSnacks, fallback.feedingSnacks),
     feedingAvoid: normalizeTextList(value.feedingAvoid, fallback.feedingAvoid),
     tripPlace: cleanText(value.tripPlace, fallback.tripPlace),
-    tripDateTime: normalizeDateTime(value.tripDateTime || value.tripTime) || fallback.tripDateTime,
+    tripDateTime,
+    tripEndDateTime: normalizeDateTime(value.tripEndDateTime) || addHoursToDateTime(tripDateTime, 6) || fallback.tripEndDateTime,
     tripTransport: cleanText(value.tripTransport, fallback.tripTransport),
     tripHotel: cleanText(value.tripHotel, fallback.tripHotel),
     tripNotes: normalizeTextList(value.tripNotes || value.tripMemo, fallback.tripNotes),
@@ -1889,6 +1892,15 @@ function normalizeDateTime(value) {
   if (/^\d{4}-\d{2}-\d{2}T([01]\d|2[0-3]):[0-5]\d$/.test(text)) return text;
   if (/^\d{4}-\d{2}-\d{2} ([01]\d|2[0-3]):[0-5]\d$/.test(text)) return text.replace(" ", "T");
   return "";
+}
+
+function addHoursToDateTime(value, hours) {
+  const normalized = normalizeDateTime(value);
+  if (!normalized) return "";
+  const date = new Date(`${normalized}:00`);
+  if (Number.isNaN(date.getTime())) return "";
+  date.setHours(date.getHours() + hours);
+  return dateKey(date) + `T${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
 }
 
 function normalizeDayOfMonth(value, fallback = 1) {

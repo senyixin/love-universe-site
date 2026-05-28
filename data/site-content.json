@@ -476,6 +476,7 @@
     ],
     "tripPlace": "下次见面的地方",
     "tripDateTime": "2026-06-04T18:00",
+    "tripEndDateTime": "2026-06-04T23:00",
     "tripTransport": "车次/路线待填写",
     "tripHotel": "酒店/落脚点待填写",
     "tripNotes": [

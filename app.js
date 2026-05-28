@@ -151,6 +151,7 @@ const DEFAULTS = {
     feedingAvoid: ["太冰", "太辣", "空腹甜饮"],
     tripPlace: "下次见面的地方",
     tripDateTime: `${daysFromNow(7)}T18:00`,
+    tripEndDateTime: `${daysFromNow(7)}T23:00`,
     tripTransport: "车次/路线待填写",
     tripHotel: "酒店/落脚点待填写",
     tripNotes: ["身份证和充电器别忘", "提前确认出发时间", "路上注意安全，到站告诉我"],
@@ -397,6 +398,7 @@ function applyContent(content) {
 
 function normalizeDailyTools(value = {}) {
   const fallback = DEFAULTS.dailyTools;
+  const tripDateTime = normalizeDateTimeInput(value.tripDateTime || value.tripTime) || fallback.tripDateTime;
   return {
     meetTitle: String(value.meetTitle || fallback.meetTitle),
     meetDate: normalizeDateInput(value.meetDate) || state.settings.nextMeet || fallback.meetDate,
@@ -414,7 +416,8 @@ function normalizeDailyTools(value = {}) {
     feedingSnacks: normalizeTextList(value.feedingSnacks, fallback.feedingSnacks),
     feedingAvoid: normalizeTextList(value.feedingAvoid, fallback.feedingAvoid),
     tripPlace: String(value.tripPlace || fallback.tripPlace),
-    tripDateTime: normalizeDateTimeInput(value.tripDateTime || value.tripTime) || fallback.tripDateTime,
+    tripDateTime,
+    tripEndDateTime: normalizeDateTimeInput(value.tripEndDateTime) || addHoursToDateTime(tripDateTime, 6) || fallback.tripEndDateTime,
     tripTransport: String(value.tripTransport || fallback.tripTransport),
     tripHotel: String(value.tripHotel || fallback.tripHotel),
     tripNotes: normalizeTextList(value.tripNotes || value.tripMemo, fallback.tripNotes),
@@ -583,6 +586,20 @@ function normalizeDateTimeInput(value) {
   if (/^\d{4}-\d{2}-\d{2}T([01]\d|2[0-3]):[0-5]\d$/.test(text)) return text;
   if (/^\d{4}-\d{2}-\d{2} ([01]\d|2[0-3]):[0-5]\d$/.test(text)) return text.replace(" ", "T");
   return "";
+}
+
+function addHoursToDateTime(value, hours) {
+  const normalized = normalizeDateTimeInput(value);
+  if (!normalized) return "";
+  const date = new Date(`${normalized}:00`);
+  if (Number.isNaN(date.getTime())) return "";
+  date.setHours(date.getHours() + hours);
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  const h = String(date.getHours()).padStart(2, "0");
+  const min = String(date.getMinutes()).padStart(2, "0");
+  return `${y}-${m}-${d}T${h}:${min}`;
 }
 
 function normalizeDayOfMonth(value, fallback = 1) {
@@ -762,6 +779,13 @@ function getTripDateTime(tools) {
   const date = normalizeDateInput(tools.meetDate);
   const time = normalizeTimeInput(tools.meetTime) || "18:00";
   return date ? `${date}T${time}` : "";
+}
+
+function getTripEndDateTime(tools) {
+  const normalized = normalizeDateTimeInput(tools.tripEndDateTime);
+  if (normalized) return normalized;
+  const start = getTripDateTime(tools);
+  return addHoursToDateTime(start, 6);
 }
 
 function isSameLocalDate(left, right) {
@@ -984,9 +1008,14 @@ function renderEntryTripCard() {
   if (!card) return;
   const tools = state.dailyTools || DEFAULTS.dailyTools;
   const tripDateTime = getTripDateTime(tools);
+  const tripEndDateTime = getTripEndDateTime(tools);
   const target = tripDateTime ? new Date(`${tripDateTime}:00`) : null;
+  let end = tripEndDateTime ? new Date(`${tripEndDateTime}:00`) : null;
   const now = new Date();
-  if (!target || Number.isNaN(target.getTime()) || !isSameLocalDate(target, now)) {
+  if (end && (!Number.isNaN(end.getTime())) && target && end <= target) {
+    end = new Date(target.getTime() + 6 * 60 * 60 * 1000);
+  }
+  if (!target || Number.isNaN(target.getTime()) || !isSameLocalDate(target, now) || (end && !Number.isNaN(end.getTime()) && now > end)) {
     card.hidden = true;
     card.innerHTML = "";
     return;
@@ -1001,6 +1030,7 @@ function renderEntryTripCard() {
     <strong>${formatCountdownDetailed(target - now)}</strong>
     <div class="entry-trip-list">
       <span>时间：${escapeHtml(formatDateTimeMinute(tripDateTime))}</span>
+      <span>结束：${escapeHtml(formatDateTimeMinute(getTripEndDateTime(tools)))}</span>
       <span>地点：${escapeHtml(tools.tripPlace || "待填写")}</span>
       <span>车次/路线：${escapeHtml(tools.tripTransport || "待填写")}</span>
       <span>酒店/落脚点：${escapeHtml(tools.tripHotel || "待填写")}</span>
@@ -1049,6 +1079,7 @@ function syncAppNotifications() {
     periodEndDay: tools.periodEndDay || DEFAULTS.dailyTools.periodEndDay,
     periodReminderTime: tools.periodReminderTime || DEFAULTS.dailyTools.periodReminderTime,
     tripDateTime: getTripDateTime(tools),
+    tripEndDateTime: getTripEndDateTime(tools),
     tripPlace: tools.tripPlace || "",
     tripReminderHours: normalizeHourList(tools.tripReminderHours, DEFAULTS.dailyTools.tripReminderHours)
   };
@@ -1073,6 +1104,7 @@ function renderDailyTools() {
   const countdown = timeUntilText(tools.meetDate, tools.meetTime);
   const periodView = getPeriodCareView(tools, state.periodState);
   const tripDateTime = getTripDateTime(tools);
+  const tripEndDateTime = getTripEndDateTime(tools);
 
   $("#careCard").innerHTML = dailyCardHtml("heart", "今日关心卡", care, "每天自动随机一条，替代天气提醒。");
   $("#meetCountdownCard").innerHTML = dailyCardHtml(
@@ -1117,6 +1149,7 @@ function renderDailyTools() {
     dailyListHtml([
       `地点：${tools.tripPlace}`,
       `时间：${formatDateTimeMinute(tripDateTime)}`,
+      `结束：${formatDateTimeMinute(tripEndDateTime)}`,
       `车次/路线：${tools.tripTransport}`,
       `酒店/落脚点：${tools.tripHotel}`,
       ...tools.tripNotes
@@ -3611,6 +3644,7 @@ function fillDailyToolsForm() {
   form.feedingAvoid.value = normalizeTextList(tools.feedingAvoid, DEFAULTS.dailyTools.feedingAvoid).join("\n");
   form.tripPlace.value = tools.tripPlace || "";
   form.tripDateTime.value = getTripDateTime(tools);
+  form.tripEndDateTime.value = getTripEndDateTime(tools);
   form.tripTransport.value = tools.tripTransport || "";
   form.tripHotel.value = tools.tripHotel || "";
   form.tripNotes.value = normalizeTextList(tools.tripNotes, DEFAULTS.dailyTools.tripNotes).join("\n");
@@ -3642,6 +3676,7 @@ async function saveDailyTools(event) {
     feedingAvoid: normalizeTextList(form.feedingAvoid.value, DEFAULTS.dailyTools.feedingAvoid),
     tripPlace: form.tripPlace.value.trim() || DEFAULTS.dailyTools.tripPlace,
     tripDateTime: normalizeDateTimeInput(form.tripDateTime.value) || DEFAULTS.dailyTools.tripDateTime,
+    tripEndDateTime: normalizeDateTimeInput(form.tripEndDateTime.value) || DEFAULTS.dailyTools.tripEndDateTime,
     tripTransport: form.tripTransport.value.trim() || DEFAULTS.dailyTools.tripTransport,
     tripHotel: form.tripHotel.value.trim() || DEFAULTS.dailyTools.tripHotel,
     tripNotes: normalizeTextList(form.tripNotes.value, DEFAULTS.dailyTools.tripNotes),
